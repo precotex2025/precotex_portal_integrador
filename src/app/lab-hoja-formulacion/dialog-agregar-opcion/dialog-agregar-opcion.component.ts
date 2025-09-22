@@ -51,7 +51,6 @@ export class DialogAgregarOpcionComponent implements OnInit {
       inicial: this.coloranteSeleccionado.inicial,
       ajuste: 0
     });
-
   }
 
 

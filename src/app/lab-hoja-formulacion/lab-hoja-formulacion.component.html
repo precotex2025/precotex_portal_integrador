@@ -40,59 +40,57 @@
     </div>
 
     <div class="tabla-wrapper">
-      <!-- <table mat-table class="tabla-colorantes" matSort>
+      <section class="formulaciones-section">
+        <div class="formulaciones-scroll-wrapper">
+          <div class="formulaciones-grid" [ngStyle]="{ 'grid-template-columns': '2fr ' + '1fr '.repeat(formulaciones.length).trim() }">
+            
+            <div class="" style="background-color: #f4f6f9;"></div>
+            <div class="formulacion-cell" *ngFor="let f of formulaciones; let i = index">
+              <button mat-button color="accent" (click)="copiarFormulacion(i)">
+                <mat-icon>file_copy</mat-icon>
+              </button>
+            </div>
 
-        <ng-container matColumnDef="nombre">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre Colorante</th>
-          <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
-        </ng-container>
+            <div class="" style="background-color: #f4f6f9;"></div>
+            <div class="formulacion-cell" *ngFor="let f of formulaciones; let i = index">
+              <button mat-button color="primary">
+                Enviar a Autolab <mat-icon>send</mat-icon>
+              </button>
+            </div>
 
-        <ng-container matColumnDef="detalle">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Detalle</th>
-          <td mat-cell *matCellDef="let row">{{ row.detalle }}</td>
-        </ng-container>
+            <div class="formulacion-header">NOM COLORANTE</div>
+            <div class="formulacion-header" *ngFor="let f of formulaciones">{{ f.numeroColumna }}</div>
 
-        <ng-container matColumnDef="procedencia">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Procedencia</th>
-          <td mat-cell *matCellDef="let row">{{ row.procedencia }}</td>
-        </ng-container>
+            <ng-container *ngFor="let fila of filas">
+              <div class="formulacion-cell etiqueta">{{ fila.etiqueta }}</div>
+              <div class="formulacion-cell" *ngFor="let f of formulaciones">
 
-        <ng-container matColumnDef="qty">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Qty</th>
-          <td mat-cell *matCellDef="let row">{{ row.qty }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="dataColor">
-          <th mat-header-cell *matHeaderCellDef>Data Color</th>
-          <td mat-cell *matCellDef="let row">
-            <mat-checkbox [(ngModel)]="row.dataColor"></mat-checkbox>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="dataQC">
-          <th mat-header-cell *matHeaderCellDef>Data QC</th>
-          <td mat-cell *matCellDef="let row">
-            <mat-checkbox [(ngModel)]="row.dataQC"></mat-checkbox>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="dataCliente">
-          <th mat-header-cell *matHeaderCellDef>Data Cliente</th>
-          <td mat-cell *matCellDef="let row">
-            <mat-checkbox [(ngModel)]="row.dataCliente"></mat-checkbox>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="estado">
-          <th mat-header-cell *matHeaderCellDef>Estado</th>
-          <td mat-cell *matCellDef="let row">
-            <mat-checkbox [(ngModel)]="row.estado"></mat-checkbox>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="columnasTabla"></tr>
-        <tr mat-row *matRowDef="let row; columns: columnasTabla;"></tr>
-      </table> -->
+                <ng-container [ngSwitch]="fila.tipo">
+                  <ng-container *ngIf="fila.key === 'detalle'; else valorNormal">
+                    <button mat-button color="primary" (click)="verDetalle(f)">
+                      VER
+                    </button>
+                  </ng-container>
+                  <ng-template #valorNormal>
+                    <span *ngSwitchCase="'texto'">{{ getValor(f, fila.key) }}</span>
+                    <span *ngSwitchCase="'numero'">{{ getValor(f, fila.key) | number:'1.4-4' }}</span>
+                    <span *ngSwitchCase="'booleano'">
+                      <mat-icon color="primary" *ngIf="getValor(f, fila.key)">check</mat-icon>
+                    </span>
+                  </ng-template>
+                </ng-container>
+              </div>
+              
+            </ng-container>
+            <div class="formulacion-cell etiqueta">Acción</div>
+              <div class="formulacion-cell" *ngFor="let f of formulaciones; let i = index">
+              <button mat-button color="warn" (click)="borrarFormulacion(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
 
   </div>

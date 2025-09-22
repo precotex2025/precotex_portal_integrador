@@ -24,9 +24,9 @@
     <div class="colorantes-scroll-wrapper">
         <div class="colorantes-grid">
         <div class="colorante-header">Colorante</div>
-        <div class="colorante-header">Inicial (%)</div>
+        <div class="colorante-header">%</div>
         <div class="colorante-header">Ajuste</div>
-        <div class="colorante-header">Final (%)</div>
+        <div class="colorante-header">%</div>
         <div class="colorante-header">Acción</div>
 
         <ng-container *ngFor="let colorante of colorantesSeleccionados">
@@ -39,7 +39,9 @@
             </div>
             <div class="colorante-cell final">{{ calcularFinal(colorante).toFixed(4) }}</div>
             <div class="colorante-cell accion">
-            <button mat-button color="warn" (click)="quitarColorante(colorante)">Quitar</button>
+            <button mat-button (click)="quitarColorante(colorante)">
+              <a><mat-icon>delete</mat-icon></a>
+            </button>
             </div>
         </ng-container>
         </div>
