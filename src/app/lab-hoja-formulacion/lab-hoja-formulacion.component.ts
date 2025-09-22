@@ -65,7 +65,6 @@ export class LabHojaFormulacionComponent implements OnInit{
       panelClass: 'my-class',
       data:{
         Title: "Detalle",
-        // Num_SDC: num_sdc
       }
     });
     dialogref.afterClosed().subscribe(result =>

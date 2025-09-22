@@ -1,11 +1,9 @@
 <div class="laboratorio-container">
 
-  <!-- Botón flotante para mostrar/ocultar menú -->
   <button mat-icon-button (click)="toggleRecetas()" class="toggle-recetas-btn">
     <mat-icon>{{ showRecetas ? 'chevron_left' : 'menu' }}</mat-icon>
   </button>
 
-  <!-- Menú lateral de recetas -->
   <div class="recetas-sidebar" [class.visible]="showRecetas" [class.oculto]="!showRecetas">
     <h3>Recetas disponibles</h3>
     <mat-nav-list>
@@ -17,10 +15,8 @@
     </mat-nav-list>
   </div>
 
-  <!-- Contenido principal -->
   <div class="contenido-principal" [class.expandido]="!showRecetas" [class.reducido]="showRecetas">
 
-    <!-- Grid desplegable -->
     <mat-expansion-panel>
       <mat-expansion-panel-header>
         <mat-panel-title>Información:</mat-panel-title>
@@ -35,7 +31,6 @@
       </div>
     </mat-expansion-panel>
 
-    <!-- Botones funcionales -->
     <div class="botones-acciones">
       <button mat-raised-button color="primary">Informe SDC</button>
       <button mat-raised-button color="accent" (click)="onAgregarOpcion()">Agregar opción</button>
@@ -44,7 +39,6 @@
       <button mat-raised-button color="primary">Actualizar</button>
     </div>
 
-    <!-- Tabla de datos -->
     <div class="tabla-wrapper">
       <!-- <table mat-table class="tabla-colorantes" matSort>
 
