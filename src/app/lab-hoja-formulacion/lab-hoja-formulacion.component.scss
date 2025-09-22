@@ -1,0 +1,220 @@
+.laboratorio-container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  background-color: #f4f6f9;
+  font-family: 'Segoe UI', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.toggle-recetas-btn {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 20;
+  background-color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+
+.recetas-sidebar {
+  width: 260px;
+  min-width: 260px;
+  background-color: #ffffff;
+  padding: 1.5rem 1rem;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, width 0.3s ease;
+  z-index: 10;
+
+  &.oculto {
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    transform: translateX(-100%);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+  }
+
+  ::ng-deep mat-list-item {
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #ecf0f1;
+    }
+
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #34495e;
+    }
+
+    mat-icon {
+      color: #3498db;
+    }
+
+    &.receta-activa {
+      border-bottom: 2px solid #3498db;
+      background-color: #eaf4ff;
+
+      h4 {
+        color: #3498db;
+        font-weight: 600;
+      }
+
+      mat-icon {
+        color: #3498db;
+      }
+    }
+  }
+}
+
+
+.contenido-principal {
+  flex-grow: 1;
+  transition: width 0.3s ease, padding 0.3s ease;
+  padding: 2rem;
+  overflow-y: auto;
+
+  &.expandido {
+    width: 100%;
+  }
+
+  &.reducido {
+    width: calc(100% - 260px);
+  }
+}
+
+
+mat-expansion-panel {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+
+  ::ng-deep .mat-expansion-panel-header {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #2c3e50;
+  }
+
+  .sdc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+
+    div {
+      background-color: #f0f4f8;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      color: #34495e;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+
+.botones-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  button {
+    min-width: 140px;
+    font-weight: 500;
+    border-radius: 6px;
+    text-transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    button {
+      width: 100%;
+    }
+  }
+}
+
+
+.tabla-wrapper {
+  overflow-x: auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+}
+
+.tabla-colorantes {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    background-color: #e3eaf2;
+    font-weight: 600;
+    padding: 0.75rem;
+    text-align: center;
+    color: #2c3e50;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #34495e;
+    white-space: nowrap;
+  }
+
+  ::ng-deep mat-checkbox {
+    margin: auto;
+  }
+
+  tr:hover {
+    background-color: #f5faff;
+  }
+}
+
+/*RESPONSIVE*/
+@media (max-width: 768px) {
+  .laboratorio-container {
+    flex-direction: column;
+  }
+
+  .recetas-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 15;
+  }
+
+  .contenido-principal {
+    width: 100% !important;
+    padding: 1rem;
+  }
+
+  .sdc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabla-colorantes th,
+  .tabla-colorantes td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+}
+

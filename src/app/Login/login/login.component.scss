@@ -1,3 +1,64 @@
-.parrafo{
-    color:red;
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #393741, #f8f6fe);
+  animation: fadeIn 1s ease-in;
+}
+
+.login-carta {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  animation: slideUp 0.8s ease-out;
+}
+
+.login-carta h2 {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #3f51b5;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.75rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.4);
+}
+
+.login-button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 18px rgba(63, 81, 181, 0.6);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 600px) {
+  .login-carta {
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+
+  .login-button {
+    font-size: 0.9rem;
+  }
 }

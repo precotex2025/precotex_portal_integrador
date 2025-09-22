@@ -1,0 +1,105 @@
+<div class="laboratorio-container">
+
+  <!-- Botón flotante para mostrar/ocultar menú -->
+  <button mat-icon-button (click)="toggleRecetas()" class="toggle-recetas-btn">
+    <mat-icon>{{ showRecetas ? 'chevron_left' : 'menu' }}</mat-icon>
+  </button>
+
+  <!-- Menú lateral de recetas -->
+  <div class="recetas-sidebar" [class.visible]="showRecetas" [class.oculto]="!showRecetas">
+    <h3>Recetas disponibles</h3>
+    <mat-nav-list>
+      <mat-list-item *ngFor="let receta of recetas" 
+      (click)="seleccionarReceta(receta)"
+      [ngClass]="{ 'receta-activa': receta === recetaSeleccionada }">
+        <h4 matLine>{{ receta }}</h4>
+      </mat-list-item>
+    </mat-nav-list>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="contenido-principal" [class.expandido]="!showRecetas" [class.reducido]="showRecetas">
+
+    <!-- Grid desplegable -->
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Información:</mat-panel-title>
+        <mat-panel-description>#{{sdcData.sdc}} - Cliente: {{ sdcData.cliente }} - Color: {{ sdcData.color }}</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="sdc-grid">
+        <div><strong>Fecha Apertura:</strong> {{ sdcData.fechaApertura | date:'dd/MM/yyyy' }}</div>
+        <div><strong>Fecha Entrega:</strong> {{ sdcData.fechaEntrega | date:'dd/MM/yyyy' }}</div>
+        <div><strong>Tipo:</strong> {{ sdcData.tipo }}</div>
+        <div><strong>Artículo:</strong> {{ sdcData.articulo }}</div>
+      </div>
+    </mat-expansion-panel>
+
+    <!-- Botones funcionales -->
+    <div class="botones-acciones">
+      <button mat-raised-button color="primary">Informe SDC</button>
+      <button mat-raised-button color="accent" (click)="onAgregarOpcion()">Agregar opción</button>
+      <button mat-raised-button style="background-color: green; color: white;">Entregar</button>
+      <button mat-raised-button color="warn">Quitar</button>
+      <button mat-raised-button color="primary">Actualizar</button>
+    </div>
+
+    <!-- Tabla de datos -->
+    <div class="tabla-wrapper">
+      <!-- <table mat-table class="tabla-colorantes" matSort>
+
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre Colorante</th>
+          <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="detalle">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Detalle</th>
+          <td mat-cell *matCellDef="let row">{{ row.detalle }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="procedencia">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Procedencia</th>
+          <td mat-cell *matCellDef="let row">{{ row.procedencia }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="qty">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Qty</th>
+          <td mat-cell *matCellDef="let row">{{ row.qty }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="dataColor">
+          <th mat-header-cell *matHeaderCellDef>Data Color</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox [(ngModel)]="row.dataColor"></mat-checkbox>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="dataQC">
+          <th mat-header-cell *matHeaderCellDef>Data QC</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox [(ngModel)]="row.dataQC"></mat-checkbox>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="dataCliente">
+          <th mat-header-cell *matHeaderCellDef>Data Cliente</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox [(ngModel)]="row.dataCliente"></mat-checkbox>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox [(ngModel)]="row.estado"></mat-checkbox>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnasTabla"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnasTabla;"></tr>
+      </table> -->
+    </div>
+
+  </div>
+</div>

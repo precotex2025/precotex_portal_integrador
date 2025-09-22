@@ -5,26 +5,31 @@ import * as _moment from 'moment';
 import { param } from 'jquery';
 import { Observable } from 'rxjs';
 
+
 @Injectable({
   providedIn: 'root'
 })
-export class LabColTrabajoService {
+export class LoginService {
+
   baseUrlTinto = GlobalVariable.baseUrlProcesoTenido;
   Header = new HttpHeaders({
     'Content-type': 'application/json'
   });
-  constructor(private http: HttpClient) { }
 
-  getListaSDCPorEstado(){
-    const headers = this.Header;
-    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListaSDCPorEstado', {headers});
-  }
+  constructor( private http: HttpClient) { }
 
-  getListaSDCDetalle(Corr_Carta: any){
+  getUsuarioHabilitado(Cod_Usuario: string){
     const headers = this.Header;
     let params = new HttpParams();
-    params = params.append('Corr_Carta', Corr_Carta)
-    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListaSDCDetalle', { headers, params })
+    params = params.append('Cod_Usuario', Cod_Usuario);
+    return this.http.get(this.baseUrlTinto + 'TxLogin/getGetUsuarioHabilitado', {headers, params});
+  }
+
+  getUsuarioWeb(Cod_Usuario: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Cod_Usuario', Cod_Usuario);
+    return this.http.get(this.baseUrlTinto + 'TxLogin/getGetUsuarioWeb', {headers, params});
   }
 
 }

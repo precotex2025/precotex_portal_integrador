@@ -11,10 +11,12 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { HttpClient,HttpHeaders, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { LabColTrabajoService } from '../../services/lab-col-trabajo/lab-col-trabajo.service';
+import { DialogLabColTrabajoDetalleComponent } from './dialog-lab-col-trabajo-detalle/dialog-lab-col-trabajo-detalle.component';
+import { title } from 'process';
 
 
 interface data_cola_trab{
-
+  corr_Carta: number
 }
 
 @Component({
@@ -63,7 +65,7 @@ export class LabColTrabajoComponent implements OnInit{
 
   onGetListaSDC(){
 
-    console.log('1', 'Entra al getLista')
+    
       const startControl = this.range.get('start');
       const endControl = this.range.get('end');
       const fecIni: Date | null = startControl?.value ?? null;
@@ -83,7 +85,7 @@ export class LabColTrabajoComponent implements OnInit{
       next: (response: any) => {
         if(response.success){
           if(response.totalElements > 0){
-            console.log('Reparto', response.elements);
+
             this.dataListadoSDC = response.elements;
             this.dataSource.data = this.dataListadoSDC;
             this.dataSource.sort = this.sort;
@@ -108,6 +110,38 @@ export class LabColTrabajoComponent implements OnInit{
    }
 
 
+  }
+
+
+  getColorClase(row: any): string {
+    const dias = row.dias_Falt_Compromiso;
+
+    if (dias <= 0) {
+      return 'fila-roja';      // YA SE PASARON
+    } else if (dias <= 3) {
+      return 'fila-amarilla';   // TIEMPO AJUSTADO
+    } else {
+      return 'fila-verde';       // TIEMPO DE SOBRA
+    }
+  }
+
+  onCreate(objeto: any){
+
+    let num_sdc = objeto.corr_Carta;
+
+    let dialogref = this.dialog.open(DialogLabColTrabajoDetalleComponent, {
+      width:'1500px',
+      height: '700px',
+      disableClose: false,
+      panelClass: 'my-class',
+      data:{
+        Title: "Detalle",
+        Num_SDC: num_sdc
+      }
+    });
+    dialogref.afterClosed().subscribe(result =>
+    { this.onGetListaSDC()}
+    );
   }
 
 }
