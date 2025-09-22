@@ -1,8 +1,19 @@
-<p class="parrafo">login works!</p>
-    <button mat-flat-button color="primary" (click)="goColaTrabajo()">
-          <a>Ingresar</a>
-    </button>
+<div class="login-container">
+  <div class="login-carta">
+    <h2>Bienvenido</h2> 
+    <form [formGroup]="formularioLogin" #formDirective="ngForm">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Usuario</mat-label>
+        <input matInput formControlName="Cod_Usuario">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contraseña</mat-label>
+        <input matInput formControlName="Password" type="password">
+      </mat-form-field>
+      <button mat-raised-button color="primary" class="login-button" type="submit" (click)="onValidarUsuario()">
+        <mat-icon>login</mat-icon> Iniciar sesión
+      </button>
+    </form>
+  </div>
+</div>
 
-    <button mat-flat-button color="warn" mat-dialog-close>
-          <mat-icon>close</mat-icon> Salir
-    </button>

@@ -1,0 +1,38 @@
+
+  <!-- Tabla -->
+  <div class="tabla-wrapper">
+    <table mat-table [dataSource]="dataSource" class="tabla-laboratorio" matSort>
+
+      <!-- Columnas -->
+      <ng-container matColumnDef="num_sec">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>N°</th>
+        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.sec }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="color">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Color</th>
+        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.descripcion_Color }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="est_ton_com">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estandar Tono Comer</th>
+        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.estandar_Tono_Comer }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="formulado">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Formulado</th>
+        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.formulado }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="HojaFormulacion">
+        <th mat-header-cell *matHeaderCellDef>Enviar</th>
+        <td mat-cell *matCellDef="let data_cola_trab">
+            <a mat-button class="link">Enviar</a>
+        </td>
+      </ng-container>
+
+      <!-- Header y filas -->
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+    </table>
+  </div>

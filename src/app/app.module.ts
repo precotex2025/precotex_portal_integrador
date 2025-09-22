@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DatePipe, HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { CommonModule, DatePipe, HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
@@ -23,24 +23,33 @@ import { HttpErrorInterceptor } from './interceptors/http-error-response.service
 import { MaterialModule } from './material.module';
 import { ToastrModule } from 'ngx-toastr';
 //import { FilterByValuePipe } from './pipes/filter-by-value.pipe';
-
+import { RouterModule } from '@angular/router';
 import { MY_DATE_FORMATS } from '../app/my-date-formats';
 
 /*DECLARAR MODULOS*/
 import { LabColTrabajoComponent } from './lab-col-trabajo/lab-col-trabajo/lab-col-trabajo.component';
-
-
+import { DialogLabColTrabajoDetalleComponent } from './lab-col-trabajo/lab-col-trabajo/dialog-lab-col-trabajo-detalle/dialog-lab-col-trabajo-detalle.component';
+import { LabHojaFormulacionComponent } from './lab-hoja-formulacion/lab-hoja-formulacion.component';
+import { LaboratorioTabsComponent } from './laboratorio-tabs/laboratorio-tabs.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { DialogAgregarOpcionComponent } from './lab-hoja-formulacion/dialog-agregar-opcion/dialog-agregar-opcion.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    LabColTrabajoComponent
+    LabColTrabajoComponent,
+    LaboratorioTabsComponent,
+    DialogLabColTrabajoDetalleComponent,
+    LabHojaFormulacionComponent,
+    DialogAgregarOpcionComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    RouterModule,
+    CommonModule,
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
@@ -53,6 +62,7 @@ import { LabColTrabajoComponent } from './lab-col-trabajo/lab-col-trabajo/lab-co
     MatDatepickerModule,
     MatFormFieldModule,
     MatIconModule,
+    MatTabsModule,
     ToastrModule.forRoot({
       timeOut: 10000,
       positionClass: 'toast-bottom-right',
