@@ -1,0 +1,39 @@
+<div class="sdc-info-wrapper">
+  <div class="sdc-grid" *ngFor="let informe of dataInforme">
+    <!-- Encabezado -->
+    <div class="sdc-cell etiqueta">SDC</div>
+    <div class="sdc-cell">{{informe.corr_Carta}}</div>
+
+    <div class="sdc-cell etiqueta">Tipo Teñido</div>
+    <div class="sdc-cell">{{informe.descripcion}}</div>
+
+    <div class="sdc-cell etiqueta">Referencia Comercial</div>
+    <div class="sdc-cell">{{informe.descripcion_Color}}</div>
+
+    <div class="sdc-cell etiqueta">Historia Pantone SDC</div>
+    <div class="sdc-cell">{{informe.pantone}}</div>
+
+    <div class="sdc-cell etiqueta">Comentario Comercial</div>
+    <div class="sdc-cell">{{informe.com_Comer}}</div>
+
+    <!-- Subsección: Ruta -->
+    <div class="sdc-cell etiqueta">Ruta</div>
+    <div class="sdc-cell">
+      <ul>
+        <li *ngFor="let ruta of informe.ruta">{{ ruta }}</li>
+      </ul>
+    </div>
+
+    <!-- Subsección: Solidez -->
+    <div class="sdc-cell etiqueta">Solidez</div>
+    <div class="sdc-cell">
+      <ul>
+        <li *ngFor="let solidez of informe.solidez">{{ solidez }}</li>
+      </ul>
+    </div> 
+  </div>
+</div>
+
+<div class="sdc-close-button">
+  <button mat-raised-button mat-dialog-close color="warn">Cerrar</button>
+</div>

@@ -1,0 +1,121 @@
+.receta-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  max-width: 900px;
+  margin: auto;
+  font-family: 'Segoe UI', sans-serif;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    text-align: center;
+  }
+
+ .receta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  background: #f8f8f8;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+
+  .receta-header {
+    font-weight: 600;
+    background: #e0e0e0;
+    padding: 0.5rem;
+    text-align: center;
+    color: #2c3e50;
+    border-bottom: 2px solid #ccc;
+  }
+
+  .receta-cell {
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+    color: #2c3e50;
+    background-color: #fff;
+    text-align: left;
+  }
+
+  .receta-cell:nth-child(4n+1),
+  .receta-cell:nth-child(4n+3),
+  .receta-cell:nth-child(4n+5),
+  .receta-cell:nth-child(4n+7),
+  .receta-cell:nth-child(4n+9),
+  .receta-cell:nth-child(4n+11),
+  .receta-cell:nth-child(4n+13),
+  .receta-cell:nth-child(4n+15) {
+    background-color: #f0f4f8; // color suave para etiquetas
+    font-weight: 600;
+  }
+}
+
+  .receta-subsection {
+    margin-bottom: 2rem;
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #2c3e50;
+    }
+
+    .receta-table {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      background: #f9f9f9;
+      padding: 0.5rem;
+      border-radius: 6px;
+
+      .header {
+        font-weight: 600;
+        background: #e0e0e0;
+        padding: 0.5rem;
+        text-align: center;
+      }
+
+      .cell {
+        background: #fff;
+        padding: 0.5rem;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+      }
+    }
+  }
+}
+
+.receta-close {
+  text-align: center;
+  margin-top: 1rem;
+
+  button {
+    min-width: 140px;
+    font-weight: 500;
+    border-radius: 6px;
+    text-transform: none;
+  }
+}
+
+/* 📱 Responsive */
+@media (max-width: 600px) {
+  .receta-card {
+    padding: 1rem;
+
+    .receta-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .receta-table {
+      grid-template-columns: 1fr;
+      .header, .cell {
+        text-align: left;
+      }
+    }
+  }
+}

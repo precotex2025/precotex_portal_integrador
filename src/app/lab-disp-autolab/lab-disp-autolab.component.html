@@ -1,0 +1,68 @@
+<div class="laboratorio-container">
+    
+  <div class="laboratorio-header">
+    <div class="filtros">
+      <label><input type="radio" name="estado" [checked]="estadoSeleccionado === 'cola'" (change)="cambiarEstado('cola')" /> Cola Autolab</label>
+      <label><input type="radio" name="estado" [checked]="estadoSeleccionado === 'dispensado'" (change)="cambiarEstado('dispensado')"/> Dispensado</label>
+    </div>
+    <button mat-raised-button color="primary">ENVIAR A DISPENSAR</button>
+  </div>
+
+  <div class="tabla-wrapper">
+  <table mat-table [dataSource]="dataSource" class="tabla-laboratorio" matSort>
+
+    <ng-container matColumnDef="seleccion">
+    <th mat-header-cell *matHeaderCellDef>
+      <mat-checkbox
+        [checked]="isAllSelected()"
+        [indeterminate]="isIndeterminate()"
+        (change)="toggleAllRows($event.checked)">
+      </mat-checkbox>
+    </th>
+    <td mat-cell *matCellDef="let row">
+      <mat-checkbox [(ngModel)]="row.seleccionado"></mat-checkbox>
+    </td>
+  </ng-container>
+
+    <ng-container matColumnDef="id_disp">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID DISP</th>
+      <td mat-cell *matCellDef="let row">{{ row.id_disp }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="num_bandeja">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>N° BANDEJA</th>
+      <td mat-cell *matCellDef="let row">{{ row.num_bandeja }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="id_tubo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID TUBO BANDEJA</th>
+      <td mat-cell *matCellDef="let row">{{ row.id_tubo }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="sdc">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>SDC</th>
+      <td mat-cell *matCellDef="let row">{{ row.sdc }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="color">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>COLOR</th>
+      <td mat-cell *matCellDef="let row">{{ row.color }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="curva">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>CURVA</th>
+      <td mat-cell *matCellDef="let row">{{ row.curva }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="volumen">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>VOLUMEN</th>
+      <td mat-cell *matCellDef="let row">{{ row.volumen }}</td>
+    </ng-container>
+
+    <!-- Header y filas -->
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+  </table>
+</div>
+
+</div>

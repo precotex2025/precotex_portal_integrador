@@ -1,104 +1,122 @@
 <div class="agregar-opcion-container">
+  <div class="selector-botones-wrapper">
+    <div class="selector-agregar">
+      <mat-form-field appearance="fill">
+        <mat-label>Agregar colorante</mat-label>
+        <mat-select [(value)]="coloranteSeleccionado">
+          <mat-option *ngFor="let c of colorantesDisponibles" [value]="c">{{ c.nombre }}</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-<div class="selector-botones-wrapper">
-  <div class="selector-agregar">
-    <mat-form-field appearance="fill">
-      <mat-label>Agregar colorante</mat-label>
-      <mat-select [(value)]="coloranteSeleccionado">
-        <mat-option *ngFor="let c of colorantesDisponibles" [value]="c">{{ c.nombre }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <button mat-raised-button color="primary" (click)="agregarColorante()">Agregar</button>
-  </div>
-
-  <div class="botones-column">
-    <button mat-raised-button color="primary" (click)="habilitarCambios()">Habilitar cambios</button>
-    <button mat-raised-button color="primary" (click)="guardar()">Guardar</button>
-    <button mat-raised-button color="primary" (click)="cerrar()">Cerrar</button>
-  </div>
-</div>
-
-  <section class="colorantes-section">
-  <h3>Colorantes</h3>
-    <div class="colorantes-scroll-wrapper">
-        <div class="colorantes-grid">
-        <div class="colorante-header">Colorante</div>
-        <div class="colorante-header">%</div>
-        <div class="colorante-header">Ajuste</div>
-        <div class="colorante-header">%</div>
-        <div class="colorante-header">Acción</div>
-
-        <ng-container *ngFor="let colorante of colorantesSeleccionados">
-            <div class="colorante-cell nombre">{{ colorante.nombre }}</div>
-            <div class="colorante-cell inicial">{{ colorante.inicial.toFixed(4) }}</div>
-            <div class="colorante-cell ajuste">
-            <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.001)">−</button>
-            <input type="number" [(ngModel)]="colorante.ajuste" step="0.001" />
-            <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.001)">+</button>
-            </div>
-            <div class="colorante-cell final">{{ calcularFinal(colorante).toFixed(4) }}</div>
-            <div class="colorante-cell accion">
-            <button mat-button (click)="quitarColorante(colorante)">
-              <a><mat-icon>delete</mat-icon></a>
-            </button>
-            </div>
-        </ng-container>
-        </div>
+      <button mat-raised-button color="primary" (click)="agregarColorante()">Agregar</button>
     </div>
-  </section>
 
-  <section class="parametros-section">
-    <h3>Jabonado - Curva - Fijado</h3>
+    <div class="botones-column">
+      <button mat-raised-button color="primary" (click)="habilitarCambios()">Habilitar cambios</button>
+      <button mat-raised-button color="primary" (click)="guardar()">Guardar</button>
+      <button mat-raised-button color="warn" mat-dialog-close>Cerrar</button>
+    </div>
+  </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>CAN JABONADAS</mat-label>
-      <input matInput type="number" [(ngModel)]="parametros.jabonadas" />
-    </mat-form-field>
+    <section class="colorantes-section">
+      <h3>Colorantes</h3>
+      <div class="colorantes-scroll-wrapper">
+          <div class="colorantes-grid">
+          <div class="colorante-header">Codigo</div>
+          <div class="colorante-header">Colorante</div>
+          <div class="colorante-header">%</div>
+          <div class="colorante-header">Ajuste</div>
+          <div class="colorante-header">%</div>
+          <div class="colorante-header">Acción</div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>CURVA JABONADA</mat-label>
-      <mat-select [(ngModel)]="parametros.curva">
-        <mat-option *ngFor="let curva of curvas" [value]="curva">{{ curva }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+          <ng-container *ngFor="let colorante of colorantesSeleccionados">
+              <div class="colorante-cell codigo">{{ colorante.codigo }}</div>
+              <div class="colorante-cell nombre">{{ colorante.nombre }}</div>
+              <div class="colorante-cell inicial">{{ colorante.inicial.toFixed(4) }}</div>
+              <div class="colorante-cell ajuste">
+              <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.0001)">−</button>
+              <input type="number" [(ngModel)]="colorante.ajuste" step="0.0001" />
+              <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.0001)">+</button>
+              </div>
+              <div class="colorante-cell final">{{ calcularFinal(colorante).toFixed(4) }}</div>
+              <div class="colorante-cell accion">
+              <button mat-button (click)="quitarColorante(colorante)">
+                <a><mat-icon>delete</mat-icon></a>
+              </button>
+              </div>
+          </ng-container>
+          </div>
+      </div>
+    </section>
 
-    <mat-form-field appearance="fill">
-      <mat-label>FIJADO</mat-label>
-      <mat-select [(ngModel)]="parametros.fijado">
-        <mat-option *ngFor="let fijado of fijados" [value]="fijado">{{ fijado }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </section>
+    <section class="parametros-section">
+      <h3>Jabonado - Curva - Fijado</h3>
 
-<div class="seccion-doble">
-  <section class="quimicos-section">
-    <h3>Carbonato / Soda</h3>
+      <mat-form-field appearance="fill">
+        <mat-label>CAN JABONADAS</mat-label>
+        <input matInput type="number" [(ngModel)]="parametros.jabonadas" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>CURVA JABONADA</mat-label>
+        <mat-select [(ngModel)]="parametros.curva">
+          <mat-option *ngFor="let curva of curvas" [value]="curva.codigo">{{ curva.nombre }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>FIJADO</mat-label>
+        <mat-select [(ngModel)]="parametros.fijado">
+          <mat-option *ngFor="let fijado of fijados" [value]="fijado.codigo">{{ fijado.nombre }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>ACIDULADO</mat-label>
+        <mat-select [(ngModel)]="parametros.acidulado">
+          <mat-option *ngFor="let acidulado of acidulados" [value]="acidulado.codigo">{{ acidulado.nombre }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+  <div class="seccion-doble">
+    <section class="quimicos-section">
+      <h3>Carbonato / Soda</h3>
+      <!-- <div class="quimico-grid-header">
+
+    </div> -->
+
     <div class="quimico-row" *ngFor="let producto of productos">
-      <span class="nombre">{{ producto.nombre }}</span>
-      <mat-form-field appearance="outline">
+      <span class="col-nombre">{{ producto.nombre }}</span>
+
+      <mat-form-field appearance="outline" class="col-gr">
         <mat-label>Cantidad (gr)</mat-label>
         <input matInput type="number" [(ngModel)]="producto.cantidad" />
       </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col-porcentaje">
+        <mat-label>Porcentaje (%)</mat-label>
+        <input matInput type="number" [(ngModel)]="producto.porcentaje" />
+      </mat-form-field>
     </div>
-  </section>
+    </section>
 
-  <section class="datos-section">
-    <h3>Baño - Peso - Volumen</h3>
-    <mat-form-field appearance="fill">
-      <mat-label>Relación baño</mat-label>
-      <input matInput type="number" [(ngModel)]="datos.relacionBano" />
-    </mat-form-field>
+    <section class="datos-section">
+      <h3>Baño - Peso - Volumen</h3>
+      <mat-form-field appearance="fill">
+        <mat-label>Relación baño</mat-label>
+        <input matInput type="number" [(ngModel)]="datos.relacionBano" />
+      </mat-form-field>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Peso de muestra</mat-label>
-      <input matInput type="number" [(ngModel)]="datos.pesoMuestra" />
-    </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Peso de muestra</mat-label>
+        <input matInput type="number" [(ngModel)]="datos.pesoMuestra" />
+      </mat-form-field>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Volumen</mat-label>
-      <input matInput type="number" [(ngModel)]="datos.volumen" />
-    </mat-form-field>
-  </section>
-</div>
+      <mat-form-field appearance="fill">
+        <mat-label>Volumen</mat-label>
+        <input matInput type="number" [(ngModel)]="datos.volumen" />
+      </mat-form-field>
+    </section>
+  </div>
 </div>

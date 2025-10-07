@@ -14,7 +14,7 @@ export class LaboratorioTabsComponent {
   ){}
 
   onTabChange(index: number) {
-  const routes = ['/ColaTrabajo', '/HojaFormulacion', '/dispensado-autolab'];
+  const routes = ['/ColaTrabajo', '/HojaFormulacion', '/DispensadoAutolab'];
   this.router.navigate([routes[index]]);
   }
 }

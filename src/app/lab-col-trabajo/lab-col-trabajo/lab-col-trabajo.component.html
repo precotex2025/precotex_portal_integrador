@@ -10,22 +10,28 @@
   <!--Filtros-->
   <div class="filtros">
     <!--RadioButton-->
-    <mat-button-toggle-group name="estado" >
-      <mat-button-toggle value="pendientes">Pendientes</mat-button-toggle>
-      <mat-button-toggle value="entregados">Entregados</mat-button-toggle>
-      <mat-button-toggle value="estadisticas">Estadisticas</mat-button-toggle>
-    </mat-button-toggle-group>
+
+      <label><input type="radio" [value]="'01'" [(ngModel)]="estadoSeleccionado" (change)="onGetListaSDC()"  [checked]="true"/> Pendientes </label>
+      <label><input type="radio" [value]="'02'" [(ngModel)]="estadoSeleccionado" (change)="onGetListaSDC()"  /> Entregados </label>
+      <label><input type="radio" [value]="'03'" [(ngModel)]="estadoSeleccionado" (change)="onGetListaSDC()"  /> Estadisticas</label>
+    
 
     <!--Rango de Fechas-->
     <mat-form-field appearance="outline" class="rango-fechas">
       <mat-label>Rango de fechas</mat-label>
       <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
         <input matStartDate formControlName="start" placeholder="Inicio">
-        <input matEndDate formControlName="end" placeholder="Fin">
+        <input matEndDate formControlName="end" placeholder="Fin" >
       </mat-date-range-input>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-date-range-picker #picker></mat-date-range-picker>
     </mat-form-field>
+
+    <div class="boton-intermedio">
+      <button mat-raised-button color="primary" (click)="onGetListaSDC()">
+        Filtrar <mat-icon>search</mat-icon>
+      </button>
+    </div>
 
       <!-- Buscar -->
     <mat-form-field appearance="outline" class="buscador">
@@ -94,5 +100,10 @@
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
       <tr mat-row *matRowDef="let row; columns: columnsToDisplay;" [ngClass]="getColorClase(row)"></tr>
     </table>
+    <mat-paginator
+    [pageSize]="10"
+    [pageSizeOptions]="[5, 10, 20]"
+    showFirstLastButtons>
+  </mat-paginator>
   </div>
 </div>
