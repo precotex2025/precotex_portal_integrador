@@ -12,6 +12,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -25,6 +27,7 @@ import { ToastrModule } from 'ngx-toastr';
 //import { FilterByValuePipe } from './pipes/filter-by-value.pipe';
 import { RouterModule } from '@angular/router';
 import { MY_DATE_FORMATS } from '../app/my-date-formats';
+import { getCustomPaginatorIntl } from './paginacion-custom';
 
 /*DECLARAR MODULOS*/
 import { LabColTrabajoComponent } from './lab-col-trabajo/lab-col-trabajo/lab-col-trabajo.component';
@@ -33,6 +36,9 @@ import { LabHojaFormulacionComponent } from './lab-hoja-formulacion/lab-hoja-for
 import { LaboratorioTabsComponent } from './laboratorio-tabs/laboratorio-tabs.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DialogAgregarOpcionComponent } from './lab-hoja-formulacion/dialog-agregar-opcion/dialog-agregar-opcion.component';
+import { DialogInfoSdcComponent } from './lab-hoja-formulacion/dialog-info-sdc/dialog-info-sdc.component';
+import { DialogDetalleColorComponent } from './lab-hoja-formulacion/dialog-detalle-color/dialog-detalle-color.component';
+import { LabDispAutolabComponent } from './lab-disp-autolab/lab-disp-autolab.component';
 
 
 @NgModule({
@@ -43,7 +49,10 @@ import { DialogAgregarOpcionComponent } from './lab-hoja-formulacion/dialog-agre
     LaboratorioTabsComponent,
     DialogLabColTrabajoDetalleComponent,
     LabHojaFormulacionComponent,
-    DialogAgregarOpcionComponent
+    DialogAgregarOpcionComponent,
+    DialogInfoSdcComponent,
+    DialogDetalleColorComponent,
+    LabDispAutolabComponent
   ],
   imports: [
     BrowserModule,
@@ -63,6 +72,7 @@ import { DialogAgregarOpcionComponent } from './lab-hoja-formulacion/dialog-agre
     MatFormFieldModule,
     MatIconModule,
     MatTabsModule,
+    MatPaginatorModule,
     ToastrModule.forRoot({
       timeOut: 10000,
       positionClass: 'toast-bottom-right',
@@ -74,6 +84,7 @@ import { DialogAgregarOpcionComponent } from './lab-hoja-formulacion/dialog-agre
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
     { provide: LocationStrategy, useClass: HashLocationStrategy},
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true},
+    { provide: MatPaginatorIntl, useValue: getCustomPaginatorIntl() },
     DatePipe,
     provideClientHydration(),
     provideAnimationsAsync(),

@@ -1,0 +1,137 @@
+.laboratorio-container {
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  max-width: 100%;
+  margin: auto;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.laboratorio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+
+  .filtros {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem 1.5rem;
+    // background-color: #f5f5f5;
+    border-radius: 8px;
+    min-height: 60px;
+
+    label {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #2c3e50;
+
+      input {
+        margin-right: 0.5rem;
+        transform: scale(1.2);
+      }
+    }
+  }
+
+  button {
+    min-width: 180px;
+    font-weight: 600;
+    border-radius: 6px;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+}
+
+.tabla-wrapper {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.tabla-laboratorio {
+  width: 100%;
+  min-width: 800px;
+
+  th.mat-header-cell,
+  td.mat-cell {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  th.mat-header-cell {
+    background-color: #e0e0e0;
+    font-weight: 600;
+    color: #2c3e50;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  td.mat-cell {
+    padding: 0.65rem;
+    font-size: 0.95rem;
+    color: #34495e;
+  }
+
+  mat-checkbox {
+    margin: auto;
+    display: block;
+  }
+
+  .mat-icon {
+    cursor: pointer;
+    color: #1976d2;
+    font-size: 20px;
+  }
+
+  // Alternancia de filas (opcional)
+  tr.mat-row:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  tr.mat-row:hover {
+    background-color: #eef6ff;
+  }
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .tabla-laboratorio {
+    min-width: 100%;
+    th.mat-header-cell,
+    td.mat-cell {
+      font-size: 0.85rem;
+      padding: 0.5rem;
+    }
+
+    .mat-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+
+.fila-roja {
+  background-color: #ffe5e5;
+}
+
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .laboratorio-table {
+    grid-template-columns: 1fr 1fr;
+    .table-header, .table-cell {
+      text-align: left;
+    }
+  }
+
+  .laboratorio-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    button {
+      margin-top: 1rem;
+      width: 100%;
+    }
+  }
+}

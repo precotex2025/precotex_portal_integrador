@@ -8,17 +8,40 @@
   box-sizing: border-box;
 }
 
-
 .filtros {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.5rem;
+
+  label {
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0.2rem 0;
+  }
+
+  input[type="radio"] {
+    transform: scale(1.2);
+    accent-color: #1976d2;
+    cursor: pointer;
+  }
+
+  mat-icon {
+    font-size: 24px;
+    display: inline-block;
+    visibility: visible;
+    opacity: 1;
+  }
 
   .estado-toggle,
   .rango-fechas,
-  .buscador {
+  .buscador,
+  .boton-intermedio {
     flex: 1 1 100%;
     min-width: 200px;
     max-width: 100%;
@@ -44,12 +67,45 @@
     }
   }
 
+  .boton-intermedio {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0.5rem 0;
+
+    button {
+      background-color: #1976d2;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      min-width: 140px;
+
+      &:hover {
+        background-color: #1565c0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      &:disabled {
+        background-color: #ccc;
+        color: #666;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+    }
+  }
+
   @media (min-width: 720px) {
     flex-wrap: nowrap;
 
     .estado-toggle,
     .rango-fechas,
-    .buscador {
+    .buscador,
+    .boton-intermedio {
       flex: 1 1 auto;
       min-width: 160px;
       max-width: 280px;
@@ -75,7 +131,8 @@
     }
 
     .rango-fechas,
-    .buscador {
+    .buscador,
+    .boton-intermedio {
       min-width: 140px;
       font-size: 0.85rem;
 
@@ -90,6 +147,12 @@
 
       ::ng-deep .mat-form-field-infix {
         padding: 0.2rem 0;
+      }
+
+      button {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
       }
     }
   }
@@ -153,13 +216,13 @@
 
 //PINTAR FILAS
 .fila-verde {
-  background-color: #d4edda; // verde suave
+  background-color: #d4edda;
 }
 
 .fila-amarilla {
-  background-color: #fff3cd; // amarillo suave
+  background-color: #fff3cd;
 }
 
 .fila-roja {
-  background-color: #f8d7da; // rojo suave
+  background-color: #f8d7da;
 }

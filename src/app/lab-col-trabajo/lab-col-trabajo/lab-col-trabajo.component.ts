@@ -7,12 +7,13 @@ import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { MatSort } from '@angular/material/sort';
 import { NgxSpinnerService } from 'ngx-spinner'; 
 import { MatTable, MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 
 import { HttpClient,HttpHeaders, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { LabColTrabajoService } from '../../services/lab-col-trabajo/lab-col-trabajo.service';
 import { DialogLabColTrabajoDetalleComponent } from './dialog-lab-col-trabajo-detalle/dialog-lab-col-trabajo-detalle.component';
-import { title } from 'process';
+
 
 
 interface data_cola_trab{
@@ -27,6 +28,7 @@ interface data_cola_trab{
 export class LabColTrabajoComponent implements OnInit{
 
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   constructor
   (
     private dialog: MatDialog,
@@ -43,8 +45,13 @@ export class LabColTrabajoComponent implements OnInit{
     start: new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
     end: new FormControl(new Date),
   });
+  
   ngOnInit(): void {
     this.onGetListaSDC();
+  }
+
+  ngAfterViewInit(){
+    this.dataSource.paginator = this.paginator;
   }
 
   displayedColumns: string[] =  [
@@ -62,10 +69,13 @@ export class LabColTrabajoComponent implements OnInit{
   dataSource: MatTableDataSource<data_cola_trab> = new MatTableDataSource();
   columnsToDisplay: string[] = this.displayedColumns.slice();
   dataListadoSDC: Array<any> = [];
+  estadoSeleccionado: string = '01';
+
+  filtrarPorEstado() {
+  
+  }
 
   onGetListaSDC(){
-
-    
       const startControl = this.range.get('start');
       const endControl = this.range.get('end');
       const fecIni: Date | null = startControl?.value ?? null;
@@ -78,14 +88,13 @@ export class LabColTrabajoComponent implements OnInit{
       );
       return;
     }else{
-
+    let estado: string = this.estadoSeleccionado;
     this.SpinnerService.show();
     this.dataListadoSDC = [];
-    this.LabColaTrabajoService.getListaSDCPorEstado().subscribe({
+    this.LabColaTrabajoService.getListaSDCPorEstado(estado, fecIni, fecFin).subscribe({
       next: (response: any) => {
         if(response.success){
-          if(response.totalElements > 0){
-
+          if(response.totalElements > 0){         
             this.dataListadoSDC = response.elements;
             this.dataSource.data = this.dataListadoSDC;
             this.dataSource.sort = this.sort;
@@ -112,17 +121,20 @@ export class LabColTrabajoComponent implements OnInit{
 
   }
 
-
   getColorClase(row: any): string {
     const dias = row.dias_Falt_Compromiso;
-
-    if (dias <= 0) {
-      return 'fila-roja';      // YA SE PASARON
-    } else if (dias <= 3) {
-      return 'fila-amarilla';   // TIEMPO AJUSTADO
-    } else {
-      return 'fila-verde';       // TIEMPO DE SOBRA
+    if(this.estadoSeleccionado === '01'){
+      if (dias <= 0) {
+        return 'fila-roja';      // YA SE PASARON
+      } else if (dias <= 3) {
+        return 'fila-amarilla';   // TIEMPO AJUSTADO
+      } else {
+        return 'fila-verde';       // TIEMPO DE SOBRA
+      }
+    }else{
+      return '';
     }
+
   }
 
   onCreate(objeto: any){
