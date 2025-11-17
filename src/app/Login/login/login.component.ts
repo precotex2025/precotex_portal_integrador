@@ -42,58 +42,37 @@ export class LoginComponent {
       );
       return;
     }else{
-      this.loginService.getUsuarioHabilitado(cod_Usuario).subscribe({
-      next:(response: any) => {
-        if(response.success){
-          if(response.codeResult == 200){
-            this.dataUsuariosHabilitados = response.elements;
-            
-            let respuesta = this.dataUsuariosHabilitados[0].respuesta;  
-
-            console.log(respuesta);
-            if(respuesta === "OK"){
-
-              this.loginService.getUsuarioWeb(cod_Usuario).subscribe({
-                next:(response: any) => {
-                  if(response.success){
-                    if(response.codeResult == 200){
-                      this.dataUsuariosWeb = response.elements;
-                      let password = this.dataUsuariosWeb[0].password;
-                      let passwordText = this.formularioLogin.get('Password')?.value;
-                      if(passwordText?.toLowerCase() === password.toLowerCase()){
-                        this.toastr.success('Bienvenido', '', {
-                        timeOut:2500
-                        });  
-                        this.goColaTrabajo();
-                      }else{
-                        this.matSnackBar.open("Contraseña Incorrecta", "Cerrar",
-                        {horizontalPosition:'center', verticalPosition:'top', duration: 1500}
-                        );
-                        return;
-                      }
-                    }else{
-                      this.toastr.error(response.message, 'Cerrar', {
-                      timeOut:2500
-                      });
-                    }
-                  }
-                }
-              })
-            }else{
-              this.matSnackBar.open("Necesita accesos", "Cerrar",
-              {horizontalPosition:'center', verticalPosition:'top', duration: 1500}
-              );
-              return;
-            }
-            
-          }else{
-            this.toastr.error(response.message, 'Cerrar', {
-                timeOut:2500
+      this.loginService.getUsuarioWeb(cod_Usuario).subscribe({
+        next: (response: any) => {
+          if (response.success && response.codeResult === 200) {
+            this.dataUsuariosWeb = response.elements;
+            let password = this.dataUsuariosWeb[0].password;
+            let passwordText = this.formularioLogin.get('Password')?.value;
+            if (passwordText?.toLowerCase() === password.toLowerCase()) {
+              this.toastr.success('Bienvenido', '', { timeOut: 2500 });
+              console.log('Redireccionando a ColaTrabajo...');
+              this.goColaTrabajo();
+            } else {
+              this.matSnackBar.open("Contraseña Incorrecta", "Cerrar", {
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+                duration: 1500
               });
+            }
+          } else {
+            this.toastr.error(response.message || 'Error en validación de usuario web', 'Cerrar', {
+              timeOut: 2500
+            });
           }
+        },
+        error: (err) => {
+          console.error('Error en getUsuarioWeb:', err);
+          this.toastr.error('Error de conexión al validar usuario web', 'Cerrar', {
+            timeOut: 2500
+          });
         }
-      }
-    })
+      });
+
     }
   }
 

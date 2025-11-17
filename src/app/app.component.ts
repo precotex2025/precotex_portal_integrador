@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavigationEnd } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,11 +13,14 @@ export class AppComponent {
 
   isLoginRoute = true;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    public SpinnerService: NgxSpinnerService) {
     this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        this.isLoginRoute = event.url === '/Login';
-      }
+    if (event instanceof NavigationEnd) {
+      const currentRoute = event.urlAfterRedirects.toLowerCase();
+      this.isLoginRoute = currentRoute === '/login';
+    }
     });
   }
 

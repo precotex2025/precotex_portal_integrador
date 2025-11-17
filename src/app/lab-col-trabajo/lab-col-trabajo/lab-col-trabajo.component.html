@@ -36,7 +36,7 @@
       <!-- Buscar -->
     <mat-form-field appearance="outline" class="buscador">
       <mat-label>Buscar</mat-label>
-      <input matInput placeholder="Buscar">
+      <input matInput placeholder="Buscar" (keyup)="aplicarFiltrarTodo($event)">
       <button mat-icon-button matSuffix >
         <mat-icon>search</mat-icon>
       </button>
@@ -50,48 +50,48 @@
 
       <!-- Columnas -->
       <ng-container matColumnDef="cliente">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Cliente</th>
         <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.des_Cliente }}</td>
       </ng-container>
 
       <ng-container matColumnDef="num_sdc">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>#SDC</th>
-        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.corr_Carta }}</td>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">#SDC</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.corr_Carta }}</td>
       </ng-container>
 
       <ng-container matColumnDef="des_tela">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-tela" >Tela</th>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera" >Tela</th>
         <td mat-cell *matCellDef="let data_cola_trab" class="col-tela" [matTooltip]="data_cola_trab.des_Tela">{{ data_cola_trab.des_Tela }}</td>
       </ng-container>
 
       <ng-container matColumnDef="fec_asig">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fec. Asig.</th>
-        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.fec_creacion | date:'dd/MM/yyyy' }}</td>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Fec. Asig.</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.fec_creacion | date:'dd/MM/yyyy' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="dias_lab">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Dias en Lab.</th>
-        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.lab_Dias }}</td>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Dias en Lab.</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.lab_Dias }}</td>
       </ng-container>
 
       <ng-container matColumnDef="fec_comp">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fec. Comp.</th>
-        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.fec_compromiso | date:'dd/MM/yyyy' }}</td>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Fec. Comp.</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.fec_compromiso | date:'dd/MM/yyyy' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="dias_comp">
-        <th mat-header-cell *matHeaderCellDef>Dias Faltantes</th>
-        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.dias_Falt_Compromiso }}</td>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Dias Faltantes</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.dias_Falt_Compromiso }}</td>
       </ng-container>
 
       <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef>Estado</th>
-        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.estado }}</td>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Hoja de Formulación</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.estado }}</td>
       </ng-container>
 
       <ng-container matColumnDef="detalle">
-        <th mat-header-cell *matHeaderCellDef>Detalle</th>
-        <td mat-cell *matCellDef="let data_cola_trab">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Detalle</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">
             <a><mat-icon (click)="onCreate(data_cola_trab)">description</mat-icon></a>
         </td>
       </ng-container>

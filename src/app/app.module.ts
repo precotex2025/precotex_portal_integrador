@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe, HashLocationStrategy, LocationStrategy } from '@angular/common';
@@ -13,7 +13,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
-
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -39,7 +38,11 @@ import { DialogAgregarOpcionComponent } from './lab-hoja-formulacion/dialog-agre
 import { DialogInfoSdcComponent } from './lab-hoja-formulacion/dialog-info-sdc/dialog-info-sdc.component';
 import { DialogDetalleColorComponent } from './lab-hoja-formulacion/dialog-detalle-color/dialog-detalle-color.component';
 import { LabDispAutolabComponent } from './lab-disp-autolab/lab-disp-autolab.component';
-
+import { LabDosificacionComponent } from './lab-dosificacion/lab-dosificacion.component';
+import { DialogAgregarPhComponent } from './lab-dosificacion/dialog-agregar-ph/dialog-agregar-ph.component';
+import { DialogJabonadosComponent } from './dialog-jabonados/dialog-jabonados.component';
+import { NgxSpinner, NgxSpinnerModule } from 'ngx-spinner';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [
@@ -52,7 +55,10 @@ import { LabDispAutolabComponent } from './lab-disp-autolab/lab-disp-autolab.com
     DialogAgregarOpcionComponent,
     DialogInfoSdcComponent,
     DialogDetalleColorComponent,
-    LabDispAutolabComponent
+    LabDispAutolabComponent,
+    LabDosificacionComponent,
+    DialogAgregarPhComponent,
+    DialogJabonadosComponent
   ],
   imports: [
     BrowserModule,
@@ -73,11 +79,17 @@ import { LabDispAutolabComponent } from './lab-disp-autolab/lab-disp-autolab.com
     MatIconModule,
     MatTabsModule,
     MatPaginatorModule,
+    NgxSpinnerModule,
     ToastrModule.forRoot({
       timeOut: 10000,
       positionClass: 'toast-bottom-right',
       preventDuplicates: true
-
+    }),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
     }),
   ],
   providers: [

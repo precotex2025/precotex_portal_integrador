@@ -44,8 +44,23 @@
 }
 /**************************/
 .Color-Verde {
-  color: green;
+  color: rgb(1, 102, 1);
+  background-color: rgba(180, 255, 187, 0.949) !important;
   a{
-    color: green;
+    color: rgb(1, 102, 1);
   }
+}
+
+.centradoCabecera{
+    text-align: center !important;
+    justify-content: center !important;
+    font-weight: bold !important;
+    background-color: #d2d2d2 !important;
+    color: #333 !important;
+}
+
+
+.centrado{
+    text-align: center !important;
+    justify-content: center !important;
 }

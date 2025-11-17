@@ -1,49 +1,46 @@
-<div class="receta-card">
+<div class="receta-card" *ngIf="recetaDetalle">
   <h2>Detalle de receta</h2>
 
   <div class="receta-grid">
-    <div class="receta-cell">SDC</div><div class="receta-cell">8136</div>
-    <div class="receta-cell">Tipo teñido</div><div class="receta-cell">Reactivo</div>
-    <div class="receta-cell">Curva teñido</div><div class="receta-cell">Avitera 60°C</div>
-    <div class="receta-cell">Previo</div><div class="receta-cell">Blanqueo</div>
-    <div class="receta-cell">R/B</div><div class="receta-cell">1.05</div>
-    <div class="receta-cell">Peso de muestra (gr)</div><div class="receta-cell">5</div>
+    <div class="receta-cell">SDC</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.corr_Carta }}</div>
+    <div class="receta-cell">Tipo teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.tip_Tenido }}</div>
+    <div class="receta-cell">Curva teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.cur_Tenido }}</div>
+    <div class="receta-cell">Previo</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.previo }}</div>
+    <div class="receta-cell">R/B</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.r_B }}</div>
+    <div class="receta-cell">Peso de muestra (gr)</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.pes_Mue | number:'1.5-5' }}</div>
 
-    <div class="receta-cell">Can jabonados</div><div class="receta-cell">SEFOLD 200</div>
-    <div class="receta-cell">Curva jabonado</div><div class="receta-cell">REWIN</div>
-    <div class="receta-cell">pH inicio</div><div class="receta-cell">6.8</div>
-    <div class="receta-cell">pH final</div><div class="receta-cell">6.3</div>
-    <div class="receta-cell">pH jabonado</div><div class="receta-cell">6.8</div>
+    <div class="receta-cell">Can jabonados</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.can_Jabo }}</div>
+    <div class="receta-cell">Curva jabonado</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.cur_Jabo }}</div>
+    <div class="receta-cell">pH inicio</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.ph_Ini | number:'1.5-5' }}</div>
+    <div class="receta-cell">pH final</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.ph_Fin | number:'1.5-5' }}</div>
+    <div class="receta-cell">pH jabonado</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.ph_Jab | number:'1.5-5' }}</div>
   </div>
 
-
+  <!-- Auxiliares -->
   <div class="receta-subsection">
     <h3>Auxiliares</h3>
     <div class="receta-table">
       <div class="header">Nombre</div>
-      <div class="header">gr/l</div>
       <div class="header">gr</div>
 
-      <div class="cell">ALBATEX CO</div><div class="cell">1</div><div class="cell">0.005</div>
-      <div class="cell">L’DYPRINT</div><div class="cell">0.5</div><div class="cell">0.003</div>
-      <div class="cell">ALBATEX AB55</div><div class="cell">0.5</div><div class="cell">0.003</div>
-      <div class="cell">SAL</div><div class="cell">30</div><div class="cell">0.15</div>
-      <div class="cell">SULFATO</div><div class="cell">20</div><div class="cell">0.1</div>
-      <div class="cell">CARBONATO</div><div class="cell">5</div><div class="cell">0.025</div>
-      <div class="cell">SODA</div><div class="cell">5</div><div class="cell">0.025</div>
+      <ng-container *ngFor="let aux of recetaDetalle.auxiliares">
+        <div class="cell">{{ aux.col_Des }}</div>
+        <div class="cell">{{ aux.por_Fin | number:'1.5-5' }}</div>
+      </ng-container>
     </div>
   </div>
 
+  <!-- Colorantes -->
   <div class="receta-subsection">
     <h3>Colorantes</h3>
     <div class="receta-table">
       <div class="header">Nombre</div>
       <div class="header">%</div>
-      <div class="header">ml</div>
 
-      <div class="cell">AVITERA GOLD SE</div><div class="cell">0.035</div><div class="cell">0.002</div>
-      <div class="cell">AVITERA ROJO CLARO SE</div><div class="cell">0.032</div><div class="cell">0.002</div>
-      <div class="cell">AVITERA AZUL CLARO SE</div><div class="cell">0.026</div><div class="cell">0.001</div>
+      <ng-container *ngFor="let col of recetaDetalle.colorantes">
+        <div class="cell">{{ col.col_Des }}</div>
+        <div class="cell">{{ col.por_Fin | number:'1.5-5' }}</div>
+      </ng-container>
     </div>
   </div>
 </div>
@@ -51,3 +48,10 @@
 <div class="receta-close">
   <button mat-flat-button mat-dialog-close color="warn">Cerrar</button>
 </div>
+
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="medium" type="custom" [fullScreen]="true">
+  <div class="spinner-wrapper">
+    <p class="spinner-text">CARGANDO INFORMACIÓN</p>
+    <div class="loader"></div>
+  </div>
+</ngx-spinner>

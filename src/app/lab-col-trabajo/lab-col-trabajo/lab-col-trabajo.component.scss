@@ -212,6 +212,8 @@
 
 .col-tela:hover {
   white-space: normal;
+  text-align: center;
+  justify-content: center;
 }
 
 //PINTAR FILAS
@@ -225,4 +227,19 @@
 
 .fila-roja {
   background-color: #f8d7da;
+}
+
+
+.centradoCabecera{
+    text-align: center !important;
+    justify-content: center !important;
+    font-weight: bold !important;
+    background-color: #d2d2d2 !important;
+    color: #333 !important;
+}
+
+
+.centrado{
+    text-align: center !important;
+    justify-content: center !important;
 }

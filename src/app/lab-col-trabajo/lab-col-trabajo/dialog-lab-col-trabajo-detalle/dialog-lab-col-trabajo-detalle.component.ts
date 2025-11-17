@@ -42,6 +42,7 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
   }
 
   displayedColumns: string[] = [
+    'corr_Carta',
     'num_sec',
     'color',
     'est_ton_com',
@@ -55,7 +56,17 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
 
   pintarEnvio(row: any): string {
     const est_lab = row.flg_Est_Lab;
-    if(est_lab === '04'){
+    if(est_lab === '02'){
+      return 'Color-Verde'
+    }else if(est_lab === '03'){
+      return 'Color-Verde'
+    }else if(est_lab === '04'){
+      return 'Color-Verde'
+    }else if(est_lab === '05'){
+      return 'Color-Verde'
+    }else if(est_lab === '06'){
+      return 'Color-Verde'
+    }else if(est_lab === '07'){
       return 'Color-Verde'
     }else{
       return 'Color-Negro';
@@ -87,55 +98,46 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
     })
   }
 
-  onEnviarAHojaFormulacion(){
+  onEnviarAHojaFormulacion(data_cola_trab: any){
     let Corr_Carta = this.dataListadoDetalle[0].corr_Carta;
-    let Sec = this.dataListadoDetalle[0].sec;
-    Swal.fire({
-      title: "¿Desea Registrar el Retiro?",
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor:'#3085d6',
-      cancelButtonColor:'#d33',
-      confirmButtonText:'Si',
-      cancelButtonText: 'No'
-    }).then((result) =>{
-      if(result.isConfirmed){
-        const sCorr_Carta = Corr_Carta;
-        const sSec = Sec;     
-        let data: any = {
-          "Corr_Carta": sCorr_Carta,
-          "Sec": sSec
-        };
-        this.SpinnerService.show();
-        this.LabColTrabajoService.postRegistrarDetalleColorSDC(data).subscribe({
-          next: (response: any) => {
-            if(response.success){
-              if(response.codeResult == 200){
-                this.onGetDetalle();
-                this.toastr.success(response.message, '', {
-                  timeOut: 2500,
-                });
-              }else if(response.codeResult == 201){
-                this.toastr.info(response.message, '', {
-                  timeOut: 2500,
-                });
-              }
-              this.SpinnerService.hide();
-            }else{
-              this.toastr.error(response.message, 'Cerrar', {
-                timeOut:2500
-              });
-              this.SpinnerService.hide();
-            }
-          },
-          error:(error) => {
-            this. SpinnerService.hide();
-            this.toastr.error(error.message, 'Cerrar', {
-              timeOut: 2500
+    let Sec = data_cola_trab.sec;
+    const sCorr_Carta = Corr_Carta;
+    const sSec = Sec;     
+
+    let data: any = {
+      "Corr_Carta": sCorr_Carta,
+      "Sec": sSec
+    };
+
+    this.SpinnerService.show();
+    this.LabColTrabajoService.postRegistrarDetalleColorSDC(data).subscribe({
+      next: (response: any) => {
+        if(response.success){
+          if(response.codeResult == 200){
+            this.onGetDetalle();
+            this.toastr.success(response.message, '', {
+              timeOut: 2500,
+            });
+          }else if(response.codeResult == 201){
+            this.toastr.info(response.message, '', {
+              timeOut: 2500,
             });
           }
-        })
+          this.SpinnerService.hide();
+        }else{
+          this.toastr.error(response.message, 'Cerrar', {
+            timeOut:2500
+          });
+          this.SpinnerService.hide();
+        }
+      },
+      error:(error) => {
+        this. SpinnerService.hide();
+        this.toastr.error(error.message, 'Cerrar', {
+          timeOut: 2500
+        });
       }
+      
     })
   }
 

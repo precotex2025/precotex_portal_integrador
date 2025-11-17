@@ -1,0 +1,76 @@
+<div class="contenedor-dosificacion">
+  <mat-nav-list class="menu-lateral">
+    <mat-list-item
+      *ngFor="let item of menuItems"
+      (click)="seleccionarAhiba(item)"
+      [ngStyle]="item.codigo === itemSeleccionado?.codigo ? {
+        'background-color': '#e0f7fa',
+        'border-left': '4px solid #0288d1',
+        'font-weight': 'bold'
+      } : {}"
+    >
+      {{ item.nombre }}
+    </mat-list-item>
+
+  </mat-nav-list>
+
+  <div class="tabla-contenido">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 tabla-dosificacion">
+
+      <!-- Columnas -->
+      <ng-container matColumnDef="corr_Carta">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">#SDC</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.corr_Carta }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="sec">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Secuencia</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.sec }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="correlativo">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Correlativo</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.correlativo }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="descripcion_Color">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Color</th>
+        <td mat-cell *matCellDef="let r">{{ r.descripcion_Color }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="jab_Des">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Curva</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.jab_Des }}</td>
+      </ng-container>
+    
+      <ng-container matColumnDef="dosificacion1">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Dosificacion 1</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.dosificacion1 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="dosificacion2">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Dosificacion 2</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.dosificacion2 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="dosificacion3">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Dosificacion 3</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.dosificacion3 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ph_Fin">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Ph Final</th>
+        <td mat-cell *matCellDef="let r" class="centrado">
+          <a mat-button *ngIf="r.ph_Fin == 0" (click)="ingresarPH(r)" class="Boton">AGREGAR</a>
+          <a mat-button *ngIf="r.ph_Fin != 0" (click)="ingresarPH(r)" class="Boton">{{ r.ph_Fin }}</a>          
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+    </table>
+    <div *ngIf="dataSource.data.length === 0" class="mensaje-vacio">
+    No hay items disponibles.
+    </div>
+  </div>
+</div>

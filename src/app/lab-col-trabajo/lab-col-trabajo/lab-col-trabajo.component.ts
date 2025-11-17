@@ -116,7 +116,7 @@ export class LabColTrabajoComponent implements OnInit{
         })
       }
     })
-   }
+  }
 
 
   }
@@ -155,5 +155,35 @@ export class LabColTrabajoComponent implements OnInit{
     { this.onGetListaSDC()}
     );
   }
+
+  aplicarFiltrarTodo(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
+  }
+
+  filtrarTodo(): void{
+    
+    this.dataSource.filterPredicate = (data: any, filter: string): boolean => {
+      
+      const estadoOk = !this.estadoSeleccionado || data.estado === this.estadoSeleccionado;
+      
+      let fechaOk = true;
+
+      if (this.range.value.start && this.range.value.end) {
+        const fecha = new Date(data.fec_creacion);
+        fechaOk = fecha >= this.range.value.start && fecha <= this.range.value.end;
+      }
+
+      const texto = filter.toLowerCase();
+      
+      const textoOk = Object.values(data).some(val =>
+        val?.toString().toLowerCase().includes(texto)
+      );
+
+      return estadoOk && fechaOk && textoOk;
+    };
+  
+  }
+
 
 }
