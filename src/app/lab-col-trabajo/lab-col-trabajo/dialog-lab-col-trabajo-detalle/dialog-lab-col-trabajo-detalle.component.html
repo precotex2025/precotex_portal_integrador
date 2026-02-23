@@ -4,32 +4,66 @@
     <table mat-table [dataSource]="dataSource" class="tabla-laboratorio" matSort>
 
       <!-- Columnas -->
+      <ng-container matColumnDef="corr_Carta">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">#SDC</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.corr_Carta }}</td>
+      </ng-container>
+
       <ng-container matColumnDef="num_sec">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>N°</th>
-        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.sec }}</td>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Secuencia</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.sec.toString().padStart(2,'0') }}</td>
       </ng-container>
 
       <ng-container matColumnDef="color">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Color</th>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Color</th>
         <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.descripcion_Color }}</td>
       </ng-container>
 
+      <ng-container matColumnDef="fec_Asignacion">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Fecha Asignacion</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.fec_Asignacion }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="dias_Lab">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Dias Lab.</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.dias_Lab }}</td>
+      </ng-container>
+
       <ng-container matColumnDef="est_ton_com">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estandar Tono Comer</th>
-        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.estandar_Tono_Comer }}</td>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Comentario Comercial</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.estandar_Tono_Comer }}</td>
       </ng-container>
 
       <ng-container matColumnDef="formulado">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Formulado</th>
-        <td mat-cell *matCellDef="let data_cola_trab">{{ data_cola_trab.formulado }}</td>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Formulado</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">{{ data_cola_trab.formulado }}</td>
       </ng-container>
 
       <ng-container matColumnDef="HojaFormulacion">
-        <th mat-header-cell *matHeaderCellDef>Enviar</th>
-        <td mat-cell *matCellDef="let data_cola_trab">
-            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == null" class="link" (click)="onEnviarAHojaFormulacion()">Enviar</a>
-            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == ''" class="link" (click)="onEnviarAHojaFormulacion()">Enviar</a>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Enviar</th>
+        <td mat-cell *matCellDef="let data_cola_trab" class="centrado">
+            <!-- <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == null" class="link" (click)="onEnviarAHojaFormulacion(data_cola_trab)">Enviar</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == ''" class="link" (click)="onEnviarAHojaFormulacion(data_cola_trab)">Enviar</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '01'" class="link" (click)="onEnviarAHojaFormulacion(data_cola_trab)">Enviar</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '02' " class="link">Enviado</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '03' " class="link">Enviado</a>
             <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '04' " class="link">Enviado</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '05' " class="link">Enviado</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '06' " class="link">Enviado</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '07' " class="link">Enviado</a> -->
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == null" class="link" (click)="CargarModalTenido(data_cola_trab)">Enviar</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == ''" class="link" (click)="CargarModalTenido(data_cola_trab)">Enviar</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '01'" class="link" (click)="CargarModalTenido(data_cola_trab)" >Enviar</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '02' " class="link">Enviado</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '03' " class="link">Enviado</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '04' " class="link">Enviado</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '05' " class="link">Enviado</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '06' " class="link">Enviado</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '07' " class="link">Enviado</a>
+            <a mat-button *ngIf="data_cola_trab.flg_Est_Lab == '09' " class="link" 
+            (click)="ActualizarEstado(data_cola_trab.corr_Carta, data_cola_trab.sec, '04')">
+              Ver
+            </a>
         </td>
       </ng-container>
 
@@ -38,3 +72,37 @@
       <tr mat-row *matRowDef="let row; columns: columnsToDisplay;" [ngClass]="pintarEnvio(row)"></tr>
     </table>
   </div>
+
+
+  <!-- MODAL PARA ENVIAR E INSERTAR CURVA TENIDO -->
+<ng-template #modalEnviar>
+  <h2 mat-dialog-title>Seleccione Curva Teñido</h2>
+  <mat-dialog-content class="modal-content">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Proceso</mat-label>
+      <mat-select [(ngModel)]="curvaSeleccionada" (selectionChange)="onSeleccionarCurva($event.value)">
+        <mat-option *ngFor="let curva of curvas" [value]="curva.codigo">
+          {{ curva.descripcion }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Curva Teñido</mat-label>
+      <mat-select [(ngModel)]="curvaSeleccionadaDes" (selectionChange)="onSeleccionarCurvaDescripcion($event.value)">
+          <mat-option *ngFor="let curva of curvasDescripcion" [value]="curva.codigo">
+            {{ curva.descripcion }}
+          </mat-option>
+      </mat-select>
+    </mat-form-field>
+    
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="onEnviarAHojaFormulacion()">
+      Grabar
+    </button>
+    <button mat-button (click)="dialogRef1.close()">Cancelar</button>
+  </mat-dialog-actions>
+</ng-template>

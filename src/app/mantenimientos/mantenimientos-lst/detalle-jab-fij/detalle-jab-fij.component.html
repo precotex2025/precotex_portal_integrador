@@ -1,0 +1,124 @@
+<div class="detalle-container">
+  <!-- <div class="detalle-header">  -->
+  <div class="header">
+    <h2>{{ titulo }}</h2> 
+    <button mat-raised-button color="primary" (click)="onNuevo()"> 
+      <mat-icon>add</mat-icon> Nuevo 
+    </button> 
+    <button mat-raised-button color="warn" class="btn-cerrar" (click)="onCerrar()"> CERRAR </button>
+  </div>
+
+  <div class="tabla-responsive">
+    <!-- Tabla Jabonados -->
+    <table *ngIf="codigoTabla === '01'" mat-table [dataSource]="dataSourceJabonado" class="mat-elevation-z2" matSort>
+
+      <ng-container matColumnDef="item">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Item</th>
+        <td mat-cell *matCellDef="let row">{{ row.jab_Id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="rangoInicio">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Rango Inicio</th>
+        <td mat-cell *matCellDef="let row">{{ row.jab_Ran_Ini }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="rangoFin">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Rango Fin</th>
+        <td mat-cell *matCellDef="let row">{{ row.jab_Ran_Fin }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="cantidad">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad</th>
+        <td mat-cell *matCellDef="let row">{{ row.jab_Can }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="proceso">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Proceso</th>
+        <td mat-cell *matCellDef="let row">{{ row.familia }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Detalle</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button color="accent" (click)="onEditar(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="onEliminar(row)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnasJabonado"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnasJabonado;"></tr>
+    </table>
+
+    <!-- Tabla Fijados -->
+    <table *ngIf="codigoTabla === '02'" mat-table [dataSource]="dataSourceFijado" class="mat-elevation-z2" matSort>
+
+      <ng-container matColumnDef="item">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Item</th>
+        <td mat-cell *matCellDef="let row">{{ row.fij_Id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="rangoInicio">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Rango Inicio</th>
+        <td mat-cell *matCellDef="let row">{{ row.fij_Ran_Ini }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="rangoFin">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Rango Fin</th>
+        <td mat-cell *matCellDef="let row">{{ row.fij_Ran_Fin }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="proceso">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Proceso</th>
+        <td mat-cell *matCellDef="let row">{{ row.familia }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Detalle</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button color="accent" (click)="onEditar(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="onEliminar(row)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnasFijado"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnasFijado;"></tr>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL PARA REGISTRAR Y MODIFICAR -->
+<ng-template #modalDetalle> 
+  <h2 mat-dialog-title>{{ Accion === 'I' ? 'Nuevo' : 'Modificar' }}</h2> 
+  <mat-dialog-content class="modal-content"> 
+    <div class="form-grid"> 
+      <mat-form-field appearance="outline"> 
+        <mat-label>Rango Inicio</mat-label> 
+        <input matInput type="number" [(ngModel)]="rangoInicio" /> 
+      </mat-form-field> 
+      <mat-form-field appearance="outline"> 
+        <mat-label>Rango Fin</mat-label> 
+        <input matInput type="number" [(ngModel)]="rangoFin" /> 
+      </mat-form-field> 
+      <mat-form-field appearance="outline" *ngIf="codigoTabla === '01'"> 
+        <mat-label>Cantidad</mat-label> 
+        <input matInput type="number" [(ngModel)]="cantidad" /> 
+      </mat-form-field> 
+      <mat-form-field appearance="outline"> 
+        <mat-label>Proceso</mat-label> 
+        <input matInput type="number" [(ngModel)]="proceso" /> 
+      </mat-form-field> 
+    </div> 
+  </mat-dialog-content> 
+  <mat-dialog-actions align="end"> 
+        <button mat-button (click)="dialogRef.close()">Cancelar</button> 
+        <button mat-raised-button color="primary" (click)="guardarDetalle()"> Grabar </button> 
+  </mat-dialog-actions> 
+</ng-template>

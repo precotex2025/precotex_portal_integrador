@@ -1,4 +1,5 @@
 <div class="sdc-info-wrapper">
+  <h2>Informe de receta</h2>
   <div class="sdc-grid" *ngFor="let informe of dataInforme">
     <!-- Encabezado -->
     <div class="sdc-cell etiqueta">SDC</div>
@@ -19,11 +20,11 @@
     <!-- Subsección: Ruta -->
     <div class="sdc-cell etiqueta">Ruta</div>
     <div class="sdc-cell">
-      <ul>
+      <ul class="texto">
         <li *ngFor="let ruta of informe.ruta">{{ ruta }}</li>
       </ul>
     </div>
-
+<!-- [innerHTML]="ruta.replace(/ /g, '&nbsp;')" -->
     <!-- Subsección: Solidez -->
     <div class="sdc-cell etiqueta">Solidez</div>
     <div class="sdc-cell">

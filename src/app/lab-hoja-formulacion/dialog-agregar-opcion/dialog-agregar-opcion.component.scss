@@ -76,7 +76,7 @@
   }
 
   .colorantes-scroll-wrapper {
-    max-height: 200px;
+    max-height: 250px;
     overflow-y: auto;
     padding-right: 0.5rem;
   }
@@ -149,8 +149,6 @@
   }
 }
 
-
-
 .seccion-doble {
   display: flex;
   gap: 2rem;
@@ -197,5 +195,29 @@
   }
 }
 
+.tipo-formulacion-wrapper {
+  margin-bottom: 2rem;
+
+  mat-form-field {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  @media (max-width: 768px) {
+    mat-form-field {
+      max-width: 100%;
+    }
+  }
+}
 
 
+.colorantes-total {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  text-align: right;
+  padding-right: 1rem;
+}
+
+.colorante-inicial {
+  text-align: center;
+}

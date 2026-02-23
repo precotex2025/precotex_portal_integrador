@@ -4,6 +4,9 @@ import { Router } from '@angular/router';
 import { LoginService } from '../../services/login/login.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { GlobalVariable } from '../../VarGlobals';
+import { AuthService } from '../../authentication/auth.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -16,7 +19,8 @@ export class LoginComponent {
     private formBuilder: FormBuilder,
     private toastr: ToastrService,
     private matSnackBar: MatSnackBar,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private authService: AuthService
   ){}
 
   formularioLogin = this.formBuilder.group({
@@ -42,58 +46,42 @@ export class LoginComponent {
       );
       return;
     }else{
-      this.loginService.getUsuarioHabilitado(cod_Usuario).subscribe({
-      next:(response: any) => {
-        if(response.success){
-          if(response.codeResult == 200){
-            this.dataUsuariosHabilitados = response.elements;
-            
-            let respuesta = this.dataUsuariosHabilitados[0].respuesta;  
+      this.loginService.getUsuarioWeb(cod_Usuario).subscribe({
+        next: (response: any) => {
+          if (response.success && response.codeResult === 200) {
+            this.dataUsuariosWeb = response.elements;
+            let password = this.dataUsuariosWeb[0].password;
+            let passwordText = this.formularioLogin.get('Password')?.value;
+            if (passwordText?.toLowerCase() === password.toLowerCase()) {
+              this.toastr.success('Bienvenido', '', { timeOut: 2500 });
+              //console.log('Redireccionando a ColaTrabajo...');
+              // localStorage.setItem('usuario', cod_Usuario);
+              this.authService.setUsuario(cod_Usuario);
+              // GlobalVariable.vusu = localStorage.getItem('usuario') || '';
 
-            console.log(respuesta);
-            if(respuesta === "OK"){
-
-              this.loginService.getUsuarioWeb(cod_Usuario).subscribe({
-                next:(response: any) => {
-                  if(response.success){
-                    if(response.codeResult == 200){
-                      this.dataUsuariosWeb = response.elements;
-                      let password = this.dataUsuariosWeb[0].password;
-                      let passwordText = this.formularioLogin.get('Password')?.value;
-                      if(passwordText?.toLowerCase() === password.toLowerCase()){
-                        this.toastr.success('Bienvenido', '', {
-                        timeOut:2500
-                        });  
-                        this.goColaTrabajo();
-                      }else{
-                        this.matSnackBar.open("Contraseña Incorrecta", "Cerrar",
-                        {horizontalPosition:'center', verticalPosition:'top', duration: 1500}
-                        );
-                        return;
-                      }
-                    }else{
-                      this.toastr.error(response.message, 'Cerrar', {
-                      timeOut:2500
-                      });
-                    }
-                  }
-                }
-              })
-            }else{
-              this.matSnackBar.open("Necesita accesos", "Cerrar",
-              {horizontalPosition:'center', verticalPosition:'top', duration: 1500}
-              );
-              return;
-            }
-            
-          }else{
-            this.toastr.error(response.message, 'Cerrar', {
-                timeOut:2500
+              // console.log('Usuario global seteado en:', GlobalVariable.vusu);
+              this.goColaTrabajo();
+            } else {
+              this.matSnackBar.open("Contraseña Incorrecta", "Cerrar", {
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+                duration: 1500
               });
+            }
+          } else {
+            this.toastr.error(response.message || 'Error en validación de usuario web', 'Cerrar', {
+              timeOut: 2500
+            });
           }
+        },
+        error: (err) => {
+          console.error('Error en getUsuarioWeb:', err);
+          this.toastr.error('Error de conexión al validar usuario web', 'Cerrar', {
+            timeOut: 2500
+          });
         }
-      }
-    })
+      });
+
     }
   }
 

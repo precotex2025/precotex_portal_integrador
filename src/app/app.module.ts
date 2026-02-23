@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe, HashLocationStrategy, LocationStrategy } from '@angular/common';
-import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { MatDateFormats, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -13,7 +13,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
-
+import { DateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatMomentDateModule, MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -39,6 +40,16 @@ import { DialogAgregarOpcionComponent } from './lab-hoja-formulacion/dialog-agre
 import { DialogInfoSdcComponent } from './lab-hoja-formulacion/dialog-info-sdc/dialog-info-sdc.component';
 import { DialogDetalleColorComponent } from './lab-hoja-formulacion/dialog-detalle-color/dialog-detalle-color.component';
 import { LabDispAutolabComponent } from './lab-disp-autolab/lab-disp-autolab.component';
+import { LabDosificacionComponent } from './lab-dosificacion/lab-dosificacion.component';
+import { DialogAgregarPhComponent } from './lab-dosificacion/dialog-agregar-ph/dialog-agregar-ph.component';
+import { DialogJabonadosComponent } from './dialog-jabonados/dialog-jabonados.component';
+import { NgxSpinner, NgxSpinnerModule } from 'ngx-spinner';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { LabReportComponent } from './lab-report/lab-report.component';
+import { MantenimientosLstComponent } from './mantenimientos/mantenimientos-lst/mantenimientos-lst.component';
+import { DetalleJabFijComponent } from './mantenimientos/mantenimientos-lst/detalle-jab-fij/detalle-jab-fij.component';
+import { DetalleCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/detalle-comp-extra.component';
+import { DialogNuevoCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/dialog-nuevo-comp-extra/dialog-nuevo-comp-extra.component';
 
 
 @NgModule({
@@ -52,7 +63,15 @@ import { LabDispAutolabComponent } from './lab-disp-autolab/lab-disp-autolab.com
     DialogAgregarOpcionComponent,
     DialogInfoSdcComponent,
     DialogDetalleColorComponent,
-    LabDispAutolabComponent
+    LabDispAutolabComponent,
+    LabDosificacionComponent,
+    DialogAgregarPhComponent,
+    DialogJabonadosComponent,
+    LabReportComponent,
+    MantenimientosLstComponent,
+    DetalleJabFijComponent,
+    DetalleCompExtraComponent,
+    DialogNuevoCompExtraComponent
   ],
   imports: [
     BrowserModule,
@@ -73,18 +92,27 @@ import { LabDispAutolabComponent } from './lab-disp-autolab/lab-disp-autolab.com
     MatIconModule,
     MatTabsModule,
     MatPaginatorModule,
+    NgxSpinnerModule,
+    MatMomentDateModule,
+    MatTooltipModule,
     ToastrModule.forRoot({
       timeOut: 10000,
       positionClass: 'toast-bottom-right',
       preventDuplicates: true
-
+    }),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
     }),
   ],
   providers: [
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'es-Es' },
     { provide: LocationStrategy, useClass: HashLocationStrategy},
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true},
     { provide: MatPaginatorIntl, useValue: getCustomPaginatorIntl() },
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS] },
     DatePipe,
     provideClientHydration(),
     provideAnimationsAsync(),

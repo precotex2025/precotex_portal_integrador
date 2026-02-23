@@ -1,0 +1,47 @@
+.registro-container {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .bloque-principal {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+.bloque-extras {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); // 4 columnas
+  gap: 1.5rem;
+
+  .grupo-par {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+
+  .acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+}

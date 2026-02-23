@@ -1,2 +1,68 @@
 <app-laboratorio-tabs *ngIf="!isLoginRoute"></app-laboratorio-tabs>
+<!-- <div class="contenedor-scroll"> -->
 <router-outlet></router-outlet>
+
+<button 
+    *ngIf="!isLoginRoute" 
+    class="boton-flotante" 
+    (click)="irAMantenimientos()" > 
+    <mat-icon>settings</mat-icon> 
+</button>
+
+<button 
+    *ngIf="!isLoginRoute" 
+    class="boton-flotante logout" 
+    (click)="cerrarSesion()"> 
+    <mat-icon>logout</mat-icon> 
+</button>
+
+<!-- <router-outlet></router-outlet> -->
+
+<button 
+    *ngIf="!isLoginRoute" 
+    class="boton-flotante fullscreen" 
+    (click)="alternarPantallaCompleta()" 
+    matTooltip="Pantalla completa"> 
+    <mat-icon>fullscreen</mat-icon> 
+</button>
+
+
+<button 
+        *ngIf="!isLoginRoute"
+        class="boton-flotante reporte" 
+        (click)="abrirModal()" 
+        matTooltip="Imprimir reporte"> 
+        <mat-icon>print</mat-icon> 
+</button>
+
+<!-- </div> -->
+
+<!-- Botón flotante -->
+<!-- Modal (contenido del diálogo) -->
+<ng-template #modalReporte>
+  <h2 mat-dialog-title>Generar reporte</h2>
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Número SDC</mat-label>
+      <input matInput [(ngModel)]="sdc" (ngModelChange)="onGetDetalle()" (keypress)="onlyNumberInput($event)">
+    </mat-form-field>
+
+    <!-- <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Secuencia</mat-label>
+      <input matInput [(ngModel)]="secuencia"> 
+    </mat-form-field> -->
+  
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Color</mat-label>
+      <mat-select [(ngModel)]="secuencia">
+        <mat-option *ngFor="let sec of secuencias" [value]="sec.sec"> {{ sec.descripcion_Color }} </mat-option>
+      </mat-select>
+    </mat-form-field>
+    
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-raised-button color="primary" (click)="aceptar()">Aceptar</button>
+  </mat-dialog-actions>
+</ng-template>

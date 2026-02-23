@@ -1,0 +1,185 @@
+<div class="registro-container">
+  <h2>{{ modoEdicion ? 'Editar Componente Extra' : 'Registrar Componente Extra' }}</h2>
+
+  <form [formGroup]="formulario" (ngSubmit)="guardar()">
+    
+    <div class="bloque-principal">
+      <mat-form-field appearance="outline">
+        <mat-label>Pro_Cod</mat-label>
+        <input matInput formControlName="Pro_Cod" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Con</mat-label>
+        <input matInput formControlName="Com_Cod_Con" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Ran_Ini</mat-label>
+        <input matInput type="number" formControlName="Com_Ran_Ini" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Ran_Fin</mat-label>
+        <input matInput type="number" formControlName="Com_Ran_Fin" />
+      </mat-form-field>
+    </div>
+
+    
+    <div class="bloque-extras">
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra1</mat-label>
+        <input matInput formControlName="Com_Cod_Extra1" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra1</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra1" />
+      </mat-form-field>
+
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra2</mat-label>
+        <input matInput formControlName="Com_Cod_Extra2" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra2</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra2" />
+      </mat-form-field>
+
+    
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra3</mat-label>
+        <input matInput formControlName="Com_Cod_Extra3" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra3</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra3" />
+      </mat-form-field>
+
+    
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra4</mat-label>
+        <input matInput formControlName="Com_Cod_Extra4" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra4</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra4" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra5</mat-label>
+        <input matInput formControlName="Com_Cod_Extra5" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra5</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra5" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra6</mat-label>
+        <input matInput formControlName="Com_Cod_Extra6" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra6</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra6" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra7</mat-label>
+        <input matInput formControlName="Com_Cod_Extra7" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra7</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra7" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra8</mat-label>
+        <input matInput formControlName="Com_Cod_Extra8" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra8</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra8" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra9</mat-label>
+        <input matInput formControlName="Com_Cod_Extra9" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra9</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra9" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra10</mat-label>
+        <input matInput formControlName="Com_Cod_Extra10" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra10</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra10" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra11</mat-label>
+        <input matInput formControlName="Com_Cod_Extra11" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra11</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra11" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra12</mat-label>
+        <input matInput formControlName="Com_Cod_Extra12" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra12</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra12" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra13</mat-label>
+        <input matInput formControlName="Com_Cod_Extra13" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra13</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra13" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra14</mat-label>
+        <input matInput formControlName="Com_Cod_Extra14" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra14</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra14" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra15</mat-label>
+        <input matInput formControlName="Com_Cod_Extra15" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra15</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra15" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Cod_Extra16</mat-label>
+        <input matInput formControlName="Com_Cod_Extra16" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Com_Can_Extra16</mat-label>
+        <input matInput type="number" formControlName="Com_Can_Extra16" />
+      </mat-form-field>
+    </div>
+
+    <!-- Botones -->
+    <div class="acciones">
+      <button mat-raised-button color="primary" type="submit">Guardar</button>
+      <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+</div>

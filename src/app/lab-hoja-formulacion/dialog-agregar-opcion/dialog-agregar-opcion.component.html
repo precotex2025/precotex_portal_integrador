@@ -1,20 +1,46 @@
 <div class="agregar-opcion-container">
   <div class="selector-botones-wrapper">
+    
+
+    <!-- SELECTOR FAMILIA -->
+    <div class="tipo-formulacion-wrapper">
+      <mat-form-field appearance="fill">
+        <mat-label>Tipo de Proceso</mat-label>
+        <mat-select [(ngModel)]="parametros.tiposFormulacion" (selectionChange)="actualizarTotalFinal()">
+          <mat-option *ngFor="let tipo of tiposFormulacion" [value]="tipo.codigo">
+            {{ tipo.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
+    <!-- SELECTOR COLORANTES -->
     <div class="selector-agregar">
       <mat-form-field appearance="fill">
         <mat-label>Agregar colorante</mat-label>
-        <mat-select [(value)]="coloranteSeleccionado">
-          <mat-option *ngFor="let c of colorantesDisponibles" [value]="c">{{ c.nombre }}</mat-option>
-        </mat-select>
+        <input type="text" matInput [formControl]="coloranteControl" 
+        [matAutocomplete]="auto"
+        [autofocus]="false"
+        #inputColorante>
+        <mat-autocomplete #auto="matAutocomplete" 
+        [displayWith]="mostrarNombre" 
+        (optionSelected)="onColoranteSeleccionado($event)"
+        >
+          <mat-option *ngFor="let c of colorantesFiltrados" [value]="c">
+            {{ c.nombre }}
+          </mat-option>
+        </mat-autocomplete>
       </mat-form-field>
-
-      <button mat-raised-button color="primary" (click)="agregarColorante()">Agregar</button>
     </div>
+
+    
+
+
 
     <div class="botones-column">
       <button mat-raised-button color="primary" (click)="habilitarCambios()">Habilitar cambios</button>
       <button mat-raised-button color="primary" (click)="guardar()">Guardar</button>
-      <button mat-raised-button color="warn" mat-dialog-close>Cerrar</button>
+      <button mat-raised-button color="warn" (click)="cerrar()">Cerrar</button>
     </div>
   </div>
 
@@ -32,19 +58,29 @@
           <ng-container *ngFor="let colorante of colorantesSeleccionados">
               <div class="colorante-cell codigo">{{ colorante.codigo }}</div>
               <div class="colorante-cell nombre">{{ colorante.nombre }}</div>
-              <div class="colorante-cell inicial">{{ colorante.inicial.toFixed(4) }}</div>
-              <div class="colorante-cell ajuste">
-              <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.0001)">−</button>
-              <input type="number" [(ngModel)]="colorante.ajuste" step="0.0001" />
-              <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.0001)">+</button>
+              <div class="colorante-cell inicial">
+                <input class="colorante-inicial" 
+                type="number"
+                [(ngModel)]="colorante.inicial"
+                (ngModelChange)="limitarDecimales(colorante)"
+                step="0.01"/>
               </div>
-              <div class="colorante-cell final">{{ calcularFinal(colorante).toFixed(4) }}</div>
+              <div class="colorante-cell ajuste">
+              <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.5); actualizarTotalFinal()">−</button>
+              <input type="number" [(ngModel)]="colorante.ajuste" step="0.01" (ngModelChange)="actualizarTotalFinal()" />
+              <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.5); actualizarTotalFinal()" >+</button>
+              </div>
+              <div class="colorante-cell final">{{ calcularFinal(colorante).toFixed(5) }}</div>
               <div class="colorante-cell accion">
               <button mat-button (click)="quitarColorante(colorante)">
                 <a><mat-icon>delete</mat-icon></a>
               </button>
               </div>
           </ng-container>
+          </div>
+    
+          <div class="colorantes-total">
+            <strong>Total % Final:</strong> {{ totalFinalColorantes.toFixed(4) }}
           </div>
       </div>
     </section>
@@ -54,27 +90,20 @@
 
       <mat-form-field appearance="fill">
         <mat-label>CAN JABONADAS</mat-label>
-        <input matInput type="number" [(ngModel)]="parametros.jabonadas" />
+        <input matInput type="number" [(ngModel)]="parametros.jabonadas" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>CURVA JABONADA</mat-label>
-        <mat-select [(ngModel)]="parametros.curva">
+        <mat-select [(ngModel)]="parametros.curva" [disabled]="!cambiosHabilitados">
           <mat-option *ngFor="let curva of curvas" [value]="curva.codigo">{{ curva.nombre }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>FIJADO</mat-label>
-        <mat-select [(ngModel)]="parametros.fijado">
+        <mat-select [(ngModel)]="parametros.fijado" [disabled]="!cambiosHabilitados">
           <mat-option *ngFor="let fijado of fijados" [value]="fijado.codigo">{{ fijado.nombre }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>ACIDULADO</mat-label>
-        <mat-select [(ngModel)]="parametros.acidulado">
-          <mat-option *ngFor="let acidulado of acidulados" [value]="acidulado.codigo">{{ acidulado.nombre }}</mat-option>
         </mat-select>
       </mat-form-field>
     </section>
@@ -82,41 +111,51 @@
   <div class="seccion-doble">
     <section class="quimicos-section">
       <h3>Carbonato / Soda</h3>
-      <!-- <div class="quimico-grid-header">
-
-    </div> -->
-
     <div class="quimico-row" *ngFor="let producto of productos">
       <span class="col-nombre">{{ producto.nombre }}</span>
 
       <mat-form-field appearance="outline" class="col-gr">
         <mat-label>Cantidad (gr)</mat-label>
-        <input matInput type="number" [(ngModel)]="producto.cantidad" />
+        <input matInput type="number" [(ngModel)]="producto.cantidad" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="col-porcentaje">
-        <mat-label>Porcentaje (%)</mat-label>
-        <input matInput type="number" [(ngModel)]="producto.porcentaje" />
+        <mat-label>Ajuste</mat-label>
+        <input 
+        matInput 
+        type="number"
+        [(ngModel)]="producto.porcentaje"
+        (ngModelChange)="actualizarCantidad(producto)"
+        step="0.5"  
+        [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
     </div>
     </section>
 
-    <section class="datos-section">
+    <section class="datos-section" >
       <h3>Baño - Peso - Volumen</h3>
       <mat-form-field appearance="fill">
         <mat-label>Relación baño</mat-label>
-        <input matInput type="number" [(ngModel)]="datos.relacionBano" />
+        <input matInput type="number" [(ngModel)]="datos.relacionBano" step="1" min="0" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Peso de muestra</mat-label>
-        <input matInput type="number" [(ngModel)]="datos.pesoMuestra" />
+        <input matInput type="number" [(ngModel)]="datos.pesoMuestra" (ngModelChange)="calcularRelacionBano()" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Volumen</mat-label>
-        <input matInput type="number" [(ngModel)]="datos.volumen" />
+        <input matInput type="number" [(ngModel)]="datos.volumen" (ngModelChange)="calcularRelacionBano()" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
     </section>
   </div>
 </div>
+
+<!-- Spinner global -->
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="medium" type="custom" [fullScreen]="true">
+  <div class="spinner-wrapper">
+    <p class="spinner-text">ENVIANDO INFORMACIÓN</p>
+    <div class="loader"></div>
+  </div>
+</ngx-spinner>

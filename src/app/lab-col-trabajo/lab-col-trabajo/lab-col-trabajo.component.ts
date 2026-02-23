@@ -13,7 +13,8 @@ import { HttpClient,HttpHeaders, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { LabColTrabajoService } from '../../services/lab-col-trabajo/lab-col-trabajo.service';
 import { DialogLabColTrabajoDetalleComponent } from './dialog-lab-col-trabajo-detalle/dialog-lab-col-trabajo-detalle.component';
-
+import { GlobalVariable } from '../../VarGlobals';
+import { AuthService } from '../../authentication/auth.service';
 
 
 interface data_cola_trab{
@@ -26,9 +27,10 @@ interface data_cola_trab{
   styleUrl: './lab-col-trabajo.component.scss'
 })
 export class LabColTrabajoComponent implements OnInit{
-
+  usuario: string | null = null;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  //usuario = '';
   constructor
   (
     private dialog: MatDialog,
@@ -38,15 +40,25 @@ export class LabColTrabajoComponent implements OnInit{
     private LabColaTrabajoService: LabColTrabajoService,
     private toastr: ToastrService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private authService: AuthService
   ){ }
 
   range = new FormGroup({
-    start: new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
+    start: new FormControl(new Date(new Date().getFullYear(), new Date().getMonth() - 2, 1)),
     end: new FormControl(new Date),
   });
   
   ngOnInit(): void {
+
+    if (this.authService.isLoggedIn()) { 
+      console.log('Usuario activo: -------', this.authService.getUsuario()); 
+    } else { 
+      this.router.navigate(['/login']); 
+    }
+    this.usuario = this.authService.getUsuario();
+    // this.usuario = GlobalVariable.vusu;
+    console.log('EL USUARIO EN ESTE PUNTO ES: ---------', this.usuario);
     this.onGetListaSDC();
   }
 
@@ -55,15 +67,16 @@ export class LabColTrabajoComponent implements OnInit{
   }
 
   displayedColumns: string[] =  [
+    'detalle',
     'cliente',
     'num_sdc',
     'des_tela',
-    'fec_asig',
-    'dias_lab',
+    //'fec_asig',
+    //'dias_lab',
     'fec_comp',
     'dias_comp',
     'estado',
-    'detalle',
+    'entregado'
   ]
 
   dataSource: MatTableDataSource<data_cola_trab> = new MatTableDataSource();
@@ -83,19 +96,22 @@ export class LabColTrabajoComponent implements OnInit{
 
     
     if(fecIni == null || fecFin == null){
-      this.matSnackBar.open("Ingrese Rango de Fechas", "Cerrar",
-        {horizontalPosition:'center', verticalPosition:'top', duration: 1500}
-      );
+      // this.matSnackBar.open("Ingrese Rango de Fechas", "Cerrar",
+      //   {horizontalPosition:'center', verticalPosition:'top', duration: 1500}
+      // );
       return;
     }else{
     let estado: string = this.estadoSeleccionado;
+    // const usuario: string = this.usuario;
+    //console.log('El usuario antes de listar es: -------', usuario);
     this.SpinnerService.show();
     this.dataListadoSDC = [];
-    this.LabColaTrabajoService.getListaSDCPorEstado(estado, fecIni, fecFin).subscribe({
+    this.LabColaTrabajoService.getListaSDCPorEstado(estado, fecIni, fecFin, this.usuario!).subscribe({
       next: (response: any) => {
         if(response.success){
           if(response.totalElements > 0){         
             this.dataListadoSDC = response.elements;
+            console.log('dataListadoSDC: ', this.dataListadoSDC);
             this.dataSource.data = this.dataListadoSDC;
             this.dataSource.sort = this.sort;
             this.SpinnerService.hide();
@@ -116,7 +132,7 @@ export class LabColTrabajoComponent implements OnInit{
         })
       }
     })
-   }
+  }
 
 
   }
@@ -142,10 +158,11 @@ export class LabColTrabajoComponent implements OnInit{
     let num_sdc = objeto.corr_Carta;
 
     let dialogref = this.dialog.open(DialogLabColTrabajoDetalleComponent, {
-      width:'1500px',
-      height: '700px',
+      panelClass: 'dialog-tablet',
+      width:'900px',
+      height: '400px',
+      maxWidth:'none',
       disableClose: false,
-      panelClass: 'my-class',
       data:{
         Title: "Detalle",
         Num_SDC: num_sdc
@@ -155,5 +172,35 @@ export class LabColTrabajoComponent implements OnInit{
     { this.onGetListaSDC()}
     );
   }
+
+  aplicarFiltrarTodo(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
+  }
+
+  filtrarTodo(): void{
+    
+    this.dataSource.filterPredicate = (data: any, filter: string): boolean => {
+      
+      const estadoOk = !this.estadoSeleccionado || data.estado === this.estadoSeleccionado;
+      
+      let fechaOk = true;
+
+      if (this.range.value.start && this.range.value.end) {
+        const fecha = new Date(data.fec_creacion);
+        fechaOk = fecha >= this.range.value.start && fecha <= this.range.value.end;
+      }
+
+      const texto = filter.toLowerCase();
+      
+      const textoOk = Object.values(data).some(val =>
+        val?.toString().toLowerCase().includes(texto)
+      );
+
+      return estadoOk && fechaOk && textoOk;
+    };
+  
+  }
+
 
 }
