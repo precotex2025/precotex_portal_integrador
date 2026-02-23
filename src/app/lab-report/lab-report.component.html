@@ -1,0 +1,169 @@
+<div class="cancel-button-container">
+  <button mat-raised-button color="warn" (click)="Cerrar()">
+    <mat-icon>close</mat-icon> Cerrar
+  </button>
+</div>
+<div class="print-button-container">
+  <button mat-raised-button color="primary" (click)="imprimirReporte()">
+    <mat-icon>print</mat-icon> Imprimir reporte
+  </button>
+</div>
+
+<div class="report-only">
+  <!-- <p style="font-size:20px; color:red;">PRUEBA</p> -->
+  <div class="report" *ngIf="grupos.length > 0">
+
+    <!-- Cabecera en tres columnas -->
+    <div class="cabecera">
+      <div class="col">
+        <p><strong>Analista:</strong> {{ grupos[0].reporte.analista }}</p>
+        <p><strong>SDC:</strong> {{ grupos[0].reporte.corr_Carta }}</p>
+        <p><strong>Cliente:</strong> {{ grupos[0].reporte.nom_Cliente }}</p>
+        <p><strong>Artículo:</strong> {{ grupos[0].reporte.articulo }}</p>
+        <p><strong>Color:</strong> {{ grupos[0].reporte.descripcion_Color }}</p>
+      </div>
+      <div class="col">
+        <p><strong>Previo:</strong> {{ grupos[0].reporte.previo }}</p>
+        <p><strong>Cantidad Enzimático:</strong> {{ grupos[0].reporte.enz_Can }}</p>
+        <p><strong>Enzima dentro de baño:</strong> {{ grupos[0].reporte.enz_Den_Bno }}</p>
+        <p><strong>Tipo teñido:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
+        <p><strong>Curva teñido:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
+      </div>
+      <div class="col">
+        <p><strong>Curva jabonado:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
+        <p><strong>Cantidad jabonados:</strong> {{ grupos[0].reporte.can_Jab }}</p>
+        <p><strong>Fijado:</strong> {{ grupos[0].reporte.fijado }}</p>
+        <p><strong>Acabado:</strong> {{ grupos[0].reporte.acabado }}</p>
+      </div>
+    </div>
+
+    <!-- Tablas de colorantes -->
+    <!-- <div class="colorantes-section">
+      <h2>Colorantes por Correlativo</h2>
+      <div class="row">
+        <div class="table-container" *ngFor="let grupo of grupos; trackBy: trackByIndex">
+          <h3>Correlativo {{ grupo.correlativo }}</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Descripción</th>
+                <th>Porcentaje</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let insumo of grupo.insumos; trackBy: trackByIndex">
+                <td>{{ insumo.col_Des }}</td>
+                <td>{{ insumo.por_Fin }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div> -->
+
+
+    <!-- Tablas de colorantes -->
+    <!-- <div class="colorantes-section">
+      <h2>Corridas</h2>
+      <div class="row">
+        <div class="table-container" *ngFor="let grupo of grupos; trackBy: trackByIndex">
+
+          <ng-container *ngIf="!grupo.placeholder; else espacioVacio">
+            <h3>Correlativo {{ grupo.correlativo }}</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Descripción</th>
+                  <th>Porcentaje</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let insumo of grupo.insumos; trackBy: trackByIndex">
+                  <td>{{ insumo.col_Des }}</td>
+                  <td>{{ insumo.por_Fin }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </ng-container>
+
+          <ng-template #espacioVacio>
+            <div class="espacio-vacio">
+            </div>
+          </ng-template>
+
+        </div>
+      </div>
+    </div> -->
+
+    <div class="colorantes-section">
+      <h2>Corridas</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th *ngFor="let grupo of grupos; trackBy: trackByIndex">
+                <ng-container *ngIf="!grupo.placeholder; else espacioVacio">
+                  {{ grupo.correlativo }}
+                </ng-container>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let fila of colorantesTabla; trackBy: trackByIndex">
+              <td>{{ fila.descripcion }}</td>
+              <td *ngFor="let valor of fila.valores; trackBy: trackByIndex">
+                <ng-container *ngIf="valor.porcentaje !== '0.0000';">
+                  {{ valor.porcentaje }}
+                </ng-container>
+                <!-- <ng-template #espacioVacioCelda>
+              <div class="espacio-vacio"></div>
+            </ng-template> -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+      <ng-template #espacioVacio>
+        <div class="espacio-vacio">
+          <!-- <p>Muestra de tela</p> -->
+        </div>
+      </ng-template>
+
+
+    </div>
+
+
+    <!-- Ruta y Solidez en una sola fila -->
+    <div class="ruta-solidez-block">
+      <!-- RUTA -->
+      <div class="block">
+        <h4>Ruta</h4>
+        <!-- <ul> -->
+          <!-- <li *ngFor="let paso of grupos[0].reporte.ruta_Reporte; let i = index">
+            {{ paso.descripcion }}
+          </li> -->
+          <div *ngFor="let paso of grupos[0].reporte.ruta_Reporte; let i = index">
+            {{ paso.descripcion }}
+          </div>
+        <!-- </ul> -->
+      </div>
+
+      <!-- SOLIDECES SDC -->
+      <div class="block">
+        <h4>Solidez</h4>
+        <ul>
+          <li *ngFor="let s of grupos[0].reporte.solidez_Reporte; let i = index">
+            {{ s.descripcion }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading">Cargando reporte...</div>
+  <div *ngIf="error">{{ error }}</div>
+
+</div>

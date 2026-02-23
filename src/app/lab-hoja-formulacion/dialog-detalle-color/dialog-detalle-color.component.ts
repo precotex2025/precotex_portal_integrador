@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, AfterViewInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { LabColTrabajoService } from '../../services/lab-col-trabajo/lab-col-trabajo.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -17,7 +17,7 @@ interface data{
   templateUrl: './dialog-detalle-color.component.html',
   styleUrl: './dialog-detalle-color.component.scss'
 })
-export class DialogDetalleColorComponent implements OnInit{
+export class DialogDetalleColorComponent implements OnInit, AfterViewInit{
 
 
 constructor(
@@ -33,6 +33,13 @@ ngOnInit(): void {
   this.cargarReceta(this.data.corr_Carta, this.data.sec, this.data.correlativo);
 }
 
+ngAfterViewInit(): void {
+  const dialogContainer = document.querySelector('.mat-dialog-container'); 
+  if (dialogContainer) { 
+    dialogContainer.scrollTop = 0; 
+  }
+}
+
 recetaDetalle: any = null;
 
 cargarReceta(corrCarta: number, sec: number, correlativo: number): void {
@@ -41,7 +48,7 @@ cargarReceta(corrCarta: number, sec: number, correlativo: number): void {
     next: (response: any) => {
       if (response.success && response.totalElements > 0) {
         this.recetaDetalle = response.elements[0];
-        console.log('Receta cargada:', this.recetaDetalle);
+        //console.log('Receta cargada:', this.recetaDetalle);
       }
       this.SpinnerService.hide();
     },

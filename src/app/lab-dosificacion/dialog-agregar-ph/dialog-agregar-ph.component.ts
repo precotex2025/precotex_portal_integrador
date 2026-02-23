@@ -1,4 +1,4 @@
-import { Component, Optional, Inject } from '@angular/core';
+import { Component, Optional, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { LabColTrabajoService } from '../../services/lab-col-trabajo/lab-col-trabajo.service';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -6,12 +6,15 @@ import Swal from 'sweetalert2';
 import { MatDialogRef, MatDialog} from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { AuthService } from '../../authentication/auth.service';
 
 interface data {
   Title: string,
   Corr_Carta: number,
   Sec: number,
   Correlativo: number,
+  JabonadoIndex: number,
   Condicion: number
 }
 
@@ -20,7 +23,7 @@ interface data {
   templateUrl: './dialog-agregar-ph.component.html',
   styleUrl: './dialog-agregar-ph.component.scss'
 })
-export class DialogAgregarPhComponent {
+export class DialogAgregarPhComponent implements OnInit {
 
   constructor(
     private labColTrabajoService: LabColTrabajoService,
@@ -28,7 +31,17 @@ export class DialogAgregarPhComponent {
     private toastr: ToastrService,
     private dialogRef: MatDialogRef<DialogAgregarPhComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: data,
+    private router: Router,
+    private authService: AuthService
   ){}
+
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn()) { 
+      console.log('Usuario activo: -------', this.authService.getUsuario()); 
+    } else { 
+      this.router.navigate(['/login']); 
+    }
+  }
 
   ValorPH: string = '';
   
@@ -54,9 +67,11 @@ export class DialogAgregarPhComponent {
     sec: this.data.Sec,
     correlativo: this.data.Correlativo,
     tip_Ph: this.data.Condicion,
+    jabonadoIndex: this.data.JabonadoIndex,
     ph_Val: parseFloat(valorPh)
   };
 
+  //console.log('-----------------------', payload);
   this.SpinnerService.show();
 
   this.labColTrabajoService.patchActualizarPH(payload)

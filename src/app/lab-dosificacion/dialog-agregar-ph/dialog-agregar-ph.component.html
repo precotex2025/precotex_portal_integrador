@@ -3,7 +3,7 @@
 
 <mat-form-field appearance="outline" class="campo-ph">
     <mat-label>{{data.Title}}</mat-label>
-    <input matInput [(ngModel)]="ValorPH" placeholder="Ingrese {{data.Title}}" />
+    <input matInput type="text" inputmode="decimal" pattern="[0-9]*" [(ngModel)]="ValorPH" placeholder="Ingrese {{data.Title}}" />
     <mat-error *ngIf="!ValorPH.trim()">Debe ingresar un valor</mat-error>
 </mat-form-field>
 

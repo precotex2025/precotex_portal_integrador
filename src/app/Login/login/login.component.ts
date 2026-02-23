@@ -4,6 +4,9 @@ import { Router } from '@angular/router';
 import { LoginService } from '../../services/login/login.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { GlobalVariable } from '../../VarGlobals';
+import { AuthService } from '../../authentication/auth.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -16,7 +19,8 @@ export class LoginComponent {
     private formBuilder: FormBuilder,
     private toastr: ToastrService,
     private matSnackBar: MatSnackBar,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private authService: AuthService
   ){}
 
   formularioLogin = this.formBuilder.group({
@@ -50,7 +54,12 @@ export class LoginComponent {
             let passwordText = this.formularioLogin.get('Password')?.value;
             if (passwordText?.toLowerCase() === password.toLowerCase()) {
               this.toastr.success('Bienvenido', '', { timeOut: 2500 });
-              console.log('Redireccionando a ColaTrabajo...');
+              //console.log('Redireccionando a ColaTrabajo...');
+              // localStorage.setItem('usuario', cod_Usuario);
+              this.authService.setUsuario(cod_Usuario);
+              // GlobalVariable.vusu = localStorage.getItem('usuario') || '';
+
+              // console.log('Usuario global seteado en:', GlobalVariable.vusu);
               this.goColaTrabajo();
             } else {
               this.matSnackBar.open("Contraseña Incorrecta", "Cerrar", {

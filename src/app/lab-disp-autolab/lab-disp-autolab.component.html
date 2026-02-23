@@ -1,188 +1,385 @@
 <div class="laboratorio-container">
-    
+  <!-- Header y acciones -->
   <div class="laboratorio-header">
     <div class="filtros">
-      <label><input type="radio" name="estado" [checked]="estadoSeleccionado === 'cola'" (change)="cambiarEstado('cola')" /> Cola Autolab</label>
-      <label><input type="radio" name="estado" [checked]="estadoSeleccionado === 'dispensado'" (change)="cambiarEstado('dispensado')"/> Dispensado</label>
+      <label>
+        <input type="radio" name="estado" [checked]="estadoSeleccionado === 'cola'" (change)="cambiarEstado('cola')" />
+        Cola Autolab
+      </label>
+      <label>
+        <input type="radio" name="estado" [checked]="estadoSeleccionado === 'dispensado'"
+          (change)="cambiarEstado('dispensado')" />
+        Dispensado
+      </label>
+
+      <mat-form-field appearance="outline" class="buscador">
+        <mat-label>Buscar</mat-label>
+        <input matInput placeholder="Buscar" (keyup)="aplicarFiltrarTodo($event)">
+        <button mat-icon-button matSuffix class="btn-buscador">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
     </div>
+
+    <!-- Acciones para Cola -->
     <ng-container *ngIf="estadoSeleccionado === 'cola'">
-    <button mat-raised-button color="primary"
-    (click)="enviarADispensar()"
-    [disabled]="!haySeleccionados()"
-    >ENVIAR A DISPENSAR</button>
+      <button mat-raised-button color="primary" (click)="enviarADispensar()" [disabled]="!haySeleccionados()">
+        ENVIAR A DISPENSAR
+      </button>
     </ng-container>
 
+    <!-- Acciones para Dispensado -->
     <ng-container *ngIf="estadoSeleccionado === 'dispensado'">
-    <mat-form-field appearance="outline" class="selector-ahiba">
-      <mat-label>AHIBA</mat-label>
-      <mat-select 
-      [(value)]="ahibaSeleccionado"
-      (selectionChange)="onSeleccionarAhiba($event)">
-        <mat-option *ngFor="let curva of curvasAhiba" [value]="curva.codigo">{{ curva.nombre }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <div class="acciones">
-      <button mat-raised-button color="primary"
-      [disabled]="!haySeleccionadosDispensados()"
-      (click)="cargarAAHIBA()" class="botones-dosificacion">CARGAR A AHIBA</button>
-      <button mat-raised-button color="accent" (click)="onCreate()" class="botones-dosificacion">DOSIFICACIÓN</button>
-    </div>
+      <div class="selector-ahiba-wrapper">
+        <mat-form-field appearance="outline" class="selector-ahiba">
+          <mat-label>AHIBA</mat-label>
+          <mat-select [(value)]="ahibaSeleccionado" (selectionChange)="onSeleccionarAhiba($event)"
+            [panelClass]="'ahiba-panel'">
+            <mat-option *ngFor="let curva of curvasAhiba" [value]="curva.codigo">
+              {{ curva.nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="acciones">
+        <!-- <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!haySeleccionadosDispensados()"
+          (click)="cargarAAHIBA()"
+          class="botones-dosificacion"
+        >
+          CARGAR A AHIBA
+        </button> -->
+        <button mat-raised-button color="accent" (click)="onCreate()" class="botones-dosificacion">
+          DOSIFICACIÓN
+        </button>
+      </div>
     </ng-container>
-
   </div>
 
+  <!-- TABLA: Cola Autolab -->
   <div class="tabla-wrapper" *ngIf="estadoSeleccionado === 'cola'">
-  <table mat-table [dataSource]="dataSource" class="tabla-laboratorio" matSort>
+    <div class="tabla-scroll">
+      <table mat-table [dataSource]="dataSource" class="tabla-laboratorio" matSort>
+        <!-- Selección -->
+        <ng-container matColumnDef="seleccion">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">
+            <mat-checkbox [checked]="isAllSelected()" [indeterminate]="isIndeterminate()"
+              (change)="toggleAllRows($event.checked)">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox [(ngModel)]="row.seleccionado" class="centrado"></mat-checkbox>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="seleccion">
-    <th mat-header-cell *matHeaderCellDef class="centradoCabecera">
-      <mat-checkbox
-      [checked]="isAllSelected()"
-      [indeterminate]="isIndeterminate()"
-      (change)="toggleAllRows($event.checked)">
+        <!-- #SDC -->
+        <ng-container matColumnDef="corr_Carta">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera col-achi">#SDC</th>
+          <td mat-cell *matCellDef="let row" class="centrado col-achi">{{ row.corr_Carta }}</td>
+        </ng-container>
 
-      </mat-checkbox>
-    </th>
-    <td mat-cell *matCellDef="let row">
-      <mat-checkbox [(ngModel)]="row.seleccionado" class="centrado"></mat-checkbox>
-    </td>
-    </ng-container>
+        <!-- Secuencia -->
+        <ng-container matColumnDef="sec">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera col-achi">Sec</th>
+          <td mat-cell *matCellDef="let row" class="centrado col-achi">{{ row.sec.toString().padStart(2, '0')}}</td>
+        </ng-container>
 
-    <ng-container matColumnDef="corr_Carta">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">#SDC</th>
-      <td mat-cell *matCellDef="let row" class="centrado">{{ row.corr_Carta }}</td>
-    </ng-container>
+        <!-- Correlativo -->
+        <ng-container matColumnDef="correlativo">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera col-achi">Corr</th>
+          <td mat-cell *matCellDef="let row" class="centrado col-achi">{{ row.correlativo }}</td>
+        </ng-container>
 
-    <ng-container matColumnDef="sec">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Secuencia</th>
-      <td mat-cell *matCellDef="let row" class="centrado">{{ row.sec }}</td>
-    </ng-container>
+        <!-- Color -->
+        <ng-container matColumnDef="descripcion_Color">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Color</th>
+          <td mat-cell *matCellDef="let row">{{ row.descripcion_Color }}</td>
+        </ng-container>
 
-    <ng-container matColumnDef="correlativo">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Correlativo</th>
-      <td mat-cell *matCellDef="let row" class="centrado">{{ row.correlativo }}</td>
-    </ng-container>
+        <!-- Ingreso Manual -->
+        <ng-container matColumnDef="ingreso_Manual">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Ingreso Manual</th>
+          <td mat-cell *matCellDef="let row" class="item_Manual">
+            <div *ngIf="row.ingreso_Manual?.length > 0; else sinIngreso">
+              <div *ngFor="let item of row.ingreso_Manual">
+                {{ item }}
+              </div>
+            </div>
+            <ng-template #sinIngreso>
+              <span class="dispensado-automatico">Ingreso Automático</span>
+            </ng-template>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="descripcion_Color">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Color</th>
-      <td mat-cell *matCellDef="let row">{{ row.descripcion_Color }}</td>
-    </ng-container>
+        <!-- Curva -->
+        <ng-container matColumnDef="jab_Des">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Curva</th>
+          <td mat-cell *matCellDef="let row" class="centrado">{{ row.jab_Des }}</td>
+        </ng-container>
 
-    <ng-container matColumnDef="jab_Des">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Curva</th>
-      <td mat-cell *matCellDef="let row" class="centrado">{{ row.jab_Des }}</td>
-    </ng-container>
+        <!-- Volumen -->
+        <ng-container matColumnDef="volumen">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Volumen</th>
+          <td mat-cell *matCellDef="let row" class="centrado">{{ row.volumen }}</td>
+        </ng-container>
 
-    <ng-container matColumnDef="volumen">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Volumen</th>
-      <td mat-cell *matCellDef="let row" class="centrado">{{ row.volumen }}</td>
-    </ng-container>
+        <!-- Header y filas -->
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnsToDisplay"></tr>
+      </table>
+    </div>
 
-    <!-- Header y filas -->
-    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-    <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
-  </table>
+    <!-- Paginador Cola -->
+    <mat-paginator [pageSize]="20" showFirstLastButtons></mat-paginator>
   </div>
+
+  <!-- Mensaje vacío Cola -->
   <div *ngIf="dataSource.data.length === 0 && estadoSeleccionado === 'cola'" class="mensaje-vacio">
     No hay items disponibles.
   </div>
 
-  <!-- TABLA DISPENSADOS -->
+  <!-- TABLA: Dispensados -->
   <div class="tabla-wrapper" *ngIf="estadoSeleccionado === 'dispensado'">
-    <table mat-table [dataSource]="dataSourceDispensado" class="tabla-laboratorio" matSort>
+    <div class="tabla-scroll">
+      <table mat-table [dataSource]="dataSourceDispensado" class="tabla-laboratorio" matSort>
+        <!-- Selección -->
+        <ng-container matColumnDef="seleccionDispensado">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">
+            <mat-checkbox [checked]="isAllSelectedDispensado()" [indeterminate]="isIndeterminateDispensado()"
+              (change)="toggleAll($event.checked)" class="centrado">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row" class="centrado">
+            <mat-checkbox [(ngModel)]="row.seleccionado" [disabled]="row.ph_Ini == 0"></mat-checkbox>
+          </td>
+        </ng-container>
 
-      <!-- Checkbox -->
-      <ng-container matColumnDef="seleccionDispensado">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">
-          <mat-checkbox
-          [checked]="isAllSelectedDispensado()" 
-          [indeterminate]="isIndeterminateDispensado()" 
-          (change)="toggleAll($event.checked)"
-          class="centrado"></mat-checkbox>
-          
-        </th>
-        <td mat-cell *matCellDef="let row" class="centrado">
-          <mat-checkbox [(ngModel)]="row.seleccionado"></mat-checkbox>
-        </td>
-      </ng-container>
+        <!-- #SDC -->
+        <ng-container matColumnDef="corr_Carta">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera col-achi">#SDC</th>
+          <td mat-cell *matCellDef="let row" class="centrado col-achi">{{ row.corr_Carta }}</td>
+        </ng-container>
 
-      <!-- Columnas -->
-      <ng-container matColumnDef="corr_Carta">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">#SDC</th>
-        <td mat-cell *matCellDef="let row" class="centrado">{{ row.corr_Carta }}</td>
-      </ng-container>
+        <!-- Secuencia -->
+        <ng-container matColumnDef="sec">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera col-achi">Sec</th>
+          <td mat-cell *matCellDef="let row" class="centrado col-achi">{{ row.sec.toString().padStart(2, '0') }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="sec">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Secuencia</th>
-        <td mat-cell *matCellDef="let row" class="centrado">{{ row.sec }}</td>
-      </ng-container>
+        <!-- Correlativo -->
+        <ng-container matColumnDef="correlativo">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera col-achi">Corr</th>
+          <td mat-cell *matCellDef="let row" class="centrado col-achi">{{ row.correlativo }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="correlativo">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Correlativo</th>
-        <td mat-cell *matCellDef="let row" class="centrado">{{ row.correlativo }}</td>
-      </ng-container>
+        <!-- Color -->
+        <ng-container matColumnDef="descripcion_Color">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Color</th>
+          <td mat-cell *matCellDef="let row">{{ row.descripcion_Color }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="descripcion_Color">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Color</th>
-        <td mat-cell *matCellDef="let row">{{ row.descripcion_Color }}</td>
-      </ng-container>
+        <!-- Curva -->
+        <ng-container matColumnDef="jab_Des">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Curva</th>
+          <td mat-cell *matCellDef="let row" class="centrado">{{ row.jab_Des }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="jab_Des">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Curva</th>
-        <td mat-cell *matCellDef="let row" class="centrado">{{ row.jab_Des }}</td>
-      </ng-container>
+        <!-- Volumen -->
+        <ng-container matColumnDef="volumen">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Volumen</th>
+          <td mat-cell *matCellDef="let row" class="centrado">{{ row.volumen }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="volumen">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Volumen</th>
-        <td mat-cell *matCellDef="let row" class="centrado">{{ row.volumen }}</td>
-      </ng-container>
+        <!-- Sal -->
+        <ng-container matColumnDef="sal">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Sal</th>
+          <td mat-cell *matCellDef="let row" class="centrado">{{ row.sal }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="sal">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Sal</th>
-        <td mat-cell *matCellDef="let row" class="centrado">{{ row.sal }}</td>
-      </ng-container>
+        <!-- Sulfato -->
+        <ng-container matColumnDef="sulfatoreal">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Sulfato</th>
+          <td mat-cell *matCellDef="let row" class="centrado">{{ row.sulfatoReal }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="sulfato">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Sulfato</th>
-        <td mat-cell *matCellDef="let row" class="centrado">{{ row.sulfato }}</td>
-      </ng-container>
+        <!-- SE CAMBIÓ SULFATO POR CARBONATO PARA NO ALTERAR LOS PROCEDURES-->
+        <!-- Carbonato -->
+        <!-- <ng-container matColumnDef="sulfato">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Carbonato</th>
+          <td mat-cell *matCellDef="let row" class="centrado">{{ row.sulfato }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="pes_Mue">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Peso Muestra</th>
-        <td mat-cell *matCellDef="let row" class="centrado">{{ row.pes_Mue }}</td>
-      </ng-container>
+        <ng-container matColumnDef="soda">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Soda</th>
+          <td mat-cell *matCellDef="let row" class="centrado">{{ row.sod_Gr }}</td>
+        </ng-container> -->
 
-      <ng-container matColumnDef="ph_Ini">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Ph Inicio</th>
-        <td mat-cell *matCellDef="let row" class="centrado">
-          <!-- <a mat-cell *matCellDef="let row">{{ row.ph_Inicio }}</a> -->
-          <a mat-button *ngIf="row.ph_Ini == 0" (click)="ingresarPH(row)" class="Boton">AGREGAR</a>
-          <a mat-button *ngIf="row.ph_Ini != 0" (click)="ingresarPH(row)" class="Boton">{{ row.ph_Ini }}</a>          
-        </td>
-          <!-- <a mat-button *ngIf="data_req.nro_Precinto_Cierre != ''" (click)="onUpdatePrecintoCierre(data_req)" class="Boton">{{data_req.nro_Precinto_Cierre}}</a></td> -->
-      </ng-container>
+        <!-- Ingreso Manual -->
+        <ng-container matColumnDef="ingreso_Manual">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Ingreso Manual</th>
+          <td mat-cell *matCellDef="let row" class="item_Manual">
+            <div *ngIf="row.ingreso_Manual?.length > 0; else sinIngreso">
+              <div *ngFor="let item of row.ingreso_Manual">
+                {{ item }}
+              </div>
+            </div>
+            <ng-template #sinIngreso>
+              <span class="dispensado-automatico">Ingreso Automático</span>
+            </ng-template>
+          </td>
+        </ng-container>
 
-      <ng-container matColumnDef="detalle">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Detalle</th>
-        <td mat-cell *matCellDef="let row" class="centrado">
-          <button mat-button color="primary" (click)="verReceta(row)">VER</button>
-        </td>
-      </ng-container>
+        <!-- Peso Muestra -->
+        <ng-container matColumnDef="pes_Mue">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Peso Muestra</th>
+          <td mat-cell *matCellDef="let row" class="centrado">{{ row.pes_Mue }}</td>
+        </ng-container>
 
-      <!-- Renderizado -->
-      <tr mat-header-row *matHeaderRowDef="columnsToDisplayDispensado"></tr>
-      <tr mat-row *matRowDef="let row; columns: columnsToDisplayDispensado;"></tr>
-    </table>
+        <!-- pH Inicio -->
+        <ng-container matColumnDef="ph_Ini">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Ph Inicio</th>
+          <td mat-cell *matCellDef="let row" class="centrado">
+            <a mat-button *ngIf="row.ph_Ini == 0" (click)="ingresarPH(row)" class="Boton">AGREGAR</a>
+            <a mat-button *ngIf="row.ph_Ini != 0" (click)="ingresarPH(row)" class="Boton">{{ row.ph_Ini }}</a>
+          </td>
+        </ng-container>
+
+        <!-- Detalle -->
+        <ng-container matColumnDef="detalle">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Detalle</th>
+          <td mat-cell *matCellDef="let row" class="centrado">
+            <button mat-button color="primary" (click)="verReceta(row)">VER</button>
+          </td>
+        </ng-container>
+
+        <!-- Header y filas -->
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplayDispensado"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnsToDisplayDispensado"></tr>
+      </table>
+    </div>
+
+    <!-- Paginador Dispensado -->
+    <mat-paginator [pageSize]="20" showFirstLastButtons></mat-paginator>
   </div>
+
+  <!-- Mensaje vacío Dispensado -->
   <div *ngIf="dataSourceDispensado.data.length === 0 && estadoSeleccionado === 'dispensado'" class="mensaje-vacio">
     No hay items disponibles.
   </div>
 </div>
 
+<!-- Spinner global -->
 <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="medium" type="custom" [fullScreen]="true">
   <div class="spinner-wrapper">
     <p class="spinner-text">ENVIANDO INFORMACIÓN</p>
     <div class="loader"></div>
   </div>
 </ngx-spinner>
+
+
+
+<!-- 
+<ng-template #modalPosiciones let-dialogRef="dialogRef" let-data="data">
+  <div class="ahiba-label"> {{ ahiSeleccionadoNombre }} </div>
+  <div class="contador">
+    Debe seleccionar {{ cantidadRequerida }} tubos.<br>
+    Faltan: {{ cantidadRequerida - seleccionadosActuales }}
+  </div>
+
+  <mat-dialog-content>
+    <div class="modal-container">
+
+      <div class="lista-seleccionados">
+        <h3>Ítems seleccionados:</h3>
+        <table class="tabla-seleccionados">
+          <thead>
+            <tr>
+              <th>#SDC</th>
+              <th>Color</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of data?.seleccionadas">
+              <td>{{ item.corr_Carta }}</td>
+              <td>{{ item.descripcion_Color }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="circle-container">
+        <div *ngFor="let pos of posiciones; let i = index" class="posicion-tubo" [class.seleccionado]="pos.seleccionado"
+          [style.transform]="getTransform(i, posiciones.length)" (click)="toggleSeleccion(pos)">
+          <span class="numero">{{ pos.numero }}</span>
+          <div class="tubo"></div>
+        </div>
+      </div>
+
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" style="top: 10px;">
+    <button mat-raised-button color="primary" (click)="cargarAAHIBA()">Confirmar</button>
+    <button mat-button (click)="onCancelar()">Cancelar</button>
+  </mat-dialog-actions>
+</ng-template> -->
+
+
+<ng-template #modalPosiciones let-dialogRef="dialogRef" let-data="data">
+  <div class="ahiba-label"> {{ ahiSeleccionadoNombre }} </div>
+  <div class="contador">
+    Debe seleccionar {{ cantidadRequerida }} tubos.<br>
+    Faltan: {{ cantidadRequerida - seleccionadosActuales }}
+  </div>
+
+  <!-- <mat-dialog-content> -->
+    <div class="modal-container">
+
+      <!-- Lista de seleccionados -->
+      <div class="lista-seleccionados">
+        <!-- <h3>Ítems seleccionados:</h3> -->
+        <table class="tabla-seleccionados">
+          <thead>
+            <tr>
+              <th>#SDC - Color</th>
+              <th>#Tubo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of seleccionadasModal">
+              <td class="descripcion">{{ item.corr_Carta }}-{{ item.sec }}-{{ item.correlativo }} / {{ item.descripcion_Color }}</td>
+              <td class="nroTubo">{{ item.tubo }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Círculo de tubos -->
+      <div class="circle-container">
+        <div *ngFor="let pos of posiciones; let i = index" 
+        class="posicion-tubo" 
+        [class.seleccionado]="pos.seleccionado"
+        [class.ocupado]="pos.ocupado"
+        [style.transform]="getTransform(i, posiciones.length)" 
+        (click)="!pos.ocupado && toggleSeleccion(pos)">
+          <span class="numero">{{ pos.numero }}</span>
+          <div class="tubo"></div>
+        </div>
+      </div>
+
+    </div>
+
+  <div class="botones-container">
+    <button mat-raised-button color="primary" (click)="cargarAAHIBA()">Confirmar</button>
+    <button mat-raised-button class="btn-cancelar" (click)="onCancelar()">Cancelar</button>
+    <button mat-raised-button class="btn-limpiar" (click)="limpiarSeleccion()">Limpiar selección</button>
+  </div>
+
+  <!-- </mat-dialog-content> -->
+
+  <!-- <mat-dialog-actions align="end" style="height: 150px;">
+    
+  </mat-dialog-actions> -->
+</ng-template>

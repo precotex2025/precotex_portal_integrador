@@ -1,4 +1,4 @@
-import { Component, OnInit, Optional, Inject, ViewChild, ElementRef, AfterViewInit  } from '@angular/core';
+import { Component, OnInit, Optional, Inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import Swal from 'sweetalert2';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { LabColTrabajoService } from '../../services/lab-col-trabajo/lab-col-trabajo.service';
@@ -16,7 +16,8 @@ interface data {
   Title: string,
   Num_SDC: number,
   Num_Sec: number,
-  Correlativo: number
+  Correlativo: number,
+  CorrelativoAnterior?: number
 }
 
 interface ColoranteCompleto {
@@ -31,15 +32,15 @@ interface ColoranteCompleto {
   Por_Fin: string;
   Can_Jabo: number;
   Cur_Jabo: number;
-  Fijado  : number;
-  Rel_Ban : string;
-  Pes_Mue : string;
-  Volumen : string;
+  Fijado: number;
+  Rel_Ban: string;
+  Pes_Mue: string;
+  Volumen: string;
   //Acidulado: string;
-  Car_Gr  : string;
-  Car_Por : string;
-  Sod_Gr  : string;
-  Sod_Por : string;
+  Car_Gr: string;
+  Car_Por: string;
+  Sod_Gr: string;
+  Sod_Por: string;
 }
 
 
@@ -63,12 +64,12 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     private router: Router,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: data,
     // public dialogRef: MatDialogRef<DialogAgregarOpcionComponent>
-  ){}
+  ) { }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.inputColorante.nativeElement.focus();
-    }, 100);
+    // setTimeout(() => {
+    //   this.inputColorante.nativeElement.focus();
+    // }, 100);
   }
   coloranteControl = new FormControl('');
   colorantesFiltrados: any[] = [];
@@ -77,6 +78,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     this.onGetParams();
   }
 
+  cargando = true;
   onGetParams(): void {
     // Inicializar los valores predeterminados para asignar los parámetros
     // this.data = {
@@ -85,18 +87,19 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     //   Num_Sec: 0,
     //   Correlativo: 0
     // };
-    
+
     this.route.queryParams.subscribe(params => {
       this.data = {
         Title: params['accionR'] ?? '',
         Num_SDC: params['Num_SDC'] !== undefined ? Number(params['Num_SDC']) : 0,
         Num_Sec: params['Num_Sec'] !== undefined ? Number(params['Num_Sec']) : 0,
-        Correlativo: params['Correlativo'] !== undefined ? Number(params['Correlativo']) : 0
+        Correlativo: params['Correlativo'] !== undefined ? Number(params['Correlativo']) : 0,
+        CorrelativoAnterior: params['CorrelativoAnterior'] !== undefined ? Number(params['CorrelativoAnterior']) : 0
       };
     })
 
-    this.correlativo = this.data.Correlativo + 1;
-    this.coloranteControl.setValue('');
+    this.correlativo = this.data.Correlativo;
+    //this.coloranteControl.setValue('');
 
     this.coloranteControl.valueChanges.pipe(
       startWith(''),
@@ -104,37 +107,41 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     ).subscribe(filtrados => {
       this.colorantesFiltrados = filtrados;
     });
-
+    this.getObtenerTrio(this.data.Num_SDC, this.data.Num_Sec);
     this.GetColorantes();
     this.GetCurvasJabonado();
     this.GetFijados();
     this.GetFamiliasProceso();
     this.quitarFocus();
-    
-    if(this.data.Title === 'Copiar'){
-      console.log('Cargando datos para modificar...');
-      this.cargarDatosParaModificar(this.data.Num_SDC, this.data.Num_Sec, this.data.Correlativo);
+
+    if (this.data.Title === 'Copiar') {
+      //console.log('Cargando datos para modificar...');
+      this.cargarDatosParaModificar(this.data.Num_SDC, this.data.Num_Sec, this.data.CorrelativoAnterior || 0);
+      setTimeout(() => this.cargando = false, 0);
+      //this.actualizarTotalFinal();
+    } else if (this.data.Title === 'Insertar') {
+      this.correlativo += 1;
     }
 
     setTimeout(() => this.quitarFocus(), 100);
   }
 
   quitarFocus(): void {
-      this.inputColorante?.nativeElement?.blur();
+    this.inputColorante?.nativeElement?.blur();
   }
-  
+
   filtrarColorantes(valor: string): any[] {
     const filtro = valor.toLowerCase();
     return this.colorantesDisponibles.filter(c =>
-    c.nombre.toLowerCase().includes(filtro) || c.codigo.toLowerCase().includes(filtro)
+      c.nombre.toLowerCase().includes(filtro) || c.codigo.toLowerCase().includes(filtro)
     );
   }
 
-  colorantesDisponibles: { codigo: string, nombre: string, inicial: number } [] = [];
-  curvas: {nombre: string, codigo: number, cantidad: number} [] = [];
-  fijados: {nombre: string, codigo: number} [] = [];
-  productos: {nombre: string, cantidad: number, porcentaje: number}[] = [];
-  tiposFormulacion: {nombre: string, codigo: number} [] = [];
+  colorantesDisponibles: { codigo: string, nombre: string, inicial: number }[] = [];
+  curvas: { nombre: string, codigo: number, cantidad: number }[] = [];
+  fijados: { nombre: string, codigo: number }[] = [];
+  productos: { nombre: string, cantidad: number, porcentaje: number }[] = [];
+  tiposFormulacion: { nombre: string, codigo: number }[] = [];
   coloranteSeleccionado: any = null;
 
   colorantesSeleccionados: any[] = [];
@@ -154,31 +161,32 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
 
   cambiosHabilitados = false;
+  estadoCambio = 0;
 
-  agregarColorante(): void {
-    if (!this.coloranteSeleccionado) return;
+  // agregarColorante(): void {
+  //   if (!this.coloranteSeleccionado) return;
 
-    this.colorantesSeleccionados.push({
-      codigo: this.coloranteSeleccionado.codigo,
-      nombre: this.coloranteSeleccionado.nombre,
-      inicial: this.coloranteSeleccionado.inicial,
-      ajuste: 0
-    });
-    
-    
-    this.coloranteControl.setValue('');
-    this.coloranteSeleccionado = null;
+  //   this.colorantesSeleccionados.push({
+  //     codigo: this.coloranteSeleccionado.codigo,
+  //     nombre: this.coloranteSeleccionado.nombre,
+  //     inicial: null,
+  //     ajuste: null
+  //   });
 
-    
-    this.colorantesFiltrados = this.filtrarColorantes('');
 
-    this.actualizarTotalFinal();
-  }
+  //   //this.coloranteControl.setValue('');
+  //   this.coloranteSeleccionado = null;
+
+
+  //   this.colorantesFiltrados = this.filtrarColorantes('');
+
+  //   this.actualizarTotalFinal();
+  // }
 
   onColoranteSeleccionado(event: MatAutocompleteSelectedEvent): void {
     this.Familia = this.parametros.tiposFormulacion.toString();
 
-    if (!this.Familia){
+    if (!this.Familia) {
       this.toastr.warning('Debe seleccionar un Proceso', '', { timeOut: 2500 });
       return;
     }
@@ -188,27 +196,28 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     this.colorantesSeleccionados.push({
       codigo: colorante.codigo,
       nombre: colorante.nombre,
-      inicial: parseFloat(colorante.inicial.toFixed(5)),
-      ajuste: 0
+      inicial: null, //parseFloat(colorante.inicial.toFixed(5)),
+      ajuste: 0 //0
     });
 
-    this.coloranteControl.setValue('');
+    //this.coloranteControl.setValue('');
     this.coloranteSeleccionado = null;
 
     this.colorantesFiltrados = this.filtrarColorantes('');
 
     this.actualizarTotalFinal();
-}
+  }
 
   mostrarNombre(colorante: any): string {
-  return colorante?.nombre || '';
+    //return colorante?.nombre || '';
+    return '';
   }
 
-  abrirAutocomplete(): void {
-    if (this.coloranteControl.value && typeof this.coloranteControl.value === 'string') {
-    this.autocompleteTrigger.openPanel();
-    }
-  }
+  // abrirAutocomplete(): void {
+  //   if (this.coloranteControl.value && typeof this.coloranteControl.value === 'string') {
+  //   this.autocompleteTrigger.openPanel();
+  //   }
+  // }
 
 
   ajustar(colorante: any, delta: number): void {
@@ -216,32 +225,59 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   }
 
   calcularFinal(colorante: any): number {
-    return Math.max(0, parseFloat((colorante.inicial + (colorante.inicial * colorante.ajuste)/100 ).toFixed(4)));
+    return Math.max(0, parseFloat((colorante.inicial + (colorante.inicial * colorante.ajuste) / 100).toFixed(4)));
   }
 
   totalFinalColorantes: number = 0;
   condicion: number = 0;
-  
+
   actualizarTotalFinal(): void {
     this.Familia = this.parametros.tiposFormulacion.toString();
-      this.colorantesSeleccionados.forEach(c => {
-        c.inicial = parseFloat(c.inicial.toFixed(5));
-      });
+    this.colorantesSeleccionados.forEach(c => {
+      c.inicial = parseFloat(c.inicial.toFixed(5));
+    });
 
-      this.totalFinalColorantes = this.colorantesSeleccionados
-        .map(c => this.calcularFinal(c))
-        .reduce((acc, val) => acc + val, 0);
+    console.log('EL PROCESO DE LA TRICOMIA ES: ', this.Familia);
 
-      this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, this.Familia);
-      this.GetFijadosCalculado(this.totalFinalColorantes, this.Familia);
-      const contieneAmavose = this.colorantesSeleccionados.some(c => c.codigo === 'QC000441');
+    this.totalFinalColorantes = this.colorantesSeleccionados
+      .map(c => this.calcularFinal(c))
+      .reduce((acc, val) => acc + val, 0);
 
-      if (contieneAmavose){
-        this.condicion = 1;
-      }
+    this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, this.Familia);
+    this.GetFijadosCalculado(this.totalFinalColorantes, this.Familia);
+    const contieneAMAVBTES = this.colorantesSeleccionados.some(c => c.codigo === 'QC000472');
 
-      this.GetCarbonatoSodaCalculado(this.totalFinalColorantes, this.Familia, this.condicion);
-    
+    if (contieneAMAVBTES) {
+      this.condicion = 1;
+    }
+
+    this.GetCarbonatoSodaCalculado(this.totalFinalColorantes, this.Familia, this.condicion);
+
+  }
+
+  actualizarTotalFinalDesdeCopiar(Familia: string): void {
+    //this.Familia = this.parametros.tiposFormulacion.toString();
+
+    this.colorantesSeleccionados.forEach(c => {
+      c.inicial = parseFloat(c.inicial.toFixed(5));
+    });
+
+    console.log('EL PROCESO DE LA TRICOMIA ES: ', Familia);
+
+    this.totalFinalColorantes = this.colorantesSeleccionados
+      .map(c => this.calcularFinal(c))
+      .reduce((acc, val) => acc + val, 0);
+
+    // this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, Familia);
+    // this.GetFijadosCalculado(this.totalFinalColorantes, Familia);
+    const contieneAMAVBTES = this.colorantesSeleccionados.some(c => c.codigo === 'QC000472');
+
+    if (contieneAMAVBTES) {
+      this.condicion = 1;
+    }
+
+    // this.GetCarbonatoSodaCalculado(this.totalFinalColorantes, Familia, this.condicion);
+
   }
 
   limitarDecimales(colorante: any): void {
@@ -250,7 +286,13 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   }
 
   habilitarCambios(): void {
-    this.cambiosHabilitados = true;
+    if (this.cambiosHabilitados === false) {
+      this.cambiosHabilitados = true;
+      this.estadoCambio = 1;
+    } else {
+      this.cambiosHabilitados = false;
+      this.estadoCambio = 0;
+    }
     console.log('Cambios habilitados');
   }
 
@@ -260,12 +302,11 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
   cerrar(): void {
     this.router.navigate(['HojaFormulacion']);
-    console.log('Cerrando pantalla de agregar opción');
   }
 
   quitarColorante(colorante: any): void {
-  this.colorantesSeleccionados = this.colorantesSeleccionados.filter(c => c !== colorante);
-  this.actualizarTotalFinal();
+    this.colorantesSeleccionados = this.colorantesSeleccionados.filter(c => c !== colorante);
+    this.actualizarTotalFinal();
   }
 
   actualizarCantidad(producto: any): void {
@@ -275,115 +316,138 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       producto.baseCantidad = baseCantidad;
     }
 
-    producto.cantidad = +(baseCantidad + producto.porcentaje ).toFixed(2);
+    producto.cantidad = +(baseCantidad + producto.porcentaje).toFixed(2);
   }
 
-  
+
   guardarColorantesConParametros(): void {
-  if (this.colorantesSeleccionados.length === 0) {
-    this.toastr.warning('Debe agregar al menos un colorante', '', { timeOut: 2500 });
-    return;
-  }
-
-  const carbonato = this.productos.find(p => p.nombre.toUpperCase().includes('CARBONATO'));
-  const soda = this.productos.find(p => p.nombre.toUpperCase().includes('SODA'));
-
-  const comunes = {
-    Corr_Carta: this.data?.Num_SDC?.toString() || '0',
-    Sec: this.data?.Num_Sec?.toString() || '0',
-    Correlativo: this.correlativo,
-    Can_Jabo: this.parametros.jabonadas.toString(),
-    Cur_Jabo: this.parametros.curva.toString(),
-    Fijado: this.parametros.fijado.toString(),
-    Rel_Ban: this.datos.relacionBano.toString(),
-    Pes_Mue: this.datos.pesoMuestra.toString(),
-    Volumen: this.datos.volumen.toString(),
-    // Acidulado: this.parametros.acidulado.toString(),
-    Car_Gr: carbonato?.cantidad.toString() || '0',
-    Car_Por: carbonato?.porcentaje.toString() || '0',
-    Sod_Gr: soda?.cantidad.toString() || '0',
-    Sod_Por: soda?.porcentaje.toString() || '0',
-    Familia: this.parametros.tiposFormulacion.toString()
-  };
-
-  const comunes2 = {
-    Corr_Carta: this.data?.Num_SDC?.toString() || '0',
-    Sec: this.data?.Num_Sec?.toString() || '0',
-    Correlativo: this.correlativo,
-    Familia: this.parametros.tiposFormulacion.toString()
-  };
-
-  Swal.fire({
-    title: "¿Desea registrar todos los colorantes?",
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonColor:'#3085d6',
-    cancelButtonColor:'#d33',
-    confirmButtonText:'Sí',
-    cancelButtonText: 'No'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.SpinnerService.show();
-
-      let pendientes = this.colorantesSeleccionados.length;
-      let errores = 0;
-
-      this.colorantesSeleccionados.forEach((c, index) => {
-        const datos = {
-          ...comunes,
-          Col_Cod: c.codigo,
-          Procedencia: "Opcion Agregada",
-          Por_Ini: c.inicial.toFixed(4),
-          Por_Aju: c.ajuste.toFixed(4),
-          Por_Fin: this.calcularFinal(c).toFixed(4)
-        };
-        console.log('el correlativo es: ', datos);
-        this.LabColTraService.postAgregarOpcionColorante(datos).subscribe({
-          next: (response: any) => {
-            if (!response.success) errores++;
-            pendientes--;
-            if (pendientes === 0) this.finalizarGuardado(errores);
-          },
-          error: () => {
-            errores++;
-            pendientes--;
-            if (pendientes === 0) this.finalizarGuardado(errores);
-          }
-        });
-      });
-
-      console.log('Datos comunes para auxiliares:', comunes2); 
-      this.LabColTraService.postAgregarAuxiliaresHojaFormulacion(comunes2).subscribe({
-        next: (response: any) => {
-          console.log('Respuesta al agregar auxiliares:', response);
-          if (response.success) {
-            console.log('--entra al success---');
-            console.log('Auxiliares agregados correctamente');
-          }
-        }
-      });
+    if (this.colorantesSeleccionados.length === 0) {
+      this.toastr.warning('Debe agregar al menos un colorante', '', { timeOut: 2500 });
+      return;
     }
-  });
-}
 
-finalizarGuardado(errores: number): void {
-  this.SpinnerService.hide();
-  if (errores === 0) {
-    this.toastr.success('Todos los colorantes fueron guardados correctamente', '', { timeOut: 2500 });
-    // this.dialogRef.close();
-  } else {
-    this.toastr.warning(`Se guardaron con ${errores} error(es)`, '', { timeOut: 3000 });
+    const carbonato = this.productos.find(p => p.nombre.toUpperCase().includes('CARBONATO'));
+    const soda = this.productos.find(p => p.nombre.toUpperCase().includes('SODA'));
+    const familia = this.parametros.tiposFormulacion.toString();
+
+    const comunes = {
+      Corr_Carta: this.data?.Num_SDC?.toString() || '0',
+      Sec: this.data?.Num_Sec?.toString() || '0',
+      Correlativo: this.correlativo,
+      Can_Jabo: this.parametros.jabonadas.toString(),
+      Cur_Jabo: this.parametros.curva.toString(),
+      Fijado: this.parametros.fijado.toString(),
+      Rel_Ban: this.datos.relacionBano.toString(),
+      Pes_Mue: this.datos.pesoMuestra.toString(),
+      Volumen: this.datos.volumen.toString(),
+      // Acidulado: this.parametros.acidulado.toString(),
+      Car_Gr: carbonato?.cantidad.toString() || '0',
+      Car_Por: carbonato?.porcentaje.toString() || '0',
+      Sod_Gr: soda?.cantidad.toString() || '0',
+      Sod_Por: soda?.porcentaje.toString() || '0',
+      Familia: familia,
+      Cambio: this.estadoCambio
+    };
+
+    let ProcedenciaHardCodeada: string = "";
+
+    if (this.data.Title === 'Copiar') {
+      ProcedenciaHardCodeada = "Copia de Corrida #" + this.data.CorrelativoAnterior?.toString();
+      console.log('La ProcedenciaHardCodeada es: ', ProcedenciaHardCodeada)
+    }
+
+    const comunes2 = {
+      Corr_Carta: this.data?.Num_SDC?.toString() || '0',
+      Sec: this.data?.Num_Sec?.toString() || '0',
+      Correlativo: this.correlativo,
+      Familia: familia,
+      Cambio: this.estadoCambio,
+      ProcedenciaHardCodeada: ProcedenciaHardCodeada
+    };
+
+    //console.log('los datos en comunes2 son: ', comunes2);
+    Swal.fire({
+      title: "¿Desea registrar todos los colorantes?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.SpinnerService.show();
+
+        let pendientes = this.colorantesSeleccionados.length;
+        let errores = 0;
+
+        console.log('los datos son: ', comunes);
+        this.colorantesSeleccionados.forEach((c, index) => {
+          const datos = {
+            ...comunes,
+            Col_Cod: c.codigo,
+            Procedencia: "Opcion Agregada",
+            Por_Ini: c.inicial.toFixed(4),
+            Por_Aju: c.ajuste.toFixed(4),
+            Por_Fin: this.calcularFinal(c).toFixed(4)
+          };
+
+          //console.log(datos);
+          this.LabColTraService.postAgregarOpcionColorante(datos).subscribe({
+            next: (response: any) => {
+              if (!response.success) errores++;
+              pendientes--;
+              if (pendientes === 0) {
+                this.finalizarGuardado(errores)
+                this.guardarAuxiliares(comunes2);
+              };
+            },
+            error: () => {
+              errores++;
+              pendientes--;
+              if (pendientes === 0) {
+                this.finalizarGuardado(errores);
+                //this.guardarAuxiliares(comunes2);
+              }
+            }
+          });
+        });
+      }
+    });
+
+
   }
-}
 
-colorantes = [];
-GetColorantes(): void{
+  finalizarGuardado(errores: number): void {
+    this.SpinnerService.hide();
+    if (errores === 0) {
+      this.toastr.success('Todos los colorantes fueron guardados correctamente', '', { timeOut: 2500 });
+    } else {
+      this.toastr.warning(`Se guardaron con ${errores} error(es)`, '', { timeOut: 3000 });
+    }
+  }
+
+  guardarAuxiliares(comunes2: any): void {
+    this.LabColTraService.postAgregarAuxiliaresHojaFormulacion(comunes2).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          console.log('Auxiliares guardados correctamente');
+          this.router.navigate(['HojaFormulacion']);
+        }
+        this.SpinnerService.hide();
+      }
+    });
+  }
+
+
+  colorantes = [];
+  GetColorantes(): void {
     this.SpinnerService.show();
     this.colorantes = [];
     this.LabColTraService.getListarColorantesAgregarOpcion().subscribe({
       next: (response: any) => {
-        if(response.success){
-          if(response.totalElements > 0){
+        if (response.success) {
+          if (response.totalElements > 0) {
             this.colorantesDisponibles = response.elements.map((c: any) => ({
               codigo: c.col_Cod_Org,
               nombre: c.col_Des,
@@ -400,11 +464,11 @@ GetColorantes(): void{
             this.colorantesFiltrados = this.colorantesDisponibles;
 
             this.SpinnerService.hide();
-          }else{
+          } else {
             this.colorantes = [];
             this.SpinnerService.hide();
           }
-        }else{
+        } else {
           this.colorantes = [];
         }
       },
@@ -417,23 +481,23 @@ GetColorantes(): void{
     })
   }
 
-GetCurvasJabonado(): void{
+  GetCurvasJabonado(): void {
     this.SpinnerService.show();
     this.curvas = [];
     this.LabColTraService.getListarJabonados().subscribe({
       next: (response: any) => {
-        if(response.success){
-          if(response.totalElements > 0){
+        if (response.success) {
+          if (response.totalElements > 0) {
             this.curvas = response.elements.map((c: any) => ({
               codigo: c.jab_Id,
               nombre: c.jab_Des
             }));
             this.SpinnerService.hide();
-          }else{
+          } else {
             this.curvas = [];
             this.SpinnerService.hide();
           }
-        }else{
+        } else {
           this.curvas = [];
         }
       },
@@ -446,13 +510,13 @@ GetCurvasJabonado(): void{
     })
   }
 
-GetCurvasJabonadoCalculado(Colorante_Total: number, Familia: string): void{
+  GetCurvasJabonadoCalculado(Colorante_Total: number, Familia: string): void {
     this.SpinnerService.show();
     this.curvas = [];
     this.LabColTraService.getListarJabonadosCalculado(Colorante_Total, Familia).subscribe({
       next: (response: any) => {
-        if(response.success){
-          if(response.totalElements > 0){
+        if (response.success) {
+          if (response.totalElements > 0) {
             console.log('los elementos jabonados calculados son: ', response.elements);
             this.curvas = response.elements.map((c: any) => ({
               codigo: c.jab_Id,
@@ -464,11 +528,11 @@ GetCurvasJabonadoCalculado(Colorante_Total: number, Familia: string): void{
             this.parametros.jabonadas = this.curvas[0]?.cantidad || 0;
 
             this.SpinnerService.hide();
-          }else{
+          } else {
             this.curvas = [];
             this.SpinnerService.hide();
           }
-        }else{
+        } else {
           this.curvas = [];
         }
       },
@@ -482,24 +546,24 @@ GetCurvasJabonadoCalculado(Colorante_Total: number, Familia: string): void{
   }
 
 
-GetFijados(): void{
+  GetFijados(): void {
     this.SpinnerService.show();
     this.fijados = [];
     this.LabColTraService.getListarFijados().subscribe({
       next: (response: any) => {
-        if(response.success){
-          if(response.totalElements > 0){
+        if (response.success) {
+          if (response.totalElements > 0) {
             this.fijados = response.elements.map((c: any) => ({
               codigo: c.fij_Id,
               nombre: c.fij_Des
             }));
-            
+
             this.SpinnerService.hide();
-          }else{
+          } else {
             this.fijados = [];
             this.SpinnerService.hide();
           }
-        }else{
+        } else {
           this.fijados = [];
         }
       },
@@ -510,16 +574,16 @@ GetFijados(): void{
         })
       }
     })
-  }  
+  }
 
-GetFijadosCalculado(Colorante_Total: number, Familia: string): void{
+  GetFijadosCalculado(Colorante_Total: number, Familia: string): void {
     this.SpinnerService.show();
     this.fijados = [];
     this.LabColTraService.getListarFijadosCalculado(Colorante_Total, Familia).subscribe({
       next: (response: any) => {
-        if(response.success){
+        if (response.success) {
           console.log('los elementos fijados calculados son: ', response.elements);
-          if(response.totalElements > 0){
+          if (response.totalElements > 0) {
             this.fijados = response.elements.map((c: any) => ({
               codigo: c.fij_Id,
               nombre: c.fij_Des
@@ -528,11 +592,11 @@ GetFijadosCalculado(Colorante_Total: number, Familia: string): void{
             this.parametros.fijado = this.fijados[0]?.codigo || 0;
             console.log('El valor en parametros fijado es: ', this.parametros.fijado);
             this.SpinnerService.hide();
-          }else{
+          } else {
             this.fijados = [];
             this.SpinnerService.hide();
           }
-        }else{
+        } else {
           this.fijados = [];
         }
       },
@@ -543,18 +607,18 @@ GetFijadosCalculado(Colorante_Total: number, Familia: string): void{
         })
       }
     })
-  }  
+  }
 
-GetCarbonatoSodaCalculado(Colorante_Total: number, Familia: string, Com_Cod_Con: number): void{
+  GetCarbonatoSodaCalculado(Colorante_Total: number, Familia: string, Com_Cod_Con: number): void {
     this.SpinnerService.show();
     this.productos = [];
-    
+
     this.LabColTraService.getListarCarbonatoSodaCalculado(Colorante_Total, Familia, Com_Cod_Con).subscribe({
       next: (response: any) => {
-        if(response.success){
+        if (response.success) {
 
-          if(response.totalElements > 0){
-            
+          if (response.totalElements > 0) {
+
             const datos = response.elements[0];
 
             this.productos = [];
@@ -562,8 +626,8 @@ GetCarbonatoSodaCalculado(Colorante_Total: number, Familia: string, Com_Cod_Con:
             if (datos.com_Cod_Extra6 === 'CO3') {
               this.productos.push({
                 nombre: 'CARBONATO',
-                cantidad: datos.com_Can_Extra6,      
-                porcentaje: 0          
+                cantidad: datos.com_Can_Extra6,
+                porcentaje: 0
               });
             }
 
@@ -574,13 +638,13 @@ GetCarbonatoSodaCalculado(Colorante_Total: number, Familia: string, Com_Cod_Con:
                 porcentaje: 0
               });
             }
-            
+
             this.SpinnerService.hide();
-          }else{
+          } else {
             this.productos = [];
             this.SpinnerService.hide();
           }
-        }else{
+        } else {
           this.productos = [];
         }
       },
@@ -593,20 +657,20 @@ GetCarbonatoSodaCalculado(Colorante_Total: number, Familia: string, Com_Cod_Con:
     })
   }
 
-GetFamiliasProceso(): void{
+  GetFamiliasProceso(): void {
     this.tiposFormulacion = [];
     this.LabColTraService.getListarFamiliasProceso().subscribe({
       next: (response: any) => {
-        if(response.success){
-          if(response.totalElements > 0){
+        if (response.success) {
+          if (response.totalElements > 0) {
             this.tiposFormulacion = response.elements.map((c: any) => ({
               codigo: c.pro_Cod,
               nombre: c.pro_Des
             }));
-          }else{
+          } else {
             this.tiposFormulacion = [];
           }
-        }else{
+        } else {
           this.tiposFormulacion = [];
         }
       },
@@ -616,107 +680,108 @@ GetFamiliasProceso(): void{
         })
       }
     })
-  }  
+  }
 
   datosParaModificar: any = [];
-//   cargarDatosParaModificar(Corr_Carta: number, Sec: number, Correlativo: number): void {  
-//   this.datosParaModificar = [];
-//   this.LabColTraService.getCargarColoranteParaCopiar(Corr_Carta, Sec, Correlativo).subscribe({
-//     next: (response: any) => {
-//       this.datosParaModificar = response.elements;
-//       console.log('Datos para modificar cargados: ', this.datosParaModificar);
-      
-//       this.colorantesSeleccionados = this.datosParaModificar.map((c: any) => ({
-//         codigo: c.col_Cod,
-//         nombre: c.col_Des,
-//         inicial: c.por_Ini ? parseFloat(c.por_Ini.toFixed(5)) : 0,
-//         ajuste: c.por_Aju ? parseFloat(c.por_Aju.toFixed(5)) : 0
-//       }));
-//       this.parametros = {
-//         jabonadas: this.datosParaModificar.can_Jabo,
-//         curva: this.datosParaModificar.cur_Jabo,
-//         fijado: this.datosParaModificar.fijado,
-//         tiposFormulacion: this.datosParaModificar.familia
-//       };
-//       //this.productos = response.productos;
-//       this.datos = {
-//         relacionBano: this.datosParaModificar.rel_Ban,
-//         pesoMuestra: this.datosParaModificar.pes_Mue,
-//         volumen: this.datosParaModificar.rel_Ban * this.datosParaModificar.pes_Mue
-//       };
-//     },
-//     error: () => {
-//       this.toastr.error('Error al cargar datos para modificar');
-//     }
-//   });
-// }
-cargarDatosParaModificar(Corr_Carta: number, Sec: number, Correlativo: number): void {
-  this.datosParaModificar = [];
 
-  this.LabColTraService.getCargarColoranteParaCopiar(Corr_Carta, Sec, Correlativo).subscribe({
-    next: (response: any) => {
-      const datos = response.elements?.[0];
+  cargarDatosParaModificar(Corr_Carta: number, Sec: number, Correlativo: number): void {
+    this.datosParaModificar = [];
 
-      if (!datos) {
-        this.toastr.warning('No se encontraron datos para modificar');
-        return;
-      }
-      // Cargar productos auxiliares
-      this.productos = [
-        {
-          nombre: 'CARBONATO',
-          cantidad: datos.car_Gr ?? 0,
-          porcentaje: datos.car_Por ?? 0
-        },
-        {
-          nombre: 'SODA',
-          cantidad: datos.sod_Gr ?? 0,
-          porcentaje: datos.sod_Por ?? 0
+    this.LabColTraService.getCargarColoranteParaCopiar(Corr_Carta, Sec, Correlativo).subscribe({
+      next: (response: any) => {
+        const datos = response.elements?.[0];
+        console.log('los datos extraidos son: ', datos);
+        if (!datos) {
+          this.toastr.warning('No se encontraron datos para modificar');
+          return;
         }
-      ];
-    
-      console.log('Productos cargados: ', this.productos);
-      // Cargar colorantes seleccionados
-      this.colorantesSeleccionados = (datos.colorantes ?? []).map((c: any) => ({
-        codigo: c.col_Cod,
-        nombre: c.col_Des,
-        inicial: c.por_Ini ? parseFloat(c.por_Ini.toFixed(5)) : 0,
-        ajuste: c.por_Aju ? parseFloat(c.por_Aju.toFixed(5)) : 0
-      }));
+        // Cargar productos auxiliares
+        this.productos = [
+          {
+            nombre: 'CARBONATO',
+            cantidad: datos.car_Gr ?? 0,
+            porcentaje: datos.car_Por ?? 0
+          },
+          {
+            nombre: 'SODA',
+            cantidad: datos.sod_Gr ?? 0,
+            porcentaje: datos.sod_Por ?? 0
+          }
+        ];
 
-      // Cargar parámetros de formulación
-      this.parametros = {
-        jabonadas: datos.can_Jabo ?? 0,
-        curva: parseInt(datos.cur_Jabo) ?? 0,
-        fijado: parseInt(datos.fijado) ?? 0,
-        tiposFormulacion: datos.familia ?? ''
-      };
-      
-      
+        console.log('Productos cargados: ', this.productos);
+        // Cargar colorantes seleccionados
+        this.colorantesSeleccionados = (datos.colorantes ?? []).map((c: any) => ({
+          codigo: c.col_Cod,
+          nombre: c.col_Des,
+          inicial: c.por_Ini ? parseFloat(c.por_Ini.toFixed(5)) : 0,
+          //A PETICION DE JENNIFER SE QUITO EL AJUSTE 
+          //ajuste: c.por_Aju ? parseFloat(c.por_Aju.toFixed(5)) : 0
+          ajuste: 0
+        }));
 
-      // Cargar datos de baño
-      const peso = datos.pes_Mue ?? 0;
-      const relacion = datos.rel_Ban ?? 0;
+        // Cargar parámetros de formulación
+        this.parametros = {
+          jabonadas: datos.can_Jabo ?? 0,
+          curva: parseInt(datos.cur_Jabo) ?? 0,
+          fijado: parseInt(datos.fijado) ?? 0,
+          tiposFormulacion: datos.familia ?? ''
+        };
 
-      this.datos = {
-        relacionBano: relacion,
-        pesoMuestra: peso,
-        volumen: relacion * peso
-      };
 
-      // Actualizar total final de colorantes
-      //this.actualizarTotalFinal();
 
-    },
-    error: (err) => {
-      const msg = err?.error?.message ?? 'Error al cargar datos para modificar';
-      this.toastr.error(msg);
+        // Cargar datos de baño
+        const peso = datos.pes_Mue ?? 0;
+        const relacion = Math.floor(Number(datos.rel_Ban ?? 0));
+
+        this.datos = {
+          relacionBano: relacion,
+          pesoMuestra: peso,
+          volumen: relacion * peso
+        };
+
+        // Actualizar total final de colorantes
+        this.actualizarTotalFinalDesdeCopiar(datos.familia.toString());
+
+      },
+      error: (err) => {
+        const msg = err?.error?.message ?? 'Error al cargar datos para modificar';
+        this.toastr.error(msg);
+      }
+    });
+  }
+
+  calcularRelacionBano(): void {
+    const peso = this.datos.pesoMuestra;
+    const volumen = this.datos.volumen;
+
+    if (peso && volumen && peso > 0) {
+      this.datos.relacionBano = +(volumen / peso).toFixed(2);
+    } else {
+      this.datos.relacionBano = 0;
     }
-  });
-}
+  }
+
+  getObtenerTrio(Corr_Carta: number, Sec: number) {
+    this.LabColTraService.getObtenerTrio(Corr_Carta, Sec).subscribe({
+      next: (response: any) => {
+        if(response.success){
+          //if(response.totalElements > 0){
+            console.log('FFFFFFFFFFFFFFFFFFFFFFFFF',response.elements);
+            this.datos.relacionBano = Math.floor(response.elements[0].rel_Ban);
+            this.datos.pesoMuestra = response.elements[0].pes_Mue;
+            this.datos.volumen = response.elements[0].volumen;
+            this.parametros.tiposFormulacion = response.elements[0].familia;
+          //}
+        }
+      },
+      error: (error: any) => {
+
+      }
+    });
+  }
 
 
 
 
-  
 }

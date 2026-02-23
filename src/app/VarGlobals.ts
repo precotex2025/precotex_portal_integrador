@@ -7,10 +7,10 @@ export const GlobalVariable = {
 
 
   //Base URL BackEnd - ic.backend.precotex.web - HM
-  baseUrlProcesoTenido: "https://localhost:7093/api/", //LOCAL
-  //baseUrlProcesoTenido: "https://gestion.precotex.com:444/ubicaciones/api/", // PRODUCCION EIQ
+  //baseUrlProcesoTenido: "https://localhost:7093/api/", //LOCAL
+  baseUrlProcesoTenido: "https://gestion.precotex.com:444/ubicaciones/api/", // PRODUCCION EIQ
 
-
+  //TINTORERIA >
 
   num_planta: 0,
   cod_ordtra: '',

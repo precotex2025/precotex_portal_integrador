@@ -12,7 +12,8 @@ interface data_jabonado {
   correlativo: number;
   descripcion_color: string;
   tela: string;
-  ph_Jab: number;
+  //ph_Jab: number;
+  ph_Jab: number[];
 }
 
 @Component({
@@ -21,71 +22,164 @@ interface data_jabonado {
   styleUrl: './dialog-jabonados.component.scss'
 })
 export class DialogJabonadosComponent {
-  
-  @ViewChild(MatSort) sort!: MatSort;   
+
+  @ViewChild(MatSort) sort!: MatSort;
+
   constructor(
     private dialog: MatDialog,
     private SpinnerService: NgxSpinnerService,
     private LabColTrabajoService: LabColTrabajoService
-  ){}
+  ) { }
 
+  filtroSeleccionado: string = 'pendientes';
 
   columnsToDisplay: string[] = [
-    'corr_Carta', 
-    'sec', 
-    'correlativo', 
-    'descripcion_Color', 
-    'tela', 
+    'corr_Carta',
+    'sec',
+    'correlativo',
+    'descripcion_Color',
+    // 'tela', 
     'jab_Des',
     'can_Jabo',
-    'ph_Jab'
+    //'ph_Jab'
   ];
 
   ngOnInit(): void {
     this.onListarJabonado();
   }
-  
-  dataSource : MatTableDataSource<data_jabonado> = new MatTableDataSource();
+
+  dataSource: MatTableDataSource<data_jabonado> = new MatTableDataSource();
   dataListadoJabonado = [];
-  onListarJabonado(){    
-    
+
+
+  getPhColumns(): string[] {
+    const max = Math.max(...this.dataSource.data.map((r: any) => r.can_Jabo || 1));
+    return Array.from({ length: max }, (_, i) => 'ph_Jab' + (i + 1));
+  }
+
+  onListarJabonado() {
     this.SpinnerService.show();
-    this.dataListadoJabonado = [];
     this.LabColTrabajoService.getListarJabonado().subscribe({
-      next:(response: any) => {
-        if(response.success){
-          this.dataListadoJabonado = response.elements;
+      next: (response: any) => {
+        if (response.success) {
+          this.dataListadoJabonado = response.elements.map((item: any) => {
+            const phArray = Array(item.can_Jabo).fill(null);
+
+            if (item.ph_Jab && item.ph_Jab !== 0) {
+              phArray[0] = item.ph_Jab;
+            }
+
+            if (item.ph_Jab2) phArray[1] = item.ph_Jab2;
+            if (item.ph_Jab3) phArray[2] = item.ph_Jab3;
+
+            return {
+              ...item,
+              ph_Jab: phArray
+            };
+          });
+
           this.dataSource.data = this.dataListadoJabonado;
           this.dataSource.sort = this.sort;
+
+          // recalcular columnas dinámicas
+          this.columnsToDisplay = [
+            'corr_Carta',
+            'sec',
+            'correlativo',
+            'descripcion_Color',
+            'jab_Des',
+            'can_Jabo',
+            ...this.getPhColumns()
+          ];
+
           this.SpinnerService.hide();
         }
       },
-      error:(error) => {
-        this.SpinnerService.hide();
-      }
-    })
+      error: () => this.SpinnerService.hide()
+    });
   }
 
-  ingresarPH(row: any): void{
-      let num_sdc = row.corr_Carta;
-      let sec = row.sec;
-      let correlativo = row.correlativo;
-      let dialogref = this.dialog.open(DialogAgregarPhComponent, {
-        width:'500px',
-        height: '300px',
-        disableClose: false,
-        panelClass: 'my-class',
-        data:{
-          Title: "PH Jabonado",
-          Corr_Carta: num_sdc,
-          Sec: sec,
-          Correlativo: correlativo,
-          Condicion: 3
+  onListarJabonadoExcluido(): void {
+    this.SpinnerService.show();
+    this.LabColTrabajoService.getListarJabonadoExcluido().subscribe({
+      next: (response: any) => {
+        if(response.success){
+          this.dataListadoJabonado = response.elements.map((item: any) => {
+            const phArray = Array(item.can_Jabo).fill(null);
+
+            if (item.ph_Jab && item.ph_Jab !== 0) {
+              phArray[0] = item.ph_Jab;
+            }
+            
+            if (item.ph_Jab2) phArray[1] = item.ph_Jab2;
+            if (item.ph_Jab3) phArray[2] = item.ph_Jab3;
+
+            return {
+              ...item,
+              ph_Jab: phArray
+            };
+          });
+
+          this.dataSource.data = this.dataListadoJabonado;
+          this.dataSource.sort = this.sort;
+
+          this.columnsToDisplay = [
+            'corr_Carta',
+            'sec',
+            'correlativo',
+            'descripcion_Color',
+            'jab_Des',
+            'can_Jabo',
+            ...this.getPhColumns()
+          ];
+
+          this.SpinnerService.hide();
         }
-      });
-      dialogref.afterClosed().subscribe(result => {
-        this.onListarJabonado();
-      });
+      },
+      error: (error: any) => {
+
+      }
+    });
   }
+
+  ingresarPH(row: any, jabIndex: number): void {
+    let num_sdc = row.corr_Carta;
+    let sec = row.sec;
+    let correlativo = row.correlativo;
+
+    let dialogref = this.dialog.open(DialogAgregarPhComponent, {
+      width: '500px',
+      height: '300px',
+      disableClose: false,
+      panelClass: 'my-class',
+      data: {
+        Title: `PH Jabonado ${jabIndex}`,
+        Corr_Carta: num_sdc,
+        Sec: sec,
+        Correlativo: correlativo,
+        JabonadoIndex: jabIndex,
+        Condicion: 3
+      }
+    });
+
+    dialogref.afterClosed().subscribe(result => {
+      this.onListarJabonado();
+    });
+  }
+
+
+  aplicarFiltrarTodo(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
+  }
+
+  aplicarFiltroRadio(): void {
+    if (this.filtroSeleccionado === 'pendientes') {
+      this.onListarJabonado(); 
+    } else if (this.filtroSeleccionado === 'completos') {
+      this.onListarJabonadoExcluido(); 
+    }
+  }
+
 
 }

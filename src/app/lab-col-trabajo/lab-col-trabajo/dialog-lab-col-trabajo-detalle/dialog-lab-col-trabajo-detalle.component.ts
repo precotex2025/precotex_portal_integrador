@@ -1,24 +1,28 @@
-import { Component, Inject, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, inject, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { LabColTrabajoService } from '../../../services/lab-col-trabajo/lab-col-trabajo.service';
 import Swal from 'sweetalert2';
 import { FormBuilder } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { GlobalVariable } from '../../../VarGlobals';
+import { AuthService } from '../../../authentication/auth.service';
+import { Router } from '@angular/router';
 
-interface data_color{
+interface data_color {
   corr_Carta: string,
   sec: string,
   descripcion_Color: string,
   cod_Color: string,
+  dias_Lab: number,
   estandar_Tono_Comer: string,
   formulado: string,
   Flg_Est_Lab: string
 }
 
-interface data{
+interface data {
   Num_SDC: number
 }
 
@@ -28,7 +32,9 @@ interface data{
   styleUrl: './dialog-lab-col-trabajo-detalle.component.scss'
 })
 export class DialogLabColTrabajoDetalleComponent implements OnInit {
-  @ViewChild(MatSort) sort!: MatSort;   
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('modalEnviar') modalEnviar!: TemplateRef<any>;
+  dialogRef1!: MatDialogRef<any>;
   constructor(
     private SpinnerService: NgxSpinnerService,
     private formBuilder: FormBuilder,
@@ -36,109 +42,261 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: data,
     private LabColTrabajoService: LabColTrabajoService,
     public dialogRef: MatDialogRef<DialogLabColTrabajoDetalleComponent>,
-  ){}
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private router: Router
+  ) { }
   ngOnInit(): void {
+
+    if (this.authService.isLoggedIn()) {
+      console.log('Usuario activo: -------', this.authService.getUsuario());
+    } else {
+      this.router.navigate(['/login']);
+    }
+
     this.onGetDetalle();
+    this.getListarCurvas('0.00000');
+    this.dataTenido.Cur_Ten = 0;
   }
 
   displayedColumns: string[] = [
+    'HojaFormulacion',
     'corr_Carta',
     'num_sec',
     'color',
+    'fec_Asignacion',
+    'dias_Lab',
     'est_ton_com',
     'formulado',
-    'HojaFormulacion'
   ];
 
   dataSource: MatTableDataSource<data_color> = new MatTableDataSource();
   columnsToDisplay: string[] = this.displayedColumns.slice();
   dataListadoDetalle: Array<any> = [];
+  descripcion: string = '';
+  curvas: { codigo: string, descripcion: string }[] = [];
+  curvaSeleccionada: string = '';
+  curvasDescripcion: { codigo: string, descripcion: string }[] = [];
+  curvaSeleccionadaDes: string = '';
+
 
   pintarEnvio(row: any): string {
     const est_lab = row.flg_Est_Lab;
-    if(est_lab === '02'){
+    if (est_lab === '02') {
       return 'Color-Verde'
-    }else if(est_lab === '03'){
+    } else if (est_lab === '03') {
       return 'Color-Verde'
-    }else if(est_lab === '04'){
+    } else if (est_lab === '04') {
       return 'Color-Verde'
-    }else if(est_lab === '05'){
+    } else if (est_lab === '05') {
       return 'Color-Verde'
-    }else if(est_lab === '06'){
+    } else if (est_lab === '06') {
       return 'Color-Verde'
-    }else if(est_lab === '07'){
+    } else if (est_lab === '07') {
       return 'Color-Verde'
-    }else{
+    } else if (est_lab === '09'){
+      return 'Color-Verde'
+    } 
+    else {
       return 'Color-Negro';
     }
   }
 
-  onGetDetalle(){
+  onGetDetalle() {
     let Corr_Carta = this.data.Num_SDC;
-    console.log(Corr_Carta);
     this.SpinnerService.show();
     this.dataListadoDetalle = [];
     this.LabColTrabajoService.getListaSDCDetalle(Corr_Carta).subscribe({
-      next:(response: any) => {
-        if(response.success){
-          if(response.totalElements > 0){
+      next: (response: any) => {
+        if (response.success) {
+          if (response.totalElements > 0) {
             this.dataListadoDetalle = response.elements;
             console.log(this.dataListadoDetalle);
             this.dataSource.data = this.dataListadoDetalle;
             this.dataSource.sort = this.sort;
             this.SpinnerService.hide();
-          }else{
+          } else {
             this.SpinnerService.hide();
           };
         }
       },
-      error:(error) => {
+      error: (error) => {
         this.SpinnerService.hide();
       }
     })
   }
-
-  onEnviarAHojaFormulacion(data_cola_trab: any){
+  dataTenido: any = {}
+  CargarModalTenido(data_cola_trab: any): void {
     let Corr_Carta = this.dataListadoDetalle[0].corr_Carta;
     let Sec = data_cola_trab.sec;
+    let sFormulado = data_cola_trab.formulado;
     const sCorr_Carta = Corr_Carta;
-    const sSec = Sec;     
+    const sSec = Sec;
 
-    let data: any = {
+    this.dataTenido = {
       "Corr_Carta": sCorr_Carta,
-      "Sec": sSec
+      "Sec": sSec,
+      "Cur_Ten": 0,
     };
+    this.getListarCurvas('0.00000')
+    this.curvaSeleccionada = '';
+    // this.dialogRef1 = this.dialog.open(this.modalEnviar, { 
+    //   width: '500px', 
+    //   }); 
 
+    setTimeout(() => { this.dialogRef1 = this.dialog.open(this.modalEnviar, { width: '500px' }); }, 300);
+
+  }
+
+  onEnviarAHojaFormulacion() {
+    // let Corr_Carta = this.dataListadoDetalle[0].corr_Carta;
+    // let Sec = data_cola_trab.sec;
+    // let sFormulado = data_cola_trab.formulado;
+    // const sCorr_Carta = Corr_Carta;
+    // const sSec = Sec;     
+
+    // let data: any = {
+    //   "Corr_Carta": sCorr_Carta,
+    //   "Sec": sSec
+    // };
+    if (this.dataTenido.Cur_Ten == 0 || this.dataTenido.Cur_Ten == '') { this.toastr.warning('Debe seleccionar una curva', 'Atención'); return; }
     this.SpinnerService.show();
-    this.LabColTrabajoService.postRegistrarDetalleColorSDC(data).subscribe({
+    this.LabColTrabajoService.postRegistrarDetalleColorSDC(this.dataTenido).subscribe({
       next: (response: any) => {
-        if(response.success){
-          if(response.codeResult == 200){
+        if (response.success) {
+          if (response.codeResult == 200) {
             this.onGetDetalle();
             this.toastr.success(response.message, '', {
               timeOut: 2500,
             });
-          }else if(response.codeResult == 201){
+          } else if (response.codeResult == 201) {
             this.toastr.info(response.message, '', {
               timeOut: 2500,
             });
           }
           this.SpinnerService.hide();
-        }else{
+          this.dialogRef1.close();
+        } else {
           this.toastr.error(response.message, 'Cerrar', {
-            timeOut:2500
+            timeOut: 2500
           });
           this.SpinnerService.hide();
         }
       },
-      error:(error) => {
-        this. SpinnerService.hide();
+      error: (error) => {
+        this.SpinnerService.hide();
         this.toastr.error(error.message, 'Cerrar', {
           timeOut: 2500
         });
       }
-      
+
     })
+
   }
+
+
+  getListarCurvas(Pro_Cod: string): void {
+    this.LabColTrabajoService.getListarCurvas(Pro_Cod).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.curvas = response.elements.map((c: any) => ({
+            codigo: c.codigo,
+            descripcion: c.descripcion
+          }));
+        }
+      },
+      error: (error: any) => {
+        console.log(error.error.message, 'Cancelar', { timeout: 3000 });
+      }
+    });
+  }
+
+  onSeleccionarCurva(codigoSeleccionado: string): void {
+    this.curvaSeleccionada = codigoSeleccionado;
+    //this.getListarCurvas('0.00000');
+    this.onCargarCurvaDes(codigoSeleccionado);
+  }
+
+  onCargarCurvaDes(codigo: string): void {
+    this.LabColTrabajoService.getListarCurvas(codigo).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.curvasDescripcion = response.elements.map((c: any) => ({
+            codigo: c.codigo,
+            descripcion: c.descripcion
+          }));
+        }
+      },
+      error: (error: any) => {
+        console.log(error.error.message, 'Cancelar', { timeout: 3000 });
+      }
+    });
+  }
+
+  onSeleccionarCurvaDescripcion(codigoSeleccionado: string): void {
+    //OBTENER EL NOMBRE DE LA CURVA
+    const curva = this.curvas.find(c => c.codigo === codigoSeleccionado);
+
+    this.curvaSeleccionadaDes = curva ? curva.descripcion : '';
+
+    console.log(this.curvaSeleccionadaDes);
+
+    this.dataTenido = {
+      ...this.dataTenido,
+      "Cur_Ten": parseInt(codigoSeleccionado),
+      "Usr_Cod": GlobalVariable.vusu
+    }
+
+    console.log('LA INFORMACION AQUI ES -------------- ', this.dataTenido);
+  }
+
+
+
+  ActualizarEstado(corr_carta: number, sec: number, flg_est_lab: string) {
+    let Corr_Carta = 0
+    let Sec = 0
+    const sCorr_Carta = corr_carta;
+    const sSec = sec;
+    const sFlg_Est_Lab = flg_est_lab;
+    let data: any = {
+      "Corr_Carta": sCorr_Carta,
+      "Sec": sSec,
+      "Flg_Est_Lab": sFlg_Est_Lab
+    };
+    this.SpinnerService.show();
+    this.LabColTrabajoService.patchActualizarEstadoDeColor(data).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          if (response.codeResult == 200) {
+            this.toastr.success(response.message, '', {
+              timeOut: 2500,
+            });
+            this.dialogRef.close();
+            this.router.navigate(['/HojaFormulacion'], {
+              queryParams: {
+                corr_CartaE: sCorr_Carta,
+                secE: sSec
+              }
+            });
+          } 
+          this.SpinnerService.hide();
+        } else {
+          this.toastr.error(response.message, 'Cerrar', {
+            timeOut: 2500
+          });
+          this.SpinnerService.hide();
+        }
+      },
+      error: (error) => {
+        this.SpinnerService.hide();
+        this.toastr.error(error.message, 'Cerrar', {
+          timeOut: 2500
+        });
+      }
+    })
+
+  }
+
+
 
 }

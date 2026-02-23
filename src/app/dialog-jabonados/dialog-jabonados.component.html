@@ -1,60 +1,120 @@
+<!-- <div>
+  <mat-form-field appearance="outline" class="buscador">
+    <mat-label>Buscar</mat-label>
+    <input matInput placeholder="Buscar" (keyup)="aplicarFiltrarTodo($event)">
+    <button mat-icon-button matSuffix class="btn-buscador">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+</div> -->
+
+<div class="filtros-container">
+  <!-- Buscador -->
+  <mat-form-field appearance="outline" class="buscador">
+    <mat-label>Buscar</mat-label>
+    <input matInput placeholder="Buscar" (keyup)="aplicarFiltrarTodo($event)">
+    <button mat-icon-button matSuffix class="btn-buscador">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <!-- Radio buttons -->
+  <mat-radio-group [(ngModel)]="filtroSeleccionado" (change)="aplicarFiltroRadio()"
+  class="radio-filtros">
+    <mat-radio-button value="pendientes">Pendientes</mat-radio-button>
+    <mat-radio-button value="completos">Completos</mat-radio-button>
+  </mat-radio-group>
+</div>
+
 <div class="tabla-wrapper">
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z2 tabla-ph">
+  <div class="tabla-scroll">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 tabla-ph">
+      <!-- SDC -->
+      <ng-container matColumnDef="corr_Carta">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera col-achi">#SDC</th>
+        <td mat-cell *matCellDef="let r" class="centrado col-achi">{{ r.corr_Carta }}</td>
+      </ng-container>
 
-    <!-- SDC -->
-    <ng-container matColumnDef="corr_Carta">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">#SDC</th>
-      <td mat-cell *matCellDef="let r" class="centrado">{{ r.corr_Carta }}</td>
-    </ng-container>
+      <ng-container matColumnDef="sec">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera col-achi">Sec</th>
+        <td mat-cell *matCellDef="let r" class="centrado col-achi">{{ r.sec.toString().padStart(2, '0') }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="sec">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Secuencia</th>
-      <td mat-cell *matCellDef="let r" class="centrado">{{ r.sec }}</td>
-    </ng-container>
+      <ng-container matColumnDef="correlativo">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera col-achi">Corr</th>
+        <td mat-cell *matCellDef="let r" class="centrado col-achi">{{ r.correlativo }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="correlativo">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Correlativo</th>
-      <td mat-cell *matCellDef="let r" class="centrado">{{ r.correlativo }}</td>
-    </ng-container>
+      <!-- COLOR -->
+      <ng-container matColumnDef="descripcion_Color">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Color</th>
+        <td mat-cell *matCellDef="let r">{{ r.descripcion_Color }}</td>
+      </ng-container>
 
-    <!-- COLOR -->
-    <ng-container matColumnDef="descripcion_Color">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Color</th>
-      <td mat-cell *matCellDef="let r">{{ r.descripcion_Color }}</td>
-    </ng-container>
+      <!-- TELA -->
+      <!-- <ng-container matColumnDef="tela">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Tela</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.tela ?? '' }}</td>
+      </ng-container> -->
 
-    <!-- TELA -->
-    <ng-container matColumnDef="tela">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Tela</th>
-      <td mat-cell *matCellDef="let r" class="centrado">{{ r.tela ?? '' }}</td>
-    </ng-container>
+      <!-- Descripcion Jabonado -->
+      <ng-container matColumnDef="jab_Des">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Curva</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.jab_Des ?? '' }}</td>
+      </ng-container>
 
-    <!-- Descripcion Jabonado -->
-    <ng-container matColumnDef="jab_Des">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Curva</th>
-      <td mat-cell *matCellDef="let r" class="centrado">{{ r.jab_Des ?? '' }}</td>
-    </ng-container>
+      <!-- Cantidad Jabonados -->
+      <ng-container matColumnDef="can_Jabo">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Can. Jabonados</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.can_Jabo ?? '' }}</td>
+      </ng-container>
 
-    <!-- Cantidad Jabonados -->
-    <ng-container matColumnDef="can_Jabo">
-      <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Can. Jabonados</th>
-      <td mat-cell *matCellDef="let r" class="centrado">{{ r.can_Jabo ?? '' }}</td>
-    </ng-container>
-
-    <!-- PH JABONADO -->
-    <ng-container matColumnDef="ph_Jab">
+      <!-- PH JABONADO -->
+      <!-- <ng-container matColumnDef="ph_Jab">
         <th mat-header-cell *matHeaderCellDef class="centradoCabecera">PH JABONADO</th>
         <td mat-cell *matCellDef="let r" class="centrado">
-        <a mat-button *ngIf="r.ph_Jab == 0" (click)="ingresarPH(r)" class="Boton">AGREGAR</a>
-        <a mat-button *ngIf="r.ph_Jab != 0" (click)="ingresarPH(r)" class="Boton">{{ r.ph_Jab }}</a> 
+          <a mat-button *ngIf="r.ph_Jab == 0" (click)="ingresarPH(r)" class="Boton">AGREGAR</a>
+          <a mat-button *ngIf="r.ph_Jab != 0" (click)="ingresarPH(r)" class="Boton">{{ r.ph_Jab }}</a>
         </td>
-    </ng-container>
+      </ng-container> -->
 
-    <!-- Renderizado -->
-    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-    <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
-</table>
-<div *ngIf="dataSource.data.length === 0" class="mensaje-vacio">
+      <ng-container *ngFor="let colIndex of getPhColumns()" [matColumnDef]="colIndex">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">
+          Ph Jab {{ colIndex.replace('ph_Jab','') }}
+        </th>
+        <td mat-cell *matCellDef="let r" class="centrado">
+          <ng-container 
+          *ngIf="+colIndex.replace('ph_Jab','') <= r.can_Jabo">
+            <a mat-button 
+            *ngIf="!r.ph_Jab[+colIndex.replace('ph_Jab','') - 1]"
+            (click)="ingresarPH(r, +colIndex.replace('ph_Jab',''))" 
+            class="Boton">AGREGAR</a>
+
+            <a mat-button 
+            *ngIf="r.ph_Jab[+colIndex.replace('ph_Jab','') - 1]"
+            (click)="ingresarPH(r, +colIndex.replace('ph_Jab',''))" 
+            class="Boton">
+            {{ r.ph_Jab[+colIndex.replace('ph_Jab','') - 1] }}
+            </a>
+
+          </ng-container>
+        </td>
+      </ng-container>
+
+
+
+      <!-- Renderizado -->
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+    </table>
+    <!-- Paginador -->
+    <div class="paginador-container">
+      <mat-paginator [pageSize]="20" showFirstLastButtons>
+      </mat-paginator>
+    </div>
+  </div>
+
+  <div *ngIf="dataSource.data.length === 0" class="mensaje-vacio">
     No hay items disponibles.
-</div>
+  </div>
 </div>

@@ -30,7 +30,8 @@
 }
 
 .tabla-dosificacion {
-  width: 100%;
+  // width: 100%;
+  width: 1200px;
   min-width: 800px;
 
   th.mat-header-cell,
@@ -84,4 +85,32 @@
 .centrado{
     text-align: center;
     justify-content: center;
+}
+
+.col-achi {
+  width: 70px;
+  min-width: 70px;
+  max-width: 80px;
+}
+
+.col-achi2{
+  width: 120px;
+  min-width: 120px;
+  max-width: 130px;
+}
+
+.titulo-con-botones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.botones-extra {
+    display: flex;
+    gap: 10px;
+}
+
+.botones-extra button {
+    min-width: 100px;
 }

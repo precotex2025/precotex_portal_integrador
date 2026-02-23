@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Optional, Inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogAgregarOpcionComponent } from './dialog-agregar-opcion/dialog-agregar-opcion.component';
 import { DialogInfoSdcComponent } from './dialog-info-sdc/dialog-info-sdc.component';
@@ -10,7 +10,9 @@ import { MatSort } from '@angular/material/sort';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import { response } from 'express';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../authentication/auth.service';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 interface Formulacion {
   numeroColumna: number;
@@ -46,15 +48,22 @@ interface grillaDesplegable {
   fec_Entrega: string
 }
 
+interface data {
+  corr_CartaR: number,
+  secR: number
+}
+
 @Component({
   selector: 'app-lab-hoja-formulacion',
   templateUrl: './lab-hoja-formulacion.component.html',
   styleUrl: './lab-hoja-formulacion.component.scss'
 })
 export class LabHojaFormulacionComponent implements OnInit{
+  usuario: string | null = null;
   Corr_Carta_Remover: number = 0
   Sec_Remover: number = 0
   TituloEstado: string = ''
+  
   @ViewChild(MatSort) sort!: MatSort;   
   constructor(
     private dialog: MatDialog,
@@ -62,12 +71,40 @@ export class LabHojaFormulacionComponent implements OnInit{
     private SpinnerService: NgxSpinnerService,
     private toastr: ToastrService,
     private router: Router,
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: data,
   ){}
   
   ngOnInit() {
+
+    if (this.authService.isLoggedIn()) { 
+      console.log('Usuario activo: -------', this.authService.getUsuario()); 
+    } else { 
+      this.router.navigate(['/login']); 
+    }
     this.onLlenarDesplegable();
+    //this.onGetParams();
   }
 
+  onGetParams(): void {
+    this.route.queryParams.subscribe(params => {
+      this.data = {
+        corr_CartaR: params['corr_CartaE'] !== undefined ? Number(params['corr_CartaE']) : 0,
+        secR: params['secE'] !== undefined ? Number(params['secE']) : 0,
+      };
+    })
+    if (this.data.corr_CartaR !== 0 && this.data.secR !== 0) {
+      const encontrada = this.recetas.find(r => r.corr_Carta === this.data.corr_CartaR && r.sec === this.data.secR);
+      if (encontrada) {
+        this.recetaSeleccionada = encontrada;
+        this.Corr_Carta_Remover = encontrada.corr_Carta;
+        this.Sec_Remover = encontrada.sec;
+        this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
+        this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover);
+      }
+    }
+  }
 
   recetaSeleccionadaDesplegable(){
     const guardada = localStorage.getItem('recetaSeleccionada');
@@ -82,10 +119,12 @@ export class LabHojaFormulacionComponent implements OnInit{
       this.recetaSeleccionada = this.recetas[0]; 
     }
   }
-  showRecetas = true;
+  
+  showRecetas = false;
   recetas: Array<receta> = [];
   recetaSeleccionada!: receta | undefined;
   grillaExpandible: Array <grillaDesplegable> = [];
+
   seleccionarReceta(receta: receta) {
     this.recetaSeleccionada = receta;
     this.Corr_Carta_Remover = receta.corr_Carta;
@@ -104,9 +143,15 @@ export class LabHojaFormulacionComponent implements OnInit{
       next:(response: any) => {
         if(response.success){
           if(response.totalElements > 0){
-            console.log('Entrando al metodo');
+            //console.log('Entrando al metodo');
             this.recetas = response.elements;
-            this.recetaSeleccionadaDesplegable();            
+
+            this.onGetParams();
+
+            if (!this.recetaSeleccionada) { 
+              this.recetaSeleccionadaDesplegable(); 
+            }
+
             this.SpinnerService.hide();
           }else{
             this.SpinnerService.hide();
@@ -152,8 +197,9 @@ export class LabHojaFormulacionComponent implements OnInit{
         if(result.isConfirmed){  
 
           for (const item of this.indicesSeleccionados) {
+            console.log('EL ITEM ES:-----------------',item);
             this.EntregarRecetaCabeceraColorante(this.Corr_Carta_Remover, this.Sec_Remover, '02');
-            this.EntregarRecetaColorante(this.Corr_Carta_Remover, this.Sec_Remover, item,'02');
+            this.EntregarRecetaColorante(this.Corr_Carta_Remover, this.Sec_Remover, item, '02');
 
           }
         }
@@ -167,7 +213,6 @@ export class LabHojaFormulacionComponent implements OnInit{
       Correlativo: index,
       Flg_Est_Autolab: '05'
     }
-    console.log('la informacion enviada es: ', data);
 
     this.LabColTrabajoService.patchActualizarEstadoDeColorTricomiaAutolab(data).subscribe({
       next: (response: any) => {
@@ -189,7 +234,7 @@ export class LabHojaFormulacionComponent implements OnInit{
 
   onRemoverDeHojaFormulacion(){
       this.TituloEstado = '¿Remover Receta?'
-      this.ActualizarEstado(this.TituloEstado, this.Corr_Carta_Remover, this.Sec_Remover, '01');
+      this.ActualizarEstado(this.TituloEstado, this.Corr_Carta_Remover, this.Sec_Remover, '09');
   }
 
   ActualizarEstado(titulo: string, corr_carta: number, sec: number, flg_est_lab: string){
@@ -218,14 +263,32 @@ export class LabHojaFormulacionComponent implements OnInit{
             next: (response: any) => {
               if(response.success){
                 if(response.codeResult == 200){
+                  // this.onLlenarDesplegable();
+                  // this.toastr.success(response.message, '', {
+                  //   timeOut: 2500,
+                  // });
                   this.onLlenarDesplegable();
-                  this.toastr.success(response.message, '', {
-                    timeOut: 2500,
-                  });
-                }else if(response.codeResult == 201){
-                  this.toastr.info(response.message, '', {
-                    timeOut: 2500,
-                  });
+                  const indexActual = this.recetas.findIndex(r => r.corr_Carta === this.Corr_Carta_Remover && r.sec === this.Sec_Remover); 
+                  if (indexActual !== -1) { 
+                    this.recetas.splice(indexActual, 1); 
+                    let nuevaSeleccion: any = null; 
+                    if (this.recetas[indexActual]) { 
+                      nuevaSeleccion = this.recetas[indexActual]; 
+                    }else if (this.recetas[indexActual - 1]) { 
+                      nuevaSeleccion = this.recetas[indexActual - 1]; 
+                    } if (nuevaSeleccion) { 
+                      this.recetaSeleccionada = nuevaSeleccion; 
+                      this.Corr_Carta_Remover = nuevaSeleccion.corr_Carta;
+                      this.Sec_Remover = nuevaSeleccion.sec; 
+                      this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover); 
+                      this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover); 
+                    } else { 
+                      this.recetaSeleccionada = undefined; 
+                      this.Corr_Carta_Remover = 0; 
+                      this.Sec_Remover = 0; 
+                      this.toastr.warning('No quedan recetas disponibles', 'Advertencia', { timeOut: 3000 }); 
+                    }
+                  }
                 }
                 this.SpinnerService.hide();
               }else{
@@ -295,9 +358,11 @@ export class LabHojaFormulacionComponent implements OnInit{
       "Correlativo": sCorrelativo,
       "Flg_Est_Lab": sFlg_Est_Lab
     };
-    console.log(sCorr_Carta);
-    console.log(sSec);
-    console.log(sFlg_Est_Lab);
+
+    // console.log('------------------', data);
+    // console.log(sCorr_Carta);
+    // console.log(sSec);
+    // console.log(sFlg_Est_Lab);
     this.SpinnerService.show();
     this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(data).subscribe({
       next: (response: any) => {
@@ -371,6 +436,7 @@ export class LabHojaFormulacionComponent implements OnInit{
   onAgregarOpcion(){
 
     let correlativo: number =  this.getCorrelativoMayor() ;
+    console.log('el correlativo cuando no hay columnas es: ', correlativo);
     if(correlativo === -Infinity){
       correlativo = 0;
     }
@@ -380,15 +446,17 @@ export class LabHojaFormulacionComponent implements OnInit{
           accionR: 'Insertar',
           Num_SDC: this.Corr_Carta_Remover,
           Num_Sec: this.Sec_Remover,
-          Correlativo: correlativo
+          Correlativo: correlativo,
+          CorrelativoAnterior: 0
       }}
     )    
   }
 
   onInformeSDC(){
     let dialogref = this.dialog.open(DialogInfoSdcComponent,{
-      width:'500px',
-      height: '700px',
+      width:'800px',
+      height: '500px',
+      autoFocus: false,
       disableClose: false,
       panelClass: 'my-class',
       data:{
@@ -415,18 +483,16 @@ onActualizarHojaFormulacion(): void {
 }
 
 onCargarGrillaHojaFormulacion(Corr_Carta: number, Sec: number) {
-  console.log('---ENTRA A CARGAR LA GRILLA DE LA HOJA DE FORMULACION---');
-  console.log('El código de carta es: ', Corr_Carta);
-  console.log('La secuencia es: ', Sec);
-
+  this.puedeEntregar = false;
   this.formulaciones = [];
 
   this.LabColTrabajoService.getCargarGridHojaFormulacion(Corr_Carta, Sec).subscribe({
     next: (response: any) => {
       const correlativosMap = new Map<number, any>();
-
+      console.log('--------------------------', response.elements);
       response.elements.forEach((element: any) => {
-        const estado = element.flg_Est_Autolab;
+        const estado = element.flg_Est_Lab;
+        const estadoAutoLab = element.flg_Est_Autolab;
 
         element.colorantes.forEach((c: any) => {
           const correlativo = c.correlativo;
@@ -434,7 +500,7 @@ onCargarGrillaHojaFormulacion(Corr_Carta: number, Sec: number) {
           if (!correlativosMap.has(correlativo)) {
             correlativosMap.set(correlativo, {
               numeroColumna: correlativo,
-              seleccionado: false,
+              seleccionado: estado === '02' ? true : false,
               colorantes: [],
               procedencia: element.procedencia,
               sod_Gr: element.sod_Gr,
@@ -445,7 +511,8 @@ onCargarGrillaHojaFormulacion(Corr_Carta: number, Sec: number) {
               can_Jabo: element.can_Jabo,
               acidulado: element.acidulado,
               pes_Mue: element.pes_Mue,
-              flg_Est_Autolab: estado ?? null
+              flg_Est_Lab: estado ?? null,
+              flg_Est_Autolab: estadoAutoLab ?? null
             });
           }
           
@@ -460,22 +527,23 @@ onCargarGrillaHojaFormulacion(Corr_Carta: number, Sec: number) {
         });
       });
       
-
+      correlativosMap.forEach(f => {
+        f.colorantes.sort((a: any, b: any) => a.col_Des.localeCompare(b.col_Des));
+      });    
+      
       this.formulaciones = Array.from(correlativosMap.values())
         .sort((a, b) => Number(b.numeroColumna) - Number(a.numeroColumna));
-        console.log('Formulaciones generadas:', this.formulaciones);
       console.log('Formulaciones generadas:', this.formulaciones.map(f => ({
                   correlativo: f.numeroColumna,
                   estado: f.flg_Est_Autolab
                 })));
 
-
-      console.log('Colorantes por correlativo:');
+            
       this.formulaciones.forEach(f => {
         console.log(`Columna ${f.numeroColumna}:`, f.colorantes.map((c: any) => ({
           codigo: c.col_Cod,
           nombre: c.col_Des,
-          valor: c.por_Ini
+          valor: c.por_Fin
         })));
       });
 
@@ -489,36 +557,6 @@ onCargarGrillaHojaFormulacion(Corr_Carta: number, Sec: number) {
   });
 }
 
-
-
-
-
-// generarFilasDesdeColorantes(): void {
-//   const coloranteMap = new Map<string, string>();
-
-//   this.formulaciones.forEach(f => {
-//     f.colorantes.forEach((c: any) => {
-//       if (c.col_Cod && c.col_Des) {
-//         coloranteMap.set(c.col_Cod, c.col_Des);
-//       }
-//     });
-//   });
-
-//   this.filas = [
-//     { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
-//     { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
-//     ...Array.from(coloranteMap.entries()).map(([codigo, nombre]) => ({
-//       etiqueta: nombre,
-//       key: codigo,
-//       tipo: 'numero'
-//     })),
-//     { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
-//     { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
-//     { etiqueta: 'FIJADO', key: 'fijado', tipo: 'texto' },
-//     { etiqueta: 'CANTIDAD JABONADO', key: 'can_Jabo', tipo: 'numero' },
-//     { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' }
-//   ];
-// }
 generarFilasDesdeColorantes(): void {
   const coloranteMap = new Map<string, string>();
   const auxiliaresMap = new Map<string, string>();
@@ -547,6 +585,10 @@ generarFilasDesdeColorantes(): void {
       tipo: 'numero'
     })),
 
+    //SUMA DEL VALOR DE LOS COLORANTES
+    { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total'},
+
+
     //LUEGO LOS AUXILIARES SAL Y SULFATO
     ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
       etiqueta: nombre,
@@ -557,17 +599,21 @@ generarFilasDesdeColorantes(): void {
     //DESPUES COMPLETAMOS LA INFO
     { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
     { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
-    { etiqueta: 'FIJADO', key: 'fijado', tipo: 'texto' },
+    { etiqueta: 'TIPO DESCARGA', key: 'fijado', tipo: 'texto' },
     { etiqueta: 'CANTIDAD JABONADO', key: 'can_Jabo', tipo: 'numero' },
     { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' }
   ];
 }
 
-
+  getSumaTotalColorantes(f: any): number {
+  return f.colorantes
+    .filter((c: any) => c.por_Fin != null && !c.col_Des.toUpperCase().includes('SAL') && !c.col_Des.toUpperCase().includes('SULFATO'))
+    .reduce((acc: number, c: any) => acc + Number(c.por_Fin), 0);
+  }
 
   getValorColorantePorCodigo(colorantes: any[], cod: string): number | null {  
     const c = colorantes.find(c => c.col_Cod?.trim().toUpperCase() === cod.trim().toUpperCase());
-    return c ? c.por_Ini : null;
+    return c ? c.por_Fin : null;
   }
   
   getValor(formulacion: Formulacion, key: string): any {
@@ -592,52 +638,94 @@ generarFilasDesdeColorantes(): void {
     });
   }
 
-  copiarFormulacion(index: number): void {
-    // const original = this.formulaciones[index];
+  // copiarFormulacion(index: number): void {
+  //   const original = this.formulaciones[index];
 
-    // //BUSCAMOS EL INDEX MAYOR
-    // const maxNumero = Math.max(...this.formulaciones.map(f => f.numeroColumna ?? 0));
+  //   //BUSCAMOS EL INDEX MAYOR
+  //   const maxNumero = Math.max(...this.formulaciones.map(f => f.numeroColumna ?? 0));
 
-    // //COPIAR DATOS
-    // const copia = {
-    //   ...original,
-    //   numeroColumna: maxNumero + 1,
-    // };
+  //   // //COPIAR DATOS
+  //   // const copia = {
+  //   //   ...original,
+  //   //   numeroColumna: maxNumero + 1,
+  //   // };
+  //   const numeroColumna = maxNumero + 1;
 
-    // //BUSQUEDA DEL INDEX MAYOR
-    // const destinoIndex = this.formulaciones.findIndex(f => f.numeroColumna === maxNumero);
+  //   // //BUSQUEDA DEL INDEX MAYOR
+  //   // const destinoIndex = this.formulaciones.findIndex(f => f.numeroColumna === maxNumero);
 
-    // //PEGAR DATOS COPIADOS
-    // this.formulaciones.splice(destinoIndex, 0, copia);
+  //   // //PEGAR DATOS COPIADOS
+  //   // this.formulaciones.splice(destinoIndex, 0, copia);
 
-    // const data = {
-    //       corr_Carta: this.Corr_Carta_Remover,
-    //       sec: this.Sec_Remover,
-    //       correlativo: index
-    //     }
+  //   // const data = {
+  //   //       corr_Carta: this.Corr_Carta_Remover,
+  //   //       sec: this.Sec_Remover,
+  //   //       correlativo: index
+  //   //     }
 
-    // this.LabColTrabajoService.postCopiarOpcionColorante(data).subscribe({
-    //   next: (response: any) =>{
-    //     this.onActualizarHojaFormulacion();
-    //   }
-    // });
+  //   // this.LabColTrabajoService.postCopiarOpcionColorante(data).subscribe({
+  //   //   next: (response: any) =>{
+  //   //     this.onActualizarHojaFormulacion();
+  //   //   }
+  //   // });
 
-    this.router.navigate(['AgregarOpcion'], 
-      { queryParams: {
-          accionR: 'Copiar',
-          Num_SDC: this.Corr_Carta_Remover,
-          Num_Sec: this.Sec_Remover,
-          Correlativo: index
-      }}
-    )
-  }
+  //   console.log('El nuevo correlativo para la copia es: ', numeroColumna);
+  //   console.log('El correlativo original para la copia es: ', original.numeroColumna);
+  //   this.router.navigate(['AgregarOpcion'], 
+  //     { queryParams: {
+  //         accionR: 'Copiar',
+  //         Num_SDC: this.Corr_Carta_Remover,
+  //         Num_Sec: this.Sec_Remover,
+  //         Correlativo: numeroColumna,
+  //         CorrelativoAnterior: original.numeroColumna
+  //     }}
+  //   )
+  // }
 
-  borrarFormulacion(index: number): void {
-    this.LabColTrabajoService.deleteEliminarOpcionColorante(this.Corr_Carta_Remover, this.Sec_Remover, index).subscribe({
-      next: (response: any) => {
-        this.onActualizarHojaFormulacion();
-      }
-    });
+  copiarFormulacion(correlativoAnterior: number): void {
+  const original = this.formulaciones.find(f => f.numeroColumna === correlativoAnterior);
+  const maxNumero = Math.max(...this.formulaciones.map(f => f.numeroColumna ?? 0));
+  const numeroColumna = maxNumero + 1;
+  this.router.navigate(['AgregarOpcion'], {
+    queryParams: {
+      accionR: 'Copiar',
+      Num_SDC: this.Corr_Carta_Remover,
+      Num_Sec: this.Sec_Remover,
+      Correlativo: numeroColumna,
+      CorrelativoAnterior: correlativoAnterior
+    }
+  });
+}
+
+
+  borrarFormulacion(index: number, f:any): void {
+    
+    if(f.flg_Est_Autolab !== null){
+            this.toastr.warning('No se puede eliminar una corrida que ya fue enviada a Autolab', '', {
+              timeOut: 2500,
+            });
+            return;
+          }
+    
+    Swal.fire({
+        title: '¿Desea eliminar la corrida?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor:'#3085d6',
+        cancelButtonColor:'#d33',
+        confirmButtonText:'Si',
+        cancelButtonText: 'No'
+      }).then((result) =>{
+        if(result.isConfirmed){  
+
+          this.LabColTrabajoService.deleteEliminarOpcionColorante(this.Corr_Carta_Remover, this.Sec_Remover, index).subscribe({
+            next: (response: any) => {
+              this.onActualizarHojaFormulacion();
+            }
+          });
+        }
+      })
+    
   }
 
   getValorColorante(colorante: any, key: string): any {
@@ -659,7 +747,7 @@ generarFilasDesdeColorantes(): void {
       this.indicesSeleccionados.push(index);
     }
 
-    this.puedeEntregar = this.indicesSeleccionados.length >= 3;
+    this.puedeEntregar = this.indicesSeleccionados.length > 0;
   } 
 
 }

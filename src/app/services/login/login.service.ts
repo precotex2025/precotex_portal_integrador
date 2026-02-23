@@ -25,11 +25,18 @@ export class LoginService {
     return this.http.get(this.baseUrlTinto + 'TxLogin/getGetUsuarioHabilitado', {headers, params});
   }
 
+  // getUsuarioWeb(Cod_Usuario: string){
+  //   const headers = this.Header;
+  //   let params = new HttpParams();
+  //   params = params.append('Cod_Usuario', Cod_Usuario);
+  //   return this.http.get(this.baseUrlTinto + 'TxLogin/getGetUsuarioWeb', {headers, params});
+  // }
+
   getUsuarioWeb(Cod_Usuario: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Cod_Usuario', Cod_Usuario);
-    return this.http.get(this.baseUrlTinto + 'TxLogin/getGetUsuarioWeb', {headers, params});
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getGetUsuarioWeb', {headers, params});
   }
 
 }

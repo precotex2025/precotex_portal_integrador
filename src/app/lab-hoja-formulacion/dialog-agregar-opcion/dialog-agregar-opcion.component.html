@@ -1,24 +1,8 @@
 <div class="agregar-opcion-container">
   <div class="selector-botones-wrapper">
-    <div class="selector-agregar">
-      <mat-form-field appearance="fill">
-        <mat-label>Agregar colorante</mat-label>
-        <input type="text" matInput [formControl]="coloranteControl" 
-        [matAutocomplete]="auto"
-        
-        #inputColorante>
-        <mat-autocomplete #auto="matAutocomplete" 
-        [displayWith]="mostrarNombre" 
-        
-        (optionSelected)="onColoranteSeleccionado($event)"
-        >
-          <mat-option *ngFor="let c of colorantesFiltrados" [value]="c">
-            {{ c.nombre }}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-    </div>
+    
 
+    <!-- SELECTOR FAMILIA -->
     <div class="tipo-formulacion-wrapper">
       <mat-form-field appearance="fill">
         <mat-label>Tipo de Proceso</mat-label>
@@ -29,6 +13,27 @@
         </mat-select>
       </mat-form-field>
     </div>
+    
+    <!-- SELECTOR COLORANTES -->
+    <div class="selector-agregar">
+      <mat-form-field appearance="fill">
+        <mat-label>Agregar colorante</mat-label>
+        <input type="text" matInput [formControl]="coloranteControl" 
+        [matAutocomplete]="auto"
+        [autofocus]="false"
+        #inputColorante>
+        <mat-autocomplete #auto="matAutocomplete" 
+        [displayWith]="mostrarNombre" 
+        (optionSelected)="onColoranteSeleccionado($event)"
+        >
+          <mat-option *ngFor="let c of colorantesFiltrados" [value]="c">
+            {{ c.nombre }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    
 
 
 
@@ -61,9 +66,9 @@
                 step="0.01"/>
               </div>
               <div class="colorante-cell ajuste">
-              <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.01)">−</button>
+              <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.5); actualizarTotalFinal()">−</button>
               <input type="number" [(ngModel)]="colorante.ajuste" step="0.01" (ngModelChange)="actualizarTotalFinal()" />
-              <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.01)">+</button>
+              <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.5); actualizarTotalFinal()" >+</button>
               </div>
               <div class="colorante-cell final">{{ calcularFinal(colorante).toFixed(5) }}</div>
               <div class="colorante-cell accion">
@@ -131,18 +136,26 @@
       <h3>Baño - Peso - Volumen</h3>
       <mat-form-field appearance="fill">
         <mat-label>Relación baño</mat-label>
-        <input matInput type="number" [(ngModel)]="datos.relacionBano" [disabled]="!cambiosHabilitados"/>
+        <input matInput type="number" [(ngModel)]="datos.relacionBano" step="1" min="0" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Peso de muestra</mat-label>
-        <input matInput type="number" [(ngModel)]="datos.pesoMuestra" [disabled]="!cambiosHabilitados"/>
+        <input matInput type="number" [(ngModel)]="datos.pesoMuestra" (ngModelChange)="calcularRelacionBano()" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Volumen</mat-label>
-        <input matInput type="number" [(ngModel)]="datos.volumen" [disabled]="!cambiosHabilitados"/>
+        <input matInput type="number" [(ngModel)]="datos.volumen" (ngModelChange)="calcularRelacionBano()" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
     </section>
   </div>
 </div>
+
+<!-- Spinner global -->
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="medium" type="custom" [fullScreen]="true">
+  <div class="spinner-wrapper">
+    <p class="spinner-text">ENVIANDO INFORMACIÓN</p>
+    <div class="loader"></div>
+  </div>
+</ngx-spinner>

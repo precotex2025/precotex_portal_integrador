@@ -1,0 +1,200 @@
+<div class="componentes-extra-container">
+  <div class="header">
+    <h2>Componentes Extra</h2>
+    <button mat-raised-button color="primary" (click)="onNuevo()">
+      <mat-icon>add</mat-icon> Nuevo 
+    </button>
+    <button mat-raised-button color="warn" class="btn-cerrar" (click)="onCerrar()"> CERRAR </button>
+  </div>
+
+  <div class="tabla-responsive">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2" matSort>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button color="accent" (click)="onEditar(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="onEliminar(row)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- Pro_Cod -->
+      <ng-container matColumnDef="Pro_Cod">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Pro_Cod</th>
+        <td mat-cell *matCellDef="let row">{{ row.pro_Cod }}</td>
+      </ng-container>
+
+      <!-- Com_Cod_Con -->
+      <ng-container matColumnDef="Com_Cod_Con">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Con</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Con }}</td>
+      </ng-container>
+
+      <!-- Com_Ran_Ini -->
+      <ng-container matColumnDef="Com_Ran_Ini">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Ran_Ini</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Ran_Ini }}</td>
+      </ng-container>
+
+      <!-- Com_Ran_Fin -->
+      <ng-container matColumnDef="Com_Ran_Fin">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Ran_Fin</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Ran_Fin }}</td>
+      </ng-container>
+
+      <!-- Extras 1–16 -->
+      <ng-container matColumnDef="Com_Cod_Extra1">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra1</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra1 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra1">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra1</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra1 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra2">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra2</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra2 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra2">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra2</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra2 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra3">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra3</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra3 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra3">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra3</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra3 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra4">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra4</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra4 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra4">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra4</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra4 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra5">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra5</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra5 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra5">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra5</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra5 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra6">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra6</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra6 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra6">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra6</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra6 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra7">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra7</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra7 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra7">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra7</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra7 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra8">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra8</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra8 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra8">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra8</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra8 }}</td>
+      </ng-container>
+      
+      <ng-container matColumnDef="Com_Cod_Extra9">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra9</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra9 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra9">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra9</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra9 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra10">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra10</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra10 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra10">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra10</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra10 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra11">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra11</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra11 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra11">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra11</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra11 }}</td>
+      </ng-container>
+      
+      <ng-container matColumnDef="Com_Cod_Extra12">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra12</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra12 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra12">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra12</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra12 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra13">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra13</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra13 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra13">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra13</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra13 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra14">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra14</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra14 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra14">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra14</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra14 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra15">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra15</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra15 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra15">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra15</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra15 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="Com_Cod_Extra16">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Cod_Extra16</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Cod_Extra16 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="Com_Can_Extra16">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Com_Can_Extra16</th>
+        <td mat-cell *matCellDef="let row">{{ row.com_Can_Extra16 }}</td>
+      </ng-container>
+
+      <!-- Filas -->
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+    </table>
+  </div>
+</div>

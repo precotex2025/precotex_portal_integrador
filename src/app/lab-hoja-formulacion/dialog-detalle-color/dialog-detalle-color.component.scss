@@ -67,11 +67,58 @@
       font-weight: 600;
       margin-bottom: 0.5rem;
       color: #2c3e50;
+      text-align: center;
     }
 
-    .receta-table {
+    .receta-table1 {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      background: #f9f9f9;
+      padding: 0.5rem;
+      border-radius: 6px;
+
+      .header {
+        font-weight: 600;
+        background: #e0e0e0;
+        padding: 0.5rem;
+        text-align: center;
+      }
+
+      .cell {
+        background: #fff;
+        padding: 0.5rem;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+      }
+    }
+
+    .receta-table2 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      background: #f9f9f9;
+      padding: 0.5rem;
+      border-radius: 6px;
+
+      .header {
+        font-weight: 600;
+        background: #e0e0e0;
+        padding: 0.5rem;
+        text-align: center;
+      }
+
+      .cell {
+        background: #fff;
+        padding: 0.5rem;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+      }
+    }
+
+    .receta-table3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 0.5rem;
       background: #f9f9f9;
       padding: 0.5rem;
@@ -179,6 +226,11 @@
   width: 6px;
   height: 6px;
   animation: animloader1 6s linear infinite;
+}
+
+.rojo {
+  color: red;
+  font-weight: bold;
 }
 
 @keyframes animloader {

@@ -2,7 +2,7 @@ import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe, HashLocationStrategy, LocationStrategy } from '@angular/common';
-import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { MatDateFormats, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -13,6 +13,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
+import { DateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatMomentDateModule, MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -43,6 +45,12 @@ import { DialogAgregarPhComponent } from './lab-dosificacion/dialog-agregar-ph/d
 import { DialogJabonadosComponent } from './dialog-jabonados/dialog-jabonados.component';
 import { NgxSpinner, NgxSpinnerModule } from 'ngx-spinner';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { LabReportComponent } from './lab-report/lab-report.component';
+import { MantenimientosLstComponent } from './mantenimientos/mantenimientos-lst/mantenimientos-lst.component';
+import { DetalleJabFijComponent } from './mantenimientos/mantenimientos-lst/detalle-jab-fij/detalle-jab-fij.component';
+import { DetalleCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/detalle-comp-extra.component';
+import { DialogNuevoCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/dialog-nuevo-comp-extra/dialog-nuevo-comp-extra.component';
+
 
 @NgModule({
   declarations: [
@@ -58,7 +66,12 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     LabDispAutolabComponent,
     LabDosificacionComponent,
     DialogAgregarPhComponent,
-    DialogJabonadosComponent
+    DialogJabonadosComponent,
+    LabReportComponent,
+    MantenimientosLstComponent,
+    DetalleJabFijComponent,
+    DetalleCompExtraComponent,
+    DialogNuevoCompExtraComponent
   ],
   imports: [
     BrowserModule,
@@ -80,6 +93,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     MatTabsModule,
     MatPaginatorModule,
     NgxSpinnerModule,
+    MatMomentDateModule,
+    MatTooltipModule,
     ToastrModule.forRoot({
       timeOut: 10000,
       positionClass: 'toast-bottom-right',
@@ -93,10 +108,11 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     }),
   ],
   providers: [
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'es-Es' },
     { provide: LocationStrategy, useClass: HashLocationStrategy},
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true},
     { provide: MatPaginatorIntl, useValue: getCustomPaginatorIntl() },
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS] },
     DatePipe,
     provideClientHydration(),
     provideAnimationsAsync(),

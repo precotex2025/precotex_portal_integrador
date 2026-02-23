@@ -16,7 +16,7 @@ export class LabColTrabajoService {
   });
   constructor(private http: HttpClient) { }
 
-  getListaSDCPorEstado(estadoSeleccionado: string, Fec_Ini: any, Fec_Fin: any){
+  getListaSDCPorEstado(estadoSeleccionado: string, Fec_Ini: any, Fec_Fin: any, usuario: string){
 
     if(!_moment(Fec_Ini).isValid())
     { Fec_Ini = ''; }
@@ -34,6 +34,7 @@ export class LabColTrabajoService {
     params = params.append('Flg_Est_Lab', estadoSeleccionado);
     params = params.append('Fec_Ini', Fec_Ini);
     params = params.append('Fec_Fin', Fec_Fin);
+    params = params.append('Usr_Cod', usuario);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListaSDCPorEstado', {headers, params})
   }
 
@@ -168,6 +169,75 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarColoranteParaDetalle', { headers, params })
   }
 
+  getListarIngresoManual(Corr_Carta: number, Sec: number, Correlativo: number){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Corr_Carta', Corr_Carta);
+    params = params.append('Sec', Sec);
+    params = params.append('Correlativo', Correlativo);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarIngresoManual', { headers, params })
+  }
+
+  getCargarDatosReporte(Corr_Carta: number, Sec: number, Correlativo: number){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Corr_Carta', Corr_Carta);
+    params = params.append('Sec', Sec);
+    params = params.append('Correlativo', Correlativo);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarDatosReporte', { headers, params })
+  }
+
+  getListarJabonadoMantenimiento() {
+    const headers = this.Header;
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarJabonadoMantenimiento', { headers })
+  }
+
+  getListarJabonadosDetalleMantenimiento(Jab_Id: number){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Jab_Id', Jab_Id)
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarJabonadosDetalleMantenimiento', { headers, params })
+  }
+
+  getListarFijadosMantenimiento() {
+    const headers = this.Header;
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarFijadosMantenimiento', { headers })
+  }
+
+  getListarFijadosDetalleMantenimiento(Fij_Id: number){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Fij_Id', Fij_Id);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarFijadosDetalleMantenimiento', { headers, params })
+  }
+
+  getListarProcesoValor(Pro_Cod: string) {
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Pro_Cod', Pro_Cod);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarProcesoValor', { headers, params })
+  }
+
+  getListarCurvas(Pro_Cod: string) {
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Pro_Cod', Pro_Cod);
+    return this.http.get(this.baseUrlTinto + 'LbColatrabajo/getListarCurvas', { headers, params })
+  }
+  
+  getListarJabonadoExcluido() {
+    const headers = this.Header;
+    return this.http.get(this.baseUrlTinto + 'LbColatrabajo/getListarJabonadoExcluido', { headers })
+  }
+
+  getObtenerTrio(Corr_Carta: number, Sec: number) {
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Corr_Carta', Corr_Carta);
+    params = params.append('Sec', Sec);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerTrio', { headers, params })
+  }
+
   postRegistrarDetalleColorSDC(data: any){
     const headers = this.Header;
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarDetalleColorSDC', data, { headers })
@@ -191,6 +261,36 @@ export class LabColTrabajoService {
   postLlenarTextoFinal(data: any){
     const headers = this.Header;
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postLlenarTextoFinal', data, { headers })
+  }
+
+  postRegistrarJabonado(data: any){
+    const headers = this.Header;
+    return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarJabonado', data, { headers })
+  }
+  
+  postRegistrarFijado(data: any){
+    const headers = this.Header;
+    return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarFijado', data, { headers })
+  }
+
+  postRegistrarJabonadoDetalle(data: any){
+    const headers = this.Header;
+    return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarJabonadoDetalle', data, { headers })
+  }
+
+  postRegistrarFijadoDetalle(data: any){
+    const headers = this.Header;
+    return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarFijadoDetalle', data, { headers })
+  }
+
+  postRegistrarProceso(data: any){
+    const headers = this.Header;
+    return this.http.post(this.baseUrlTinto+ 'LbColaTrabajo/postRegistrarProceso', data, { headers })
+  }
+
+  postRegistrarProcesoValor(data: any){
+    const headers = this.Header;
+    return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarProcesoValor', data, { headers })
   }
 
   patchActualizarEstadoDeColor(data: any){
@@ -226,6 +326,71 @@ export class LabColTrabajoService {
   patchEnviarAutolab(data: any){
     const headers = this.Header;
     return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchEnviarAutolab', data, { headers })
+  }
+
+  patchModificarJabonado(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchModificarJabonado', data, { headers })
+  }
+
+  patchModificarFijado(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchModificarFijado', data, { headers })
+  }
+
+  patchDeshabilitarJabonado(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchDeshabilitarJabonado', data, { headers })
+  }
+
+  patchDeshabilitarFijado(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchDeshabilitarFijado', data, { headers })
+  }
+
+  patchModificarJabonadoDetalle(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchModificarJabonadoDetalle', data, { headers })
+  }
+
+  patchModificarFijadoDetalle(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchModificarFijadoDetalle', data, { headers })
+  }
+
+  patchDeshabilitarJabonadoDetalle(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchDeshabilitarJabonadoDetalle', data, { headers })
+  }
+
+  patchDeshabilitarFijadoDetalle(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchDeshabilitarFijadoDetalle', data, { headers })
+  }
+
+  patchModificarProceso(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchModificarProceso', data, { headers })
+  }
+
+  patchDeshabilitarProceso(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchDeshabilitarProceso', data, { headers })
+  }
+
+  patchModificarProcesoValor(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchModificarProcesoValor', data, { headers })
+  }
+
+  patchDeshabilitarProcesoValor(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchDeshabilitarProcesoValor', data, { headers })
+  }
+
+  patchProcesoAhiba(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchProcesoAhiba', data, { headers })
   }
 
   deleteEliminarOpcionColorante(Corr_Carta: number, Sec: number, Correlativo: number) {

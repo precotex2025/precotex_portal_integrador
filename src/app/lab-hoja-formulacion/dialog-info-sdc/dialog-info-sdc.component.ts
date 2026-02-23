@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Inject, Optional } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject, Optional, AfterViewInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -25,7 +25,7 @@ interface informacionSDC{
   templateUrl: './dialog-info-sdc.component.html',
   styleUrl: './dialog-info-sdc.component.scss'
 })
-export class DialogInfoSdcComponent implements OnInit{
+export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
 
   constructor(
     private LabColTrabService: LabColTrabajoService, 
@@ -35,6 +35,13 @@ export class DialogInfoSdcComponent implements OnInit{
   ){}
   ngOnInit(): void {
     this.onLoadData();
+  }
+
+  ngAfterViewInit(): void {
+    const dialogContainer = document.querySelector('.mat-dialog-container'); 
+    if (dialogContainer) { 
+      dialogContainer.scrollTop = 0; 
+    }
   }
 
   dataInforme: Array<informacionSDC> = [];
@@ -50,7 +57,7 @@ export class DialogInfoSdcComponent implements OnInit{
       next:(response: any) => {
         if(response.success){
           this.dataInforme = response.elements;
-            console.log('contenido que cargará en la grilla', this.dataInforme);
+            //console.log('contenido que cargará en la grilla', this.dataInforme);
             this.SpinnerService.hide();
         }
       },
