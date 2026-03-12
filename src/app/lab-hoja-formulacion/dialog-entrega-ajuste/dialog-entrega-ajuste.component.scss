@@ -1,0 +1,225 @@
+.tabla-ajuste {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff; // fondo blanco limpio
+    color: #000; // texto negro
+    font-family: 'Roboto', sans-serif;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+
+    th,
+    td {
+        padding: 0.75rem 1rem;
+        text-align: center;
+        border: 1px solid #ccc;
+        font-size: 0.95rem;
+    }
+
+    th {
+        background: #e3f2fd; // azul claro
+        color: #1565c0; // azul fuerte
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    td {
+        background: #fafafa;
+        transition: background 0.3s ease;
+
+        &:hover {
+            background: #f0f0f0;
+        }
+    }
+
+    // Inputs dentro de la tabla
+    .valor-input {
+        width: 80%;
+        background: #fff;
+        border: 1px solid #1565c0;
+        color: #000;
+        text-align: center;
+        padding: 0.25rem;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 0.9rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+        &:focus {
+            outline: none;
+            border-color: #42a5f5;
+            box-shadow: 0 0 6px #42a5f5;
+        }
+    }
+
+    // Filas alternas
+    tr:nth-child(even) td {
+        background: #fdfdfd;
+    }
+}
+
+.acciones {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+// Botones estilo laboratorio
+.boton-lab {
+    background: #1565c0;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 8px rgba(21, 101, 192, 0.5);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+.boton-cancelar {
+    background: #e53935; // rojo laboratorio para cancelar
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 8px rgba(229, 57, 53, 0.5);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+
+@media (max-width: 1024px) {
+
+    .tabla-ajuste th,
+    .tabla-ajuste td {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .valor-input {
+        width: 70%;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .tabla-ajuste {
+        font-size: 0.8rem;
+    }
+
+    .tabla-ajuste th,
+    .tabla-ajuste td {
+        padding: 0.4rem;
+    }
+
+    .valor-input {
+        width: 100%;
+        font-size: 0.8rem;
+    }
+
+    // Scroll horizontal para pantallas pequeñas
+    .tabla-ajuste {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .tabla-ajuste th,
+    .tabla-ajuste td {
+        font-size: 0.75rem;
+        padding: 0.3rem;
+    }
+
+    .valor-input {
+        font-size: 0.75rem;
+    }
+
+    .boton-lab {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .boton-cancelar {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
+
+
+.spinner-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.spinner-text {
+    color: white;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.loader {
+    width: 24px;
+    height: 80px;
+    display: block;
+    margin: 35px auto 0;
+    border: 1px solid #fff;
+    border-radius: 0 0 50px 50px;
+    position: relative;
+    box-shadow: 0px 0px #ff3d00 inset;
+    background-image: linear-gradient(#ff3d00 100px, transparent 0);
+    background-position: 0px 0px;
+    background-size: 22px 80px;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+    animation: animloader 6s linear infinite;
+}
+
+.loader::after {
+    content: '';
+    box-sizing: border-box;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    width: 28px;
+    height: 6px;
+}
+
+.loader::before {
+    content: '';
+    box-sizing: border-box;
+    left: 0;
+    bottom: -4px;
+    border-radius: 50%;
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    animation: animloader1 6s linear infinite;
+}

@@ -50,6 +50,7 @@ import { MantenimientosLstComponent } from './mantenimientos/mantenimientos-lst/
 import { DetalleJabFijComponent } from './mantenimientos/mantenimientos-lst/detalle-jab-fij/detalle-jab-fij.component';
 import { DetalleCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/detalle-comp-extra.component';
 import { DialogNuevoCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/dialog-nuevo-comp-extra/dialog-nuevo-comp-extra.component';
+import { DialogEntregaAjusteComponent } from './lab-hoja-formulacion/dialog-entrega-ajuste/dialog-entrega-ajuste.component';
 
 
 @NgModule({
@@ -71,7 +72,8 @@ import { DialogNuevoCompExtraComponent } from './mantenimientos/mantenimientos-l
     MantenimientosLstComponent,
     DetalleJabFijComponent,
     DetalleCompExtraComponent,
-    DialogNuevoCompExtraComponent
+    DialogNuevoCompExtraComponent,
+    DialogEntregaAjusteComponent
   ],
   imports: [
     BrowserModule,

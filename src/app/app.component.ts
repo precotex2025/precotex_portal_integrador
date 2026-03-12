@@ -62,7 +62,7 @@ interface SecuenciaOption {
 export class AppComponent {
   title = 'precotex_portal_integrador';
   isLoginRoute = true;
-  sdc: number | null = null; 
+  sdc: string | null = null; 
   secuencia: number = 0;
   @ViewChild('modalReporte') modalReporte!: TemplateRef<any>;
   @ViewChild(MatSort) sort!: MatSort;   

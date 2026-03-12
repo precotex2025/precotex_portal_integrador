@@ -5,14 +5,15 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { MatTableDataSource } from '@angular/material/table';
 import { LabColTrabajoService } from '../services/lab-col-trabajo/lab-col-trabajo.service';
 import { MatSort } from '@angular/material/sort';
+import { AuthService } from '../authentication/auth.service';
+import { Router } from '@angular/router';
 
 interface data_jabonado {
-  corr_Carta: number;
+  corr_Carta: any;
   sec: number;
   correlativo: number;
   descripcion_color: string;
   tela: string;
-  //ph_Jab: number;
   ph_Jab: number[];
 }
 
@@ -24,11 +25,13 @@ interface data_jabonado {
 export class DialogJabonadosComponent {
 
   @ViewChild(MatSort) sort!: MatSort;
-
+  Usuario: string = '';
   constructor(
     private dialog: MatDialog,
     private SpinnerService: NgxSpinnerService,
-    private LabColTrabajoService: LabColTrabajoService
+    private LabColTrabajoService: LabColTrabajoService,
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   filtroSeleccionado: string = 'pendientes';
@@ -45,7 +48,14 @@ export class DialogJabonadosComponent {
   ];
 
   ngOnInit(): void {
-    this.onListarJabonado();
+
+    if (this.authService.isLoggedIn()) {
+      this.Usuario = this.authService.getUsuario()!;
+    } else {
+      this.router.navigate(['/login']);
+    }
+
+    this.onListarJabonado(this.Usuario);
   }
 
   dataSource: MatTableDataSource<data_jabonado> = new MatTableDataSource();
@@ -57,9 +67,9 @@ export class DialogJabonadosComponent {
     return Array.from({ length: max }, (_, i) => 'ph_Jab' + (i + 1));
   }
 
-  onListarJabonado() {
+  onListarJabonado(Usr_Cod: string) {
     this.SpinnerService.show();
-    this.LabColTrabajoService.getListarJabonado().subscribe({
+    this.LabColTrabajoService.getListarJabonado(Usr_Cod).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.dataListadoJabonado = response.elements.map((item: any) => {
@@ -99,9 +109,9 @@ export class DialogJabonadosComponent {
     });
   }
 
-  onListarJabonadoExcluido(): void {
+  onListarJabonadoExcluido(Usr_Cod: string): void {
     this.SpinnerService.show();
-    this.LabColTrabajoService.getListarJabonadoExcluido().subscribe({
+    this.LabColTrabajoService.getListarJabonadoExcluido(Usr_Cod).subscribe({
       next: (response: any) => {
         if(response.success){
           this.dataListadoJabonado = response.elements.map((item: any) => {
@@ -163,7 +173,7 @@ export class DialogJabonadosComponent {
     });
 
     dialogref.afterClosed().subscribe(result => {
-      this.onListarJabonado();
+      this.onListarJabonado(this.Usuario);
     });
   }
 
@@ -175,9 +185,9 @@ export class DialogJabonadosComponent {
 
   aplicarFiltroRadio(): void {
     if (this.filtroSeleccionado === 'pendientes') {
-      this.onListarJabonado(); 
+      this.onListarJabonado(this.Usuario); 
     } else if (this.filtroSeleccionado === 'completos') {
-      this.onListarJabonadoExcluido(); 
+      this.onListarJabonadoExcluido(this.Usuario); 
     }
   }
 

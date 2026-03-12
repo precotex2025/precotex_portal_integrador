@@ -49,7 +49,9 @@
   .receta-cell:nth-child(4n+9),
   .receta-cell:nth-child(4n+11),
   .receta-cell:nth-child(4n+13),
-  .receta-cell:nth-child(4n+15) {
+  .receta-cell:nth-child(4n+15), 
+  .receta-cell:nth-child(4n+17),
+  .receta-cell:nth-child(4n+19){
     background-color: #f0f4f8; 
     font-weight: 600;
   }

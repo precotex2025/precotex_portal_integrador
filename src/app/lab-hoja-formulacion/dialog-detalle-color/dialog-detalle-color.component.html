@@ -6,8 +6,15 @@
     <div class="receta-cell">Tipo teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.tip_Tenido }}</div>
     <div class="receta-cell">Curva teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.cur_Tenido }}</div>
     <div class="receta-cell">Previo</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.previo }}</div>
-    <div class="receta-cell">R/B</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.r_B | number:'1.0-0' }}</div>
+
+    <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod > 0">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod > 0">{{ recetaDetalle.r_B | number:'1.0-0' }}</div>
+    <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">{{ recetaDetalle.r_B_Prod | number:'1.2-2' }}</div>
+
     <div class="receta-cell">Peso de muestra (gr)</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.pes_Mue | number:'1.0-0' }}</div>
+
+
+
+    <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">Kg Tela</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">{{ recetaDetalle.kgs_Prod | number:'1.2-2' }}</div>
 
     <div class="receta-cell">Can jabonados</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.can_Jabo }}</div>
     <div class="receta-cell">Curva jabonado</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.cur_Jabo }}</div>

@@ -1,5 +1,6 @@
+<div [hidden]="dataInforme.length === 0">
 <div class="sdc-info-wrapper">
-  <h2>Informe de receta</h2>
+  <h2>Informe de receta (Lab Dips)</h2>
   <div class="sdc-grid" *ngFor="let informe of dataInforme">
     <!-- Encabezado -->
     <div class="sdc-cell etiqueta">SDC</div>
@@ -33,6 +34,66 @@
       </ul>
     </div> 
   </div>
+</div>
+</div>
+
+<div [hidden]="dataInformeProduccion.length === 0">
+<div class="sdc-info-wrapper">
+  <h2>Informe de receta (Produccion)</h2>
+  <div class="sdc-grid" *ngFor="let informe of dataInformeProduccion">
+    <!-- Encabezado -->
+    <div class="sdc-cell etiqueta">Partida</div>
+    <div class="sdc-cell">{{informe.corr_Carta}}</div>
+
+    <div class="sdc-cell etiqueta">Tipo Teñido</div>
+    <div class="sdc-cell">{{informe.descripcion}}</div>
+
+    <div class="sdc-cell etiqueta">Curva Teñido</div>
+    <div class="sdc-cell">{{informe.cur_Ten}}</div>
+
+    <div class="sdc-cell etiqueta">Clase Oc</div>
+    <div class="sdc-cell">{{informe.cla_Oc}}</div>
+
+    <div class="sdc-cell etiqueta">Temporada</div>
+    <div class="sdc-cell">{{informe.temporada}}</div>
+
+    <div class="sdc-cell etiqueta">Estilo</div>
+    <div class="sdc-cell">{{informe.estilo}}</div>
+
+    <div class="sdc-cell etiqueta">Op</div>
+    <div class="sdc-cell">{{informe.op}}</div>
+
+    <div class="sdc-cell etiqueta">Grupo Textil</div>
+    <div class="sdc-cell">{{informe.cod_GrupoTex}}</div>
+
+    <div class="sdc-cell etiqueta">O/C</div>
+    <div class="sdc-cell">{{informe.oc}}</div>
+
+    <div class="sdc-cell etiqueta">Máquina</div>
+    <div class="sdc-cell">{{informe.maq_Tinto}}</div>
+
+    <div class="sdc-cell etiqueta">Referencia Partida</div>
+    <div class="sdc-cell">{{informe.ref_Par}}</div>
+
+    <div class="sdc-cell etiqueta">Referencia Comercial</div>
+    <div class="sdc-cell">{{informe.ref_Com}}</div>
+
+    <div class="sdc-cell etiqueta">Lote</div>
+    <div class="sdc-cell">{{informe.lote}}</div>
+
+    <div class="sdc-cell etiqueta">Observacion</div>
+    <div class="sdc-cell">{{informe.obs}}</div>
+
+    <!-- Subsección: Ruta -->
+    <div class="sdc-cell etiqueta">Ruta</div>
+    <div class="sdc-cell">
+      <ul class="texto">
+        <li *ngFor="let ruta of informe.ruta">{{ ruta }}</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
 </div>
 
 <div class="sdc-close-button">

@@ -19,7 +19,7 @@ import { NonNullableFormBuilder } from '@angular/forms';
 import { response } from 'express';
 import { log } from 'console';
 interface data_colaautolab {
-  corr_Carta: number,
+  corr_Carta: any,
   sec: number,
   correlativo: number,
   descripcion_Color: string,
@@ -28,7 +28,7 @@ interface data_colaautolab {
 }
 
 interface data_dispensado {
-  corr_Carta: number,
+  corr_Carta: any,
   sec: number,
   correlativo: number,
   descripcion_Color: string,
@@ -50,6 +50,7 @@ export class LabDispAutolabComponent implements OnInit {
   // @ViewChild('modalListaSeleccionados') modalListaSeleccionados!: TemplateRef<any>;
   @ViewChild(MatTable) table!: MatTable<any>;
   @ViewChild(MatSort) sort!: MatSort;
+  Usuario: string = '';
   constructor(
     private dialog: MatDialog,
     private SpinnerService: NgxSpinnerService,
@@ -64,7 +65,8 @@ export class LabDispAutolabComponent implements OnInit {
   ngOnInit(): void {
 
     if (this.authService.isLoggedIn()) {
-      console.log('Usuario activo: -------', this.authService.getUsuario());
+      //console.log('Usuario activo: -------', this.authService.getUsuario());
+      this.Usuario = this.authService.getUsuario()!;
     } else {
       this.router.navigate(['/login']);
     }
@@ -74,7 +76,7 @@ export class LabDispAutolabComponent implements OnInit {
     }));
 
     this.ahibaSeleccionado = 0;
-    this.onListarColaAutolab();
+    this.onListarColaAutolab(this.Usuario);
     // this.onListarDispensado();
   }
 
@@ -108,11 +110,11 @@ export class LabDispAutolabComponent implements OnInit {
   }
 
   dataListadoColaAutolab = [];
-  onListarColaAutolab() {
+  onListarColaAutolab(Usr_Cod: string) {
 
     this.SpinnerService.show();
     this.dataListadoColaAutolab = [];
-    this.LabColTrabajoService.getListarColaAutolab().subscribe({
+    this.LabColTrabajoService.getListarColaAutolab(Usr_Cod).subscribe({
       next: (response: any) => {
         if (response.success) {
           console.log('elementos en el listado de cola autolab: ', response.elements);
@@ -176,7 +178,7 @@ export class LabDispAutolabComponent implements OnInit {
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
       const dataEnviar = {
-        corr_Carta: 0,
+        corr_Carta: "",
         sec: 0,
         correlativo: 0,
         posicion: 0
@@ -189,7 +191,7 @@ export class LabDispAutolabComponent implements OnInit {
       }
 
       if (this.estadoSeleccionado === 'cola') {
-        this.onListarColaAutolab();
+        this.onListarColaAutolab(this.Usuario);
       }
 
     } finally {
@@ -203,9 +205,9 @@ export class LabDispAutolabComponent implements OnInit {
   cambiarEstado(valor: 'cola' | 'dispensado'): void {
     this.estadoSeleccionado = valor;
     if (this.estadoSeleccionado === 'cola') {
-      this.onListarColaAutolab();
+      this.onListarColaAutolab(this.Usuario);
     } else if (this.estadoSeleccionado === 'dispensado') {
-      this.onListarDispensado();
+      this.onListarDispensado(this.Usuario);
       this.listarAhibas();
     }
   }
@@ -276,10 +278,10 @@ export class LabDispAutolabComponent implements OnInit {
 
 
   dataListadoDispensado = [];
-  onListarDispensado() {
+  onListarDispensado(Usr_Cod: string) {
     this.SpinnerService.show();
     this.dataListadoDispensado = [];
-    this.LabColTrabajoService.getListarDispensado().subscribe({
+    this.LabColTrabajoService.getListarDispensado(Usr_Cod).subscribe({
       next: (response: any) => {
         if (response.success) {
           console.log('elementos en el listado de dispensado: ', response.elements);
@@ -404,14 +406,14 @@ export class LabDispAutolabComponent implements OnInit {
       }
 
       if (this.estadoSeleccionado === 'dispensado') {
-        this.onListarColaAutolab();
+        this.onListarColaAutolab(this.Usuario);
       }
 
     } finally {
       this.ahibaSeleccionado = 0;
       this.dialog.closeAll();
       this.SpinnerService.hide();
-      this.onListarDispensado();
+      this.onListarDispensado(this.Usuario);
     }
 
 
@@ -453,7 +455,7 @@ export class LabDispAutolabComponent implements OnInit {
       panelClass: 'my-class',
       data: {
         Title: "Detalle",
-        Num_SDC: 0,
+        Num_SDC: "",
         Estado: estado
       }
     });
@@ -478,7 +480,7 @@ export class LabDispAutolabComponent implements OnInit {
     });
 
     dialogref.afterClosed().subscribe(result => {
-      this.onListarDispensado();
+      this.onListarDispensado(this.Usuario);
     });
   }
 
@@ -755,21 +757,16 @@ export class LabDispAutolabComponent implements OnInit {
           this.dataSource.data = this.dataListadoDosificaciones;
           this.dataSource.sort = this.sort;
 
-          console.log(':::::::::::::::::::::::.', this.dataListadoDosificaciones);
-
-          // reset ocupados
           this.posiciones.forEach(p => p.ocupado = false);
 
-          // obtener tubos únicos y válidos
           const tubosUnicos = Array.from(
             new Set(
               this.dataListadoDosificaciones
-                .filter(item => item.nro_Tubo && item.nro_Tubo > 0) // quitar los 0
-                .map(item => item.nro_Tubo) // quedarte solo con el número
+                .filter(item => item.nro_Tubo && item.nro_Tubo > 0)
+                .map(item => item.nro_Tubo)
             )
           );
 
-          // marcar ocupados en posiciones
           tubosUnicos.forEach(nro => {
             const pos = this.posiciones.find(p => p.numero === nro);
             if (pos) pos.ocupado = true;

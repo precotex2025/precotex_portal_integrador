@@ -24,10 +24,11 @@
       <div><strong>Fecha Entrega:</strong> {{ grilla.fec_Entrega | date:'dd/MM/yyyy' }}</div>
       <div><strong>Tipo:</strong> {{ grilla.tipo }}</div>
       <div><strong>Artículo:</strong> {{ grilla.des_Tela }}</div>
+      <div *ngIf="mostrarPartidas"><strong>Partidas:</strong> {{ this.PartidasAgrupadas }} </div>      
    </div>
 </mat-expansion-panel>
 <!-- Botones de acción --> 
-<div class="botones-acciones"> <button mat-raised-button color="primary" (click)="onInformeSDC()">Informe SDC</button>
+<div class="botones-acciones"> <button mat-raised-button color="primary" (click)="onInformeSDC()">Informe SDC/PARTIDA</button>
    <button mat-raised-button color="accent" 
       (click)="onAgregarOpcion()">Agregar opción
    </button> 

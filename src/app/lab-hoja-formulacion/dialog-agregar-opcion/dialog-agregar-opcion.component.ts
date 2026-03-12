@@ -14,10 +14,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 interface data {
   Title: string,
-  Num_SDC: number,
+  Num_SDC: any,
   Num_Sec: number,
   Correlativo: number,
-  CorrelativoAnterior?: number
+  CorrelativoAnterior?: number,
+  PartidasAgrupadasR?: string
 }
 
 interface ColoranteCompleto {
@@ -80,27 +81,19 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
   cargando = true;
   onGetParams(): void {
-    // Inicializar los valores predeterminados para asignar los parámetros
-    // this.data = {
-    //   Title: '',
-    //   Num_SDC: 0,
-    //   Num_Sec: 0,
-    //   Correlativo: 0
-    // };
-
     this.route.queryParams.subscribe(params => {
       this.data = {
         Title: params['accionR'] ?? '',
-        Num_SDC: params['Num_SDC'] !== undefined ? Number(params['Num_SDC']) : 0,
+        Num_SDC: params['Num_SDC'] !== undefined ? String(params['Num_SDC']) : '',
         Num_Sec: params['Num_Sec'] !== undefined ? Number(params['Num_Sec']) : 0,
         Correlativo: params['Correlativo'] !== undefined ? Number(params['Correlativo']) : 0,
-        CorrelativoAnterior: params['CorrelativoAnterior'] !== undefined ? Number(params['CorrelativoAnterior']) : 0
+        CorrelativoAnterior: params['CorrelativoAnterior'] !== undefined ? Number(params['CorrelativoAnterior']) : 0,
+        PartidasAgrupadasR: params['PartidasAgrupadasE'] !== undefined ? String(params['PartidasAgrupadasE']) : ''
       };
     })
 
     this.correlativo = this.data.Correlativo;
-    //this.coloranteControl.setValue('');
-
+    console.log('::::::::::::::::::::::', this.data);
     this.coloranteControl.valueChanges.pipe(
       startWith(''),
       map(value => typeof value === 'string' ? this.filtrarColorantes(value) : this.filtrarColorantes(''))
@@ -163,26 +156,6 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   cambiosHabilitados = false;
   estadoCambio = 0;
 
-  // agregarColorante(): void {
-  //   if (!this.coloranteSeleccionado) return;
-
-  //   this.colorantesSeleccionados.push({
-  //     codigo: this.coloranteSeleccionado.codigo,
-  //     nombre: this.coloranteSeleccionado.nombre,
-  //     inicial: null,
-  //     ajuste: null
-  //   });
-
-
-  //   //this.coloranteControl.setValue('');
-  //   this.coloranteSeleccionado = null;
-
-
-  //   this.colorantesFiltrados = this.filtrarColorantes('');
-
-  //   this.actualizarTotalFinal();
-  // }
-
   onColoranteSeleccionado(event: MatAutocompleteSelectedEvent): void {
     this.Familia = this.parametros.tiposFormulacion.toString();
 
@@ -213,13 +186,6 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     return '';
   }
 
-  // abrirAutocomplete(): void {
-  //   if (this.coloranteControl.value && typeof this.coloranteControl.value === 'string') {
-  //   this.autocompleteTrigger.openPanel();
-  //   }
-  // }
-
-
   ajustar(colorante: any, delta: number): void {
     colorante.ajuste = parseFloat((colorante.ajuste + delta).toFixed(4));
   }
@@ -236,8 +202,6 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     this.colorantesSeleccionados.forEach(c => {
       c.inicial = parseFloat(c.inicial.toFixed(5));
     });
-
-    console.log('EL PROCESO DE LA TRICOMIA ES: ', this.Familia);
 
     this.totalFinalColorantes = this.colorantesSeleccionados
       .map(c => this.calcularFinal(c))
@@ -256,28 +220,20 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   }
 
   actualizarTotalFinalDesdeCopiar(Familia: string): void {
-    //this.Familia = this.parametros.tiposFormulacion.toString();
 
     this.colorantesSeleccionados.forEach(c => {
       c.inicial = parseFloat(c.inicial.toFixed(5));
     });
 
-    console.log('EL PROCESO DE LA TRICOMIA ES: ', Familia);
-
     this.totalFinalColorantes = this.colorantesSeleccionados
       .map(c => this.calcularFinal(c))
       .reduce((acc, val) => acc + val, 0);
 
-    // this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, Familia);
-    // this.GetFijadosCalculado(this.totalFinalColorantes, Familia);
     const contieneAMAVBTES = this.colorantesSeleccionados.some(c => c.codigo === 'QC000472');
 
     if (contieneAMAVBTES) {
       this.condicion = 1;
     }
-
-    // this.GetCarbonatoSodaCalculado(this.totalFinalColorantes, Familia, this.condicion);
-
   }
 
   limitarDecimales(colorante: any): void {
@@ -331,7 +287,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     const familia = this.parametros.tiposFormulacion.toString();
 
     const comunes = {
-      Corr_Carta: this.data?.Num_SDC?.toString() || '0',
+      Corr_Carta: this.data?.Num_SDC?.toString() || '',
       Sec: this.data?.Num_Sec?.toString() || '0',
       Correlativo: this.correlativo,
       Can_Jabo: this.parametros.jabonadas.toString(),
@@ -353,69 +309,49 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
     if (this.data.Title === 'Copiar') {
       ProcedenciaHardCodeada = "Copia de Corrida #" + this.data.CorrelativoAnterior?.toString();
-      console.log('La ProcedenciaHardCodeada es: ', ProcedenciaHardCodeada)
     }
 
     const comunes2 = {
-      Corr_Carta: this.data?.Num_SDC?.toString() || '0',
+      Corr_Carta: this.data?.Num_SDC?.toString() || '',
       Sec: this.data?.Num_Sec?.toString() || '0',
       Correlativo: this.correlativo,
       Familia: familia,
       Cambio: this.estadoCambio,
       ProcedenciaHardCodeada: ProcedenciaHardCodeada
     };
+    this.SpinnerService.show();
 
-    //console.log('los datos en comunes2 son: ', comunes2);
-    Swal.fire({
-      title: "¿Desea registrar todos los colorantes?",
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí',
-      cancelButtonText: 'No'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.SpinnerService.show();
+    let pendientes = this.colorantesSeleccionados.length;
+    let errores = 0;
 
-        let pendientes = this.colorantesSeleccionados.length;
-        let errores = 0;
+    this.colorantesSeleccionados.forEach((c, index) => {
+      const datos = {
+        ...comunes,
+        Col_Cod: c.codigo,
+        Procedencia: "Opcion Agregada",
+        Por_Ini: c.inicial.toFixed(4),
+        Por_Aju: c.ajuste.toFixed(4),
+        Por_Fin: this.calcularFinal(c).toFixed(4)
+      };
 
-        console.log('los datos son: ', comunes);
-        this.colorantesSeleccionados.forEach((c, index) => {
-          const datos = {
-            ...comunes,
-            Col_Cod: c.codigo,
-            Procedencia: "Opcion Agregada",
-            Por_Ini: c.inicial.toFixed(4),
-            Por_Aju: c.ajuste.toFixed(4),
-            Por_Fin: this.calcularFinal(c).toFixed(4)
+      this.LabColTraService.postAgregarOpcionColorante(datos).subscribe({
+        next: (response: any) => {
+          if (!response.success) errores++;
+          pendientes--;
+          if (pendientes === 0) {
+            this.finalizarGuardado(errores)
+            this.guardarAuxiliares(comunes2);
           };
-
-          //console.log(datos);
-          this.LabColTraService.postAgregarOpcionColorante(datos).subscribe({
-            next: (response: any) => {
-              if (!response.success) errores++;
-              pendientes--;
-              if (pendientes === 0) {
-                this.finalizarGuardado(errores)
-                this.guardarAuxiliares(comunes2);
-              };
-            },
-            error: () => {
-              errores++;
-              pendientes--;
-              if (pendientes === 0) {
-                this.finalizarGuardado(errores);
-                //this.guardarAuxiliares(comunes2);
-              }
-            }
-          });
-        });
-      }
+        },
+        error: () => {
+          errores++;
+          pendientes--;
+          if (pendientes === 0) {
+            this.finalizarGuardado(errores);
+          }
+        }
+      });
     });
-
-
   }
 
   finalizarGuardado(errores: number): void {
@@ -432,9 +368,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       next: (response: any) => {
         if (response.success) {
           console.log('Auxiliares guardados correctamente');
-          this.router.navigate(['HojaFormulacion']);
         }
-        this.SpinnerService.hide();
       }
     });
   }
@@ -684,7 +618,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
   datosParaModificar: any = [];
 
-  cargarDatosParaModificar(Corr_Carta: number, Sec: number, Correlativo: number): void {
+  cargarDatosParaModificar(Corr_Carta: any, Sec: number, Correlativo: number): void {
     this.datosParaModificar = [];
 
     this.LabColTraService.getCargarColoranteParaCopiar(Corr_Carta, Sec, Correlativo).subscribe({
@@ -695,7 +629,6 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           this.toastr.warning('No se encontraron datos para modificar');
           return;
         }
-        // Cargar productos auxiliares
         this.productos = [
           {
             nombre: 'CARBONATO',
@@ -710,17 +643,13 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         ];
 
         console.log('Productos cargados: ', this.productos);
-        // Cargar colorantes seleccionados
         this.colorantesSeleccionados = (datos.colorantes ?? []).map((c: any) => ({
           codigo: c.col_Cod,
           nombre: c.col_Des,
           inicial: c.por_Ini ? parseFloat(c.por_Ini.toFixed(5)) : 0,
-          //A PETICION DE JENNIFER SE QUITO EL AJUSTE 
-          //ajuste: c.por_Aju ? parseFloat(c.por_Aju.toFixed(5)) : 0
           ajuste: 0
         }));
 
-        // Cargar parámetros de formulación
         this.parametros = {
           jabonadas: datos.can_Jabo ?? 0,
           curva: parseInt(datos.cur_Jabo) ?? 0,
@@ -728,9 +657,6 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           tiposFormulacion: datos.familia ?? ''
         };
 
-
-
-        // Cargar datos de baño
         const peso = datos.pes_Mue ?? 0;
         const relacion = Math.floor(Number(datos.rel_Ban ?? 0));
 
@@ -740,7 +666,6 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           volumen: relacion * peso
         };
 
-        // Actualizar total final de colorantes
         this.actualizarTotalFinalDesdeCopiar(datos.familia.toString());
 
       },
@@ -762,17 +687,14 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getObtenerTrio(Corr_Carta: number, Sec: number) {
+  getObtenerTrio(Corr_Carta: any, Sec: number) {
     this.LabColTraService.getObtenerTrio(Corr_Carta, Sec).subscribe({
       next: (response: any) => {
-        if(response.success){
-          //if(response.totalElements > 0){
-            console.log('FFFFFFFFFFFFFFFFFFFFFFFFF',response.elements);
-            this.datos.relacionBano = Math.floor(response.elements[0].rel_Ban);
-            this.datos.pesoMuestra = response.elements[0].pes_Mue;
-            this.datos.volumen = response.elements[0].volumen;
-            this.parametros.tiposFormulacion = response.elements[0].familia;
-          //}
+        if (response.success) {
+          this.datos.relacionBano = Math.floor(response.elements[0].rel_Ban);
+          this.datos.pesoMuestra = response.elements[0].pes_Mue;
+          this.datos.volumen = response.elements[0].volumen;
+          this.parametros.tiposFormulacion = response.elements[0].familia;
         }
       },
       error: (error: any) => {
@@ -781,7 +703,46 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     });
   }
 
+  guardarColorantesConParametrosPromise(dataCopia: any): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const backup = { ...this.data };
+      this.data = dataCopia;
 
+      this.guardarColorantesConParametros();
 
+      const originalFinalizar = this.finalizarGuardado.bind(this);
+      this.finalizarGuardado = (errores: number) => {
+        originalFinalizar(errores);
+        this.data = backup;
+        this.SpinnerService.hide();
+        resolve();
+      };
+    });
+  }
+
+  async ejecutarPorPartidasAgrupadasSecuencial(): Promise<void> {
+    try {
+      if (!this.data.PartidasAgrupadasR) {
+        this.guardar();
+      } else {
+        const partidas = this.data.PartidasAgrupadasR!.split('/')
+          .map(p => p.trim())
+          .filter(p => p.length > 0);
+
+        const backup = { ...this.data };
+
+        for (const partida of partidas) {
+          const dataCopia = { ...backup, Num_SDC: partida };
+          console.log('Registrando partida secuencial:', partida);
+
+          await this.guardarColorantesConParametrosPromise(dataCopia);
+        }
+
+        this.data = backup;
+      }
+    } finally {
+      this.router.navigate(['HojaFormulacion']);
+    }
+  }
 
 }

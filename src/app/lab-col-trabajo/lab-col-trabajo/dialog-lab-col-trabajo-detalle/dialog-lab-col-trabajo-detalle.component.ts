@@ -12,7 +12,7 @@ import { AuthService } from '../../../authentication/auth.service';
 import { Router } from '@angular/router';
 
 interface data_color {
-  corr_Carta: string,
+  corr_Carta: any,
   sec: string,
   descripcion_Color: string,
   cod_Color: string,
@@ -23,7 +23,7 @@ interface data_color {
 }
 
 interface data {
-  Num_SDC: number
+  Num_SDC: any
 }
 
 @Component({
@@ -35,6 +35,7 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('modalEnviar') modalEnviar!: TemplateRef<any>;
   dialogRef1!: MatDialogRef<any>;
+  Usuario: string = '';
   constructor(
     private SpinnerService: NgxSpinnerService,
     private formBuilder: FormBuilder,
@@ -49,7 +50,8 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
   ngOnInit(): void {
 
     if (this.authService.isLoggedIn()) {
-      console.log('Usuario activo: -------', this.authService.getUsuario());
+      //console.log('Usuario activo: -------', this.authService.getUsuario());
+      this.Usuario = this.authService.getUsuario()!;
     } else {
       this.router.navigate(['/login']);
     }
@@ -111,7 +113,7 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
         if (response.success) {
           if (response.totalElements > 0) {
             this.dataListadoDetalle = response.elements;
-            console.log(this.dataListadoDetalle);
+            //console.log(this.dataListadoDetalle);
             this.dataSource.data = this.dataListadoDetalle;
             this.dataSource.sort = this.sort;
             this.SpinnerService.hide();
@@ -149,16 +151,11 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
   }
 
   onEnviarAHojaFormulacion() {
-    // let Corr_Carta = this.dataListadoDetalle[0].corr_Carta;
-    // let Sec = data_cola_trab.sec;
-    // let sFormulado = data_cola_trab.formulado;
-    // const sCorr_Carta = Corr_Carta;
-    // const sSec = Sec;     
-
-    // let data: any = {
-    //   "Corr_Carta": sCorr_Carta,
-    //   "Sec": sSec
-    // };
+    this.dataTenido = {
+      ...this.dataTenido,
+      "Usr_Cod": this.Usuario
+    };
+    console.log(this.dataTenido);
     if (this.dataTenido.Cur_Ten == 0 || this.dataTenido.Cur_Ten == '') { this.toastr.warning('Debe seleccionar una curva', 'Atención'); return; }
     this.SpinnerService.show();
     this.LabColTrabajoService.postRegistrarDetalleColorSDC(this.dataTenido).subscribe({
@@ -193,7 +190,6 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
     })
 
   }
-
 
   getListarCurvas(Pro_Cod: string): void {
     this.LabColTrabajoService.getListarCurvas(Pro_Cod).subscribe({
@@ -247,12 +243,12 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
       "Usr_Cod": GlobalVariable.vusu
     }
 
-    console.log('LA INFORMACION AQUI ES -------------- ', this.dataTenido);
+    //console.log('LA INFORMACION AQUI ES -------------- ', this.dataTenido);
   }
 
 
 
-  ActualizarEstado(corr_carta: number, sec: number, flg_est_lab: string) {
+  ActualizarEstado(corr_carta: any, sec: number, flg_est_lab: string) {
     let Corr_Carta = 0
     let Sec = 0
     const sCorr_Carta = corr_carta;
