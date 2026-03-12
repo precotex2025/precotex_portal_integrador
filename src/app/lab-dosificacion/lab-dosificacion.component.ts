@@ -14,7 +14,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 interface data {
   Title: string;
-  Num_SDC: number;
+  Num_SDC: any;
   Estado: string;
 }
 
@@ -23,12 +23,12 @@ interface RegistroDosificacion {
   sec: number;
   color: string;
   curva: string;
-  dosificaciones: number[]; // máximo 3
+  dosificaciones: number[]; 
   pm_final?: number;
 }
 
 interface data_dosificacion {
-  corr_Carta: number,
+  corr_Carta: any,
   sec: number,
   correlativo: number,
   descripcion_Color: string,
@@ -68,12 +68,9 @@ export class LabDosificacionComponent implements OnInit {
   ngOnInit(): void {
 
     if (this.authService.isLoggedIn()) {
-      console.log('Usuario activo: -------', this.authService.getUsuario());
     } else {
       this.router.navigate(['/login']);
     }
-
-    console.log('-----------------------', this.data.Estado);
 
     if(this.data.Estado === 'I'){
       console.log('hola');
@@ -159,13 +156,6 @@ export class LabDosificacionComponent implements OnInit {
   }
 
   itemSeleccionado: any = null;
-
-  // seleccionarAhiba(item: any): void {
-  //   this.itemSeleccionado = item;
-  //   let nroAhiba = item.codigo;
-  //   this.changeDetectorRef.detectChanges();
-  //   this.listarDosificacionesXAhiba(nroAhiba);
-  // }
 
   seleccionarAhiba(item: any): void {
   this.itemSeleccionado = item;

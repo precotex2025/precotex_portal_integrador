@@ -6,7 +6,7 @@ import { LabColTrabajoService } from '../../services/lab-col-trabajo/lab-col-tra
 
 interface data {
   Title: string,
-  Num_SDC: number,
+  Num_SDC: any,
   Num_Sec: number,
 }
 
@@ -18,6 +18,24 @@ interface informacionSDC{
   com_Comer: string;
   ruta: string[];       
   solidez: string[];    
+}
+
+interface informacionSDCProduccion{
+  corr_Carta: string;
+  descripcion: string;
+  cur_Ten: string;
+  cla_Oc: string;
+  temporada: string;
+  estilo: string;
+  op: string;
+  cod_GrupoTex: string;
+  oc: string;
+  maq_Tinto: string;
+  ref_Par: string;
+  ref_Com: string;
+  lote: string;
+  obs: string;
+  ruta: string[];        
 }
 
 @Component({
@@ -45,10 +63,8 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
   }
 
   dataInforme: Array<informacionSDC> = [];
+  dataInformeProduccion: Array<informacionSDCProduccion> = [];
   onLoadData(){
-    
-    console.log('# SDC ', this.data.Num_SDC);
-    console.log('# Secuencia ', this.data.Num_Sec);
     let Corr_Carta = this.data.Num_SDC;
     let Sec = this.data.Num_Sec;
     this.SpinnerService.show();
@@ -56,7 +72,17 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
     this.LabColTrabService.getCargarInformeSDC(Corr_Carta, Sec).subscribe({
       next:(response: any) => {
         if(response.success){
-          this.dataInforme = response.elements;
+          
+          
+          // variable booleana
+          let empiezaConNumero = !isNaN(Number(Corr_Carta.charAt(0))) && Corr_Carta.charAt(0) !== "0";
+
+          if (empiezaConNumero) {
+            this.dataInforme = response.elements;
+          } else {
+            this.dataInformeProduccion = response.elements;
+          }
+          console.log(this.dataInformeProduccion)
             //console.log('contenido que cargará en la grilla', this.dataInforme);
             this.SpinnerService.hide();
         }

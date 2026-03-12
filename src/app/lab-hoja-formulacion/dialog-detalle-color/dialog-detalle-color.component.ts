@@ -5,12 +5,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 interface data{
-  corr_Carta: number;
+  corr_Carta: any;
   sec: number;
   correlativo: number;
 }
-
-
 
 @Component({
   selector: 'app-dialog-detalle-color',
@@ -42,7 +40,7 @@ ngAfterViewInit(): void {
 
 recetaDetalle: any = null;
 
-cargarReceta(corrCarta: number, sec: number, correlativo: number): void {
+cargarReceta(corrCarta: any, sec: number, correlativo: number): void {
   this.SpinnerService.show();
   this.LabColTraService.getCargarColoranteParaDetalle(corrCarta, sec, correlativo).subscribe({
     next: (response: any) => {

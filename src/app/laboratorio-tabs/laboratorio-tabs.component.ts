@@ -10,14 +10,7 @@ import { Router, NavigationEnd } from '@angular/router';
 export class LaboratorioTabsComponent {
   showTabs: boolean = true;
   selectedIndex: number = 0;
-  // constructor(
-  //   private router: Router
-  // ){
-  //   this.router.events.subscribe(() => {
-  //     const currentRoute = this.router.url;
-  //     this.showTabs = currentRoute !== '/login';
-  //   });
-  // }
+  
   constructor(private router: Router) { 
     this.router.events.subscribe(event => { 
       if (event instanceof NavigationEnd) { 

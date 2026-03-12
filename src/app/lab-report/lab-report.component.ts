@@ -25,7 +25,7 @@ interface ReporteBackend {
   analista: string;
   articulo: string;
   can_Jab: number;
-  corr_Carta: number;
+  corr_Carta: any;
   sec: number;
   correlativo: number;
   descripcion_Color: string;
@@ -39,12 +39,11 @@ interface ReporteBackend {
   fijado: string;
   colorantes_Reporte: Insumo[];
   ruta_Reporte: Ruta[];
-  //ruta: string[];
   solidez_Reporte: Solidez[];
 }
 
 interface data {
-  sdcR: number,
+  sdcR: any,
   secuenciaR: number,
 }
 
@@ -80,7 +79,7 @@ export class LabReportComponent implements OnInit {
   ngOnGetParams(): void {
     this.route.queryParams.subscribe(params => {
       this.data = {
-        sdcR: params['sdcE'] !== undefined ? Number(params['sdcE']) : 0,
+        sdcR: params['sdcE'] !== undefined ? String(params['sdcE']) : '',
         secuenciaR: params['secuenciaE'] !== undefined ? Number(params['secuenciaE']) : 0,
       };
     });
@@ -89,7 +88,7 @@ export class LabReportComponent implements OnInit {
   }
 
 
-  cargarDatosReporte(corrCarta: number, sec: number, correlativo: number): void {
+  cargarDatosReporte(corrCarta: any, sec: number, correlativo: number): void {
     this.loading = true;
     this.labColTrabajoService.getCargarDatosReporte(corrCarta, sec, correlativo).subscribe({
 
@@ -98,11 +97,8 @@ export class LabReportComponent implements OnInit {
           ...response.elements[0],
           colorantes_Reporte: response.elements[0].colorantes_Reporte ?? [],
           ruta_Reporte: response.elements[0].ruta_Reporte ?? [],
-          //ruta: response.elements[0].ruta ?? [],
           solidez_Reporte: response.elements[0].solidez_Reporte ?? []
         };
-
-        console.log('-------------------------------------', reporte);
 
         this.grupos = this.groupByCorrelativo(reporte)
           .sort((a, b) => a.correlativo - b.correlativo);
@@ -162,7 +158,6 @@ export class LabReportComponent implements OnInit {
     html2canvas(element, { scale: 2 }).then(canvas => {
       const imgData = canvas.toDataURL('image/png');
 
-      // Crear ventana para imprimir
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(`
@@ -196,12 +191,10 @@ export class LabReportComponent implements OnInit {
 
 
   private construirTabla(): void {
-    // Lista única de descripciones de insumos
     const descripciones = Array.from(
       new Set(this.grupos.flatMap(g => g.insumos.map(i => i.col_Des)))
     ).sort((a, b) => a.localeCompare(b));
 
-    // Construir filas con valores por correlativo
     this.colorantesTabla = descripciones.map(des => {
       const valores = this.grupos.map(grupo => {
         const match = grupo.insumos.find(i => i.col_Des === des);
@@ -213,10 +206,6 @@ export class LabReportComponent implements OnInit {
       return { descripcion: des, valores };
     });
 
-    // Lista de correlativos para encabezado
     this.correlativos = this.grupos.map(g => g.correlativo);
-  }
-
-
-
+  } 
 }

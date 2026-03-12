@@ -1,0 +1,39 @@
+<table mat-table [dataSource]="colorantes" class="mat-elevation-z8 tabla-ajuste">
+
+    <ng-container matColumnDef="col_Cod">
+        <th mat-header-cell *matHeaderCellDef> Código </th>
+        <td mat-cell *matCellDef="let element"> {{ element.col_Cod }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="col_Des">
+        <th mat-header-cell *matHeaderCellDef> Colorante </th>
+        <td mat-cell *matCellDef="let element"> {{ element.col_Des }} </td>
+    </ng-container>
+
+    <ng-container *ngFor="let corr of data.correlativos" [matColumnDef]="corr.toString()">
+        <th mat-header-cell *matHeaderCellDef> {{ corr }} </th>
+        <td mat-cell *matCellDef="let element">
+            <input matInput type="number" [(ngModel)]="element.valores[corr.toString()].por_Fin" step="0.0001"
+                class="valor-input" />
+        </td>
+    </ng-container>
+
+    <!-- Render de filas -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+
+
+<div class="acciones">
+    <!-- <button mat-raised-button class="boton-lab" (click)="guardar()">Guardar</button> -->
+    <button mat-raised-button class="boton-lab" (click)="guardarAgrupado()">Guardar</button>
+    <button mat-raised-button color="warn" class="boton-cancelar" (click)="cancelar()">Cancelar</button>
+</div>
+
+
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="medium" type="custom" [fullScreen]="true">
+    <div class="spinner-wrapper">
+        <p class="spinner-text">CARGANDO INFORMACIÓN</p>
+        <div class="loader"></div>
+    </div>
+</ngx-spinner>
