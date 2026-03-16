@@ -44,7 +44,7 @@
   <mat-dialog-content>
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Número SDC</mat-label>
-      <input matInput [(ngModel)]="sdc" (ngModelChange)="onGetDetalle()" (keypress)="onlyNumberInput($event)">
+      <input matInput [(ngModel)]="sdc" (ngModelChange)="sdc = $event.toUpperCase(); onGetDetalle()">
     </mat-form-field>
 
     <!-- <mat-form-field appearance="outline" class="full-width">

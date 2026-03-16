@@ -37,6 +37,13 @@ interface ReporteBackend {
   cur_Ten: string;
   cur_Jab: string;
   fijado: string;
+  partidasAgrupadas: string;
+  cod_Color: string;
+  tipoPartida: string;
+  temporada: string;
+  kgs_Prod: string;
+  r_B_Prod: string;
+  maquina: string;
   colorantes_Reporte: Insumo[];
   ruta_Reporte: Ruta[];
   solidez_Reporte: Solidez[];
@@ -56,7 +63,7 @@ export class LabReportComponent implements OnInit {
   grupos: { correlativo: number; insumos: Insumo[]; reporte: ReporteBackend, placeholder?: boolean }[] = [];
   loading = false;
   error?: string;
-
+  mostrarCabecera = true;
   colorantesTabla: {
     descripcion: string;
     valores: { correlativo: number; porcentaje: string | number }[];
@@ -83,7 +90,9 @@ export class LabReportComponent implements OnInit {
         secuenciaR: params['secuenciaE'] !== undefined ? Number(params['secuenciaE']) : 0,
       };
     });
-
+    const empiezaConLetra = /^[A-Za-z]/.test(this.data.sdcR);
+    this.mostrarCabecera = empiezaConLetra;
+    console.log('la cabecera está en::::::::::::::::::::.', this.mostrarCabecera);
     this.cargarDatosReporte(this.data.sdcR, this.data.secuenciaR, 0);
   }
 
@@ -99,6 +108,8 @@ export class LabReportComponent implements OnInit {
           ruta_Reporte: response.elements[0].ruta_Reporte ?? [],
           solidez_Reporte: response.elements[0].solidez_Reporte ?? []
         };
+
+        console.log('EL REPORTE ES::::::::::::::::::::::::::::::.', reporte);
 
         this.grupos = this.groupByCorrelativo(reporte)
           .sort((a, b) => a.correlativo - b.correlativo);

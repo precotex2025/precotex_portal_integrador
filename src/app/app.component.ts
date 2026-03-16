@@ -165,6 +165,10 @@ export class AppComponent {
     this.SpinnerService.show();
     this.secuencias = [];
 
+    if(this.sdc?.length === 0){
+      return;
+    }
+
     this.LabColTrabajoService.getListaSDCDetalle(this.sdc).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -183,6 +187,7 @@ export class AppComponent {
     });
   }
 
+  /*SE QUITÓ DEL HTML PARA INGRESAR PARTIDAS DE PRODUCCIÓN*/
   onlyNumberInput(event: KeyboardEvent) {
     const charCode = event.charCode;
     if (charCode < 48 || charCode > 57) {

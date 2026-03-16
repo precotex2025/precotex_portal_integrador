@@ -90,6 +90,10 @@ export class DialogEntregaAjusteComponent implements OnInit {
     return this.service.postAgregarAuxiliaresHojaFormulacion(registroAux).toPromise();
   }
 
+  patchEntrega(entrega: any): Promise<any> {
+    return this.service.patchActualizarEstadoEntregaProduccion(entrega).toPromise();
+  }
+
   async guardar() {
     console.log('--- Iniciando registro correlativos ---');
     this.spinner.show();
@@ -197,13 +201,13 @@ export class DialogEntregaAjusteComponent implements OnInit {
   }
 
   async guardarAgrupado(): Promise<void> {
-    console.log('--- Iniciando registro correlativos ---');
     this.spinner.show();
     console.log('LAS PARTIDAS AGRUPADAS SON:::::::::::::::::::::::::::::::::::.', this.data.PartidasAgrupadasE);
     try {
       if (!this.data.PartidasAgrupadasE) {
 
         await this.guardarPorPartida(this.data.corr_Carta, this.data.sec);
+        await this.entregarPartida(this.data.corr_Carta);
       } else {
 
         const partidas = this.data.PartidasAgrupadasE.split('/')
@@ -213,15 +217,28 @@ export class DialogEntregaAjusteComponent implements OnInit {
         for (const partida of partidas) {
           console.log('Registrando partida secuencial:', partida);
           await this.guardarPorPartida(partida, this.data.sec);
+          await this.entregarPartida(partida);
         }
       }
 
-      console.log('--- Registro finalizado ---');
     } catch (error) {
       console.error('Error en el proceso:', error);
     } finally {
       this.spinner.hide();
       this.dialogRef.close();
+    }
+  }
+
+  async entregarPartida(Cod_OrdTra: string): Promise<void>{
+    try{
+      const entrega = {
+        cod_OrdTra: Cod_OrdTra
+      }
+
+      await this.patchEntrega(entrega);
+
+    }catch(error){
+      console.error('Error al entregar:', error);
     }
   }
 

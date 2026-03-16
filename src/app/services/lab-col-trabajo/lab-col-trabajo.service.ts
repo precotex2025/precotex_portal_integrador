@@ -456,6 +456,11 @@ export class LabColTrabajoService {
     return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchReformularPartida', data, { headers })
   }
 
+  patchActualizarEstadoEntregaProduccion(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarEstadoEntregaProduccion', data, { headers })
+  }
+
   deleteEliminarOpcionColorante(Corr_Carta: any, Sec: number, Correlativo: number) {
     const headers = this.Header;
     let params = new HttpParams();

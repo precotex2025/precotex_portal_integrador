@@ -14,26 +14,55 @@
   <div class="report" *ngIf="grupos.length > 0">
 
     <!-- Cabecera en tres columnas -->
-    <div class="cabecera">
-      <div class="col">
-        <p><strong>Analista:</strong> {{ grupos[0].reporte.analista }}</p>
-        <p><strong>SDC/PARTIDA:</strong> {{ grupos[0].reporte.corr_Carta }}</p>
-        <p><strong>Cliente:</strong> {{ grupos[0].reporte.nom_Cliente }}</p>
-        <p><strong>Artículo:</strong> {{ grupos[0].reporte.articulo }}</p>
-        <p><strong>Color:</strong> {{ grupos[0].reporte.descripcion_Color }}</p>
+    <div [hidden]="this.mostrarCabecera">
+      <div class="cabecera">
+        <div class="col">
+          <p><strong>Analista:</strong> {{ grupos[0].reporte.analista }}</p>
+          <p><strong>SDC:</strong> {{ grupos[0].reporte.corr_Carta }}</p>
+          <p><strong>Cliente:</strong> {{ grupos[0].reporte.nom_Cliente }}</p>
+          <p><strong>Artículo:</strong> {{ grupos[0].reporte.articulo }}</p>
+          <p><strong>Color:</strong> {{ grupos[0].reporte.descripcion_Color }}</p>
+        </div>
+        <div class="col">
+          <p><strong>Previo:</strong> {{ grupos[0].reporte.previo }}</p>
+          <p><strong>Cantidad Enzimático:</strong> {{ grupos[0].reporte.enz_Can }}</p>
+          <p><strong>Enzima dentro de baño:</strong> {{ grupos[0].reporte.enz_Den_Bno }}</p>
+          <p><strong>Tipo teñido:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
+          <p><strong>Curva teñido:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
+        </div>
+        <div class="col">
+          <p><strong>Curva jabonado:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
+          <p><strong>Cantidad jabonados:</strong> {{ grupos[0].reporte.can_Jab }}</p>
+          <p><strong>Fijado:</strong> {{ grupos[0].reporte.fijado }}</p>
+          <p><strong>Acabado:</strong> {{ grupos[0].reporte.acabado }}</p>
+        </div>
       </div>
-      <div class="col">
-        <p><strong>Previo:</strong> {{ grupos[0].reporte.previo }}</p>
-        <p><strong>Cantidad Enzimático:</strong> {{ grupos[0].reporte.enz_Can }}</p>
-        <p><strong>Enzima dentro de baño:</strong> {{ grupos[0].reporte.enz_Den_Bno }}</p>
-        <p><strong>Tipo teñido:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
-        <p><strong>Curva teñido:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
-      </div>
-      <div class="col">
-        <p><strong>Curva jabonado:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
-        <p><strong>Cantidad jabonados:</strong> {{ grupos[0].reporte.can_Jab }}</p>
-        <p><strong>Fijado:</strong> {{ grupos[0].reporte.fijado }}</p>
-        <p><strong>Acabado:</strong> {{ grupos[0].reporte.acabado }}</p>
+    </div>
+    <div [hidden]="!this.mostrarCabecera">
+      <div class="cabecera">
+        <div class="col">
+          <p><strong>Analista:</strong> {{ grupos[0].reporte.analista }}</p>
+          <p><strong>PARTIDAS:</strong> {{ grupos[0].reporte.partidasAgrupadas }}</p>
+          <p><strong>Cliente:</strong> {{ grupos[0].reporte.nom_Cliente }}</p>
+          <p><strong>Artículo:</strong> {{ grupos[0].reporte.articulo }}</p>
+          <p><strong>Color:</strong> {{ grupos[0].reporte.descripcion_Color }}</p>
+          <p><strong>Color:</strong> {{ grupos[0].reporte.cod_Color }}</p>
+        </div>
+        <div class="col">
+          <p><strong>Previo:</strong> {{ grupos[0].reporte.previo }}</p>
+          <p><strong>Tipo:</strong> {{ grupos[0].reporte.tipoPartida }}</p>
+          <p><strong>Tipo teñido:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
+          <p><strong>Curva teñido:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
+          <p><strong>Temporada: </strong> {{ grupos[0].reporte.temporada }}</p>
+        </div>
+        <div class="col">
+          <p><strong>Curva jabonado:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
+          <p><strong>Cantidad jabonados:</strong> {{ grupos[0].reporte.can_Jab }}</p>
+          <p><strong>Fijado:</strong> {{ grupos[0].reporte.fijado }}</p>
+          <p><strong>Maquina:</strong> {{ grupos[0].reporte.maquina }}</p>
+          <p><strong>Kg Tela:</strong> {{ grupos[0].reporte.kgs_Prod }}</p>
+          <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p>
+        </div>
       </div>
     </div>
 
@@ -153,7 +182,8 @@
 
       <!-- SOLIDECES SDC -->
       <div class="block">
-        <h4>Solidez</h4>
+        <h4 [hidden]="this.mostrarCabecera">Solidez</h4>
+        <h4 [hidden]="!this.mostrarCabecera">Referencias</h4>
         <ul>
           <li *ngFor="let s of grupos[0].reporte.solidez_Reporte; let i = index">
             {{ s.descripcion }}
