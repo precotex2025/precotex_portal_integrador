@@ -44,8 +44,12 @@ interface ColoranteCompleto {
   Sod_Por: string;
 }
 
+interface Datos {
+  relacionBano: number;
+  pesoMuestra: number;
+  volumen: number;
+}
 
-//SE QUITO EL CAMPO ACIDULADO -> FALTA ELIMINARLO DEL BACKEND Y DE LOS SP EN EL SQL
 
 @Component({
   selector: 'app-dialog-agregar-opcion',
@@ -57,6 +61,39 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   @ViewChild('inputColorante') inputColorante!: ElementRef<HTMLInputElement>;
+
+  colorantesDisponibles: { codigo: string, nombre: string, inicial: number }[] = [];
+  curvas: { nombre: string, codigo: number, cantidad: number }[] = [];
+  fijados: { nombre: string, codigo: number }[] = [];
+  productos: { nombre: string, cantidad: number, porcentaje: number }[] = [];
+  tiposFormulacion: { nombre: string, codigo: string }[] = [];
+  coloranteSeleccionado: any = null;
+  correlativoAnterior: number = 0;
+  colorantesSeleccionados: any[] = [];
+
+  parametros = {
+    jabonadas: 0,
+    curva: 0,
+    fijado: 0,
+    tiposFormulacion: ''
+  };
+
+  // datos = {
+  //   relacionBano: 8,
+  //   pesoMuestra: 10,
+  //   volumen: 80
+  // };
+
+  datos: Datos = {
+    relacionBano: 0,
+    pesoMuestra: 0,
+    volumen: 0
+  };
+
+
+  cambiosHabilitados = false;
+  estadoCambio = 0;
+
   constructor(
     private SpinnerService: NgxSpinnerService,
     private LabColTraService: LabColTrabajoService,
@@ -75,6 +112,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   coloranteControl = new FormControl('');
   colorantesFiltrados: any[] = [];
   Familia: string = '';
+  esPartida: boolean = true;
   ngOnInit(): void {
     this.onGetParams();
   }
@@ -92,23 +130,27 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       };
     })
 
+    const empiezaConLetra = /^[A-Za-z]/.test(this.data.Num_SDC);
+    this.esPartida = empiezaConLetra;
+    
     this.correlativo = this.data.Correlativo;
-    console.log('::::::::::::::::::::::', this.data);
+    //console.log('::::::::::::::::::::::', this.data);
     this.coloranteControl.valueChanges.pipe(
       startWith(''),
       map(value => typeof value === 'string' ? this.filtrarColorantes(value) : this.filtrarColorantes(''))
     ).subscribe(filtrados => {
       this.colorantesFiltrados = filtrados;
     });
+    this.GetFamiliasProceso();
     this.getObtenerTrio(this.data.Num_SDC, this.data.Num_Sec);
     this.GetColorantes();
     this.GetCurvasJabonado();
     this.GetFijados();
-    this.GetFamiliasProceso();
     this.quitarFocus();
 
     if (this.data.Title === 'Copiar') {
       //console.log('Cargando datos para modificar...');
+      this.correlativoAnterior = this.data.CorrelativoAnterior!;
       this.cargarDatosParaModificar(this.data.Num_SDC, this.data.Num_Sec, this.data.CorrelativoAnterior || 0);
       setTimeout(() => this.cargando = false, 0);
       //this.actualizarTotalFinal();
@@ -130,31 +172,21 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     );
   }
 
-  colorantesDisponibles: { codigo: string, nombre: string, inicial: number }[] = [];
-  curvas: { nombre: string, codigo: number, cantidad: number }[] = [];
-  fijados: { nombre: string, codigo: number }[] = [];
-  productos: { nombre: string, cantidad: number, porcentaje: number }[] = [];
-  tiposFormulacion: { nombre: string, codigo: number }[] = [];
-  coloranteSeleccionado: any = null;
+  
 
-  colorantesSeleccionados: any[] = [];
-
-  parametros = {
-    jabonadas: 0,
-    curva: 0,
-    fijado: 0,
-    tiposFormulacion: ''
-  };
-
-  datos = {
-    relacionBano: 8,
-    pesoMuestra: 10,
-    volumen: 80
-  };
+  getDatosRelBanPesMueVol(): void {
+    if (!this.esPartida) {
+      this.datos.relacionBano = 8;
+      this.datos.pesoMuestra = 10;
+      this.datos.volumen = 80;
+    } else {
+      this.datos.relacionBano = 8;
+      this.datos.pesoMuestra = 10;
+      this.datos.volumen = 80;
+    }
+  }
 
 
-  cambiosHabilitados = false;
-  estadoCambio = 0;
 
   onColoranteSeleccionado(event: MatAutocompleteSelectedEvent): void {
     this.Familia = this.parametros.tiposFormulacion.toString();
@@ -178,7 +210,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
     this.colorantesFiltrados = this.filtrarColorantes('');
 
-    this.actualizarTotalFinal();
+    //this.actualizarTotalFinal();
   }
 
   mostrarNombre(colorante: any): string {
@@ -190,9 +222,9 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     colorante.ajuste = parseFloat((colorante.ajuste + delta).toFixed(4));
   }
 
-  calcularFinal(colorante: any): number {
-    return Math.max(0, parseFloat((colorante.inicial + (colorante.inicial * colorante.ajuste) / 100).toFixed(4)));
-  }
+  // calcularFinal(colorante: any): number {
+  //   return Math.max(0, parseFloat((colorante.inicial + (colorante.inicial * colorante.ajuste) / 100).toFixed(5)));
+  // }
 
   totalFinalColorantes: number = 0;
   condicion: number = 0;
@@ -200,21 +232,22 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   actualizarTotalFinal(): void {
     this.Familia = this.parametros.tiposFormulacion.toString();
     this.colorantesSeleccionados.forEach(c => {
-      c.inicial = parseFloat(c.inicial.toFixed(5));
+      c.inicial = parseFloat(c.inicial) || 0;
     });
 
     this.totalFinalColorantes = this.colorantesSeleccionados
       .map(c => this.calcularFinal(c))
       .reduce((acc, val) => acc + val, 0);
 
-    this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, this.Familia);
-    this.GetFijadosCalculado(this.totalFinalColorantes, this.Familia);
+    
     const contieneAMAVBTES = this.colorantesSeleccionados.some(c => c.codigo === 'QC000472');
 
     if (contieneAMAVBTES) {
       this.condicion = 1;
     }
 
+    this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, this.Familia);
+    this.GetFijadosCalculado(this.totalFinalColorantes, this.Familia);
     this.GetCarbonatoSodaCalculado(this.totalFinalColorantes, this.Familia, this.condicion);
 
   }
@@ -237,7 +270,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   }
 
   limitarDecimales(colorante: any): void {
-    colorante.inicial = parseFloat(colorante.inicial.toFixed(5));
+    //colorante.inicial = parseFloat(colorante.inicial.toFixed(5));
+    colorante.inicial = parseFloat(colorante.inicial);
     this.actualizarTotalFinal();
   }
 
@@ -281,10 +315,16 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       this.toastr.warning('Debe agregar al menos un colorante', '', { timeOut: 2500 });
       return;
     }
-
+    //console.log(this.productos);
+    // console.log(this.parametros);
+    // console.log(this.parametros.tiposFormulacion);
+    // console.log('.............ENTRAMOS..............', )
     const carbonato = this.productos.find(p => p.nombre.toUpperCase().includes('CARBONATO'));
     const soda = this.productos.find(p => p.nombre.toUpperCase().includes('SODA'));
     const familia = this.parametros.tiposFormulacion.toString();
+    // console.log(carbonato);
+    // console.log(soda);
+    // console.log(familia);
 
     const comunes = {
       Corr_Carta: this.data?.Num_SDC?.toString() || '',
@@ -325,16 +365,33 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     let errores = 0;
 
     this.colorantesSeleccionados.forEach((c, index) => {
-      const datos = {
-        ...comunes,
-        Col_Cod: c.codigo,
-        Procedencia: "Opcion Agregada",
-        Por_Ini: c.inicial.toFixed(4),
-        Por_Aju: c.ajuste.toFixed(4),
-        Por_Fin: this.calcularFinal(c).toFixed(4)
-      };
-
-      this.LabColTraService.postAgregarOpcionColorante(datos).subscribe({
+      
+      let datitos
+      if (this.data.Title === 'Copiar') {
+        datitos = {
+          ...comunes,
+          Col_Cod: c.codigo,
+          Procedencia: "Opcion Agregada",
+          Por_Ini: c.inicial.toFixed(5),
+          Por_Aju: c.ajuste,
+          Por_Fin: c.final.toFixed(5)
+        };
+      } else {
+        datitos = {
+          ...comunes,
+          Col_Cod: c.codigo,
+          Procedencia: "Opcion Agregada",
+          Por_Ini: c.inicial.toFixed(5),
+          Por_Aju: c.ajuste,
+          Por_Fin: this.calcularFinal(c).toFixed(5)
+        };
+      }
+      
+      //console.log('::::::::::::::::::::::::::.', comunes)
+      //console.log('::::::::::::::::::::::::::::::.', comunes2)
+      //console.log(':::::::::::::::::::::::::::::::::::.', datitos)
+      
+      this.LabColTraService.postAgregarOpcionColorante(datitos).subscribe({
         next: (response: any) => {
           if (!response.success) errores++;
           pendientes--;
@@ -646,25 +703,36 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         this.colorantesSeleccionados = (datos.colorantes ?? []).map((c: any) => ({
           codigo: c.col_Cod,
           nombre: c.col_Des,
-          inicial: c.por_Ini ? parseFloat(c.por_Ini.toFixed(5)) : 0,
-          ajuste: 0
+          inicial: c.por_Fin ? parseFloat(c.por_Fin.toFixed(5)) : 0,
+          ajuste: 0,
+          final:  c.por_Fin ? parseFloat(c.por_Fin.toFixed(5)) : 0
         }));
+
+        let tipoFamilia: string = datos.familia.toString();
+
+      
 
         this.parametros = {
           jabonadas: datos.can_Jabo ?? 0,
           curva: parseInt(datos.cur_Jabo) ?? 0,
           fijado: parseInt(datos.fijado) ?? 0,
-          tiposFormulacion: datos.familia ?? ''
+          //tiposFormulacion: datos.familia ?? ''
+          tiposFormulacion: tipoFamilia ?? ''
         };
 
+        console.log(this.parametros);
+
         const peso = datos.pes_Mue ?? 0;
-        const relacion = Math.floor(Number(datos.rel_Ban ?? 0));
+        const relacion = Number(datos.rel_Ban ?? 0);
 
         this.datos = {
           relacionBano: relacion,
           pesoMuestra: peso,
           volumen: relacion * peso
         };
+
+        console.log('::::::::::::::::::::::::::::::::::::::.', this.datos);
+        
 
         this.actualizarTotalFinalDesdeCopiar(datos.familia.toString());
 
@@ -691,10 +759,10 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     this.LabColTraService.getObtenerTrio(Corr_Carta, Sec).subscribe({
       next: (response: any) => {
         if (response.success) {
-          this.datos.relacionBano = Math.floor(response.elements[0].rel_Ban);
+          this.datos.relacionBano = response.elements[0].rel_Ban;
           this.datos.pesoMuestra = response.elements[0].pes_Mue;
           this.datos.volumen = response.elements[0].volumen;
-          this.parametros.tiposFormulacion = response.elements[0].familia;
+          //this.parametros.tiposFormulacion = response.elements[0].familia;
         }
       },
       error: (error: any) => {
@@ -744,5 +812,58 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       this.router.navigate(['HojaFormulacion']);
     }
   }
+
+  // actualizarDesdeFinal(colorante: any): void {
+  //   const final = Number(colorante.final) || 0;
+  //   const ajuste = Number(colorante.ajuste) || 0;
+
+  //   colorante.inicial = final / (1 + ajuste / 100);
+
+  //   this.actualizarTotalFinal();
+  // }
+
+  actualizarDesdeFinal(colorante: any): void {
+    const final = Number(colorante.final) || 0;
+    const inicial = Number(colorante.inicial) || 0;
+
+    if (inicial !== 0) {
+      colorante.ajuste = ((final - inicial) / inicial) * 100;
+    } else {
+      colorante.ajuste = 0;
+    }
+
+    this.actualizarTotalFinal();
+  }
+
+
+  calcularFinal(colorante: any): number {
+    console.log(':::::::::::::::::::.', colorante);
+    return Math.max(
+      0,
+      parseFloat(
+        (colorante.inicial + (colorante.inicial * colorante.ajuste) / 100).toFixed(5)
+      )
+    );
+  }
+
+  actualizarFinal(colorante: any): void {
+    console.log(':::::::::::::::::::::::::::::::::::::::::.', colorante);
+    colorante.final = this.calcularFinal(colorante);
+    this.actualizarTotalFinal();
+  }
+
+  validarNumero(event: KeyboardEvent) {
+    const char = event.key;
+    if (!/[0-9.]/.test(char)) {
+      event.preventDefault();
+    }
+  }
+
+  formatearDosDecimales(colorante: any) {
+    if (colorante.ajuste !== null && colorante.ajuste !== undefined) {
+      colorante.ajuste = parseFloat(colorante.ajuste);
+    }
+  }
+
 
 }

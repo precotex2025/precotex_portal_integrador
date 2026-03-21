@@ -98,22 +98,22 @@ export class LabHojaFormulacionComponent implements OnInit {
     if (this.data.corr_CartaR !== '' && this.data.secR !== 0) {
       const encontrada = this.recetas.find(r => r.corr_Carta === this.data.corr_CartaR && r.sec === this.data.secR)!;
       const empiezaConLetra = /^[A-Za-z]/.test(encontrada.corr_Carta);
-      if (encontrada) {
-        this.recetaSeleccionada = encontrada;
-        this.Corr_Carta_Remover = encontrada.corr_Carta;
-        this.Sec_Remover = encontrada.sec;
+      //if (encontrada) {
+        // this.recetaSeleccionada = encontrada;
+        // this.Corr_Carta_Remover = encontrada.corr_Carta;
+        // this.Sec_Remover = encontrada.sec;
         this.mostrarPartidas = empiezaConLetra
         this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
         this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
         this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover);
-      }
+      //}
     }
   }
 
   recetaSeleccionadaDesplegable() {
     const guardada = localStorage.getItem('recetaSeleccionada');
     
-    if (guardada) {
+    //if (guardada) {
       const encontrada = this.recetas.find(r => r.corr_Carta.toString() === guardada);
       this.recetaSeleccionada = encontrada || this.recetas[0];
       this.Corr_Carta_Remover = this.recetaSeleccionada.corr_Carta;
@@ -123,10 +123,10 @@ export class LabHojaFormulacionComponent implements OnInit {
       this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
       this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
       this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover);
-    } else {
-      this.mostrarPartidas = false;
-      this.recetaSeleccionada = this.recetas[0];
-    }
+    //} else {
+      //this.mostrarPartidas = false;
+      //this.recetaSeleccionada = this.recetas[0];
+    //}
   }
 
   showRecetas = false;
@@ -426,7 +426,7 @@ export class LabHojaFormulacionComponent implements OnInit {
   onAgregarOpcion() {
 
     let correlativo: number = this.getCorrelativoMayor();
-    console.log('el correlativo cuando no hay columnas es: ', correlativo);
+    //console.log('el correlativo cuando no hay columnas es: ', correlativo);
     if (correlativo === -Infinity) {
       correlativo = 0;
     }
@@ -520,16 +520,21 @@ export class LabHojaFormulacionComponent implements OnInit {
           });
         });
 
+        // correlativosMap.forEach(f => {
+        //   f.colorantes.sort((a: any, b: any) => a.col_Des.localeCompare(b.col_Des));
+        // });
+
         correlativosMap.forEach(f => {
-          f.colorantes.sort((a: any, b: any) => a.col_Des.localeCompare(b.col_Des));
+          f.colorantes.sort((a: any, b: any) => a.id_secuencia - b.id_secuencia);
         });
 
         this.formulaciones = Array.from(correlativosMap.values())
           .sort((a, b) => Number(b.numeroColumna) - Number(a.numeroColumna));
-        console.log('Formulaciones generadas:', this.formulaciones.map(f => ({
-          correlativo: f.numeroColumna,
-          estado: f.flg_Est_Autolab
-        })));
+        
+        // console.log('Formulaciones generadas:', this.formulaciones.map(f => ({
+        //   correlativo: f.numeroColumna,
+        //   estado: f.flg_Est_Autolab
+        // })));
 
 
         this.formulaciones.forEach(f => {
@@ -711,8 +716,8 @@ export class LabHojaFormulacionComponent implements OnInit {
     };
 
     let dialogref = this.dialog.open(DialogEntregaAjusteComponent, {
-      width: '800px',
-      height: '300px',
+      width: '900px',
+      height: '400px',
       data: payload
     });
     dialogref.afterClosed().subscribe(result => { this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover); }

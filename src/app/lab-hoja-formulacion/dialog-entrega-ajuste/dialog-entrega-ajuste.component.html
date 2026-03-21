@@ -1,5 +1,5 @@
 <table mat-table [dataSource]="colorantes" class="mat-elevation-z8 tabla-ajuste">
-
+    
     <ng-container matColumnDef="col_Cod">
         <th mat-header-cell *matHeaderCellDef> Código </th>
         <td mat-cell *matCellDef="let element"> {{ element.col_Cod }} </td>
@@ -10,13 +10,37 @@
         <td mat-cell *matCellDef="let element"> {{ element.col_Des }} </td>
     </ng-container>
 
-    <ng-container *ngFor="let corr of data.correlativos" [matColumnDef]="corr.toString()">
+    <!-- <ng-container *ngFor="let corr of data.correlativos" [matColumnDef]="corr.toString()">
         <th mat-header-cell *matHeaderCellDef> {{ corr }} </th>
         <td mat-cell *matCellDef="let element">
             <input matInput type="number" [(ngModel)]="element.valores[corr.toString()].por_Fin" step="0.0001"
                 class="valor-input" />
         </td>
+    </ng-container> -->
+
+    <ng-container *ngFor="let corr of data.correlativos">
+        <ng-container matColumnDef="inicial">
+            <th mat-header-cell *matHeaderCellDef> Inicial </th>
+            <td mat-cell *matCellDef="let element">
+                <input class="inputCentrado" matInput type="number" [(ngModel)]="element.valores[corr].por_Ini" step="0.000001" (keypress)="validarNumero($event)" />
+            </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="ajuste">
+            <th mat-header-cell *matHeaderCellDef> Ajuste </th>
+            <td mat-cell *matCellDef="let element">
+                <input class="inputCentrado" matInput type="number" [(ngModel)]="element.valores[corr].por_Aju" step="0.000001" (keypress)="validarNumero($event)" />
+            </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="final">
+            <th mat-header-cell *matHeaderCellDef> Final </th>
+            <td mat-cell *matCellDef="let element">
+                <input class="inputCentrado" matInput type="number" [(ngModel)]="element.valores[corr].por_Fin" step="0.000001" (keypress)="validarNumero($event)" />
+            </td>
+        </ng-container>
     </ng-container>
+
 
     <!-- Render de filas -->
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

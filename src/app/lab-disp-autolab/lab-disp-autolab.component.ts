@@ -273,7 +273,8 @@ export class LabDispAutolabComponent implements OnInit {
     'sec',
     'correlativo',
     'ph_Ini',
-    'detalle'
+    'detalle',
+    'reenvio'
   ];
 
 
@@ -784,6 +785,30 @@ export class LabDispAutolabComponent implements OnInit {
     });
   }
 
+
+  patchActualizarEstadoDeColorTricomia(row: any): void {
+    let Corr_Carta: string = row.corr_Carta;
+    let Sec: number = row.sec;
+    let Correlativo: number = row.correlativo;
+
+    const data = {
+      corr_Carta: Corr_Carta,
+      sec: Sec,
+      correlativo: Correlativo,
+      flg_Est_Lab: '05'
+    }
+
+    //console.log('la data para reenviar es:::::::::::::::::::::....', data);
+
+    this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(data).subscribe({
+      next: (response: any) => {
+        this.onListarDispensado(this.Usuario);
+      },
+      error: (error: any) => {
+
+      }
+    });
+  }
 
 
 

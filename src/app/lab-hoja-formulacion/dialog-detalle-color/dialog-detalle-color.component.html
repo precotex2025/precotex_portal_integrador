@@ -7,10 +7,10 @@
     <div class="receta-cell">Curva teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.cur_Tenido }}</div>
     <div class="receta-cell">Previo</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.previo }}</div>
 
-    <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod > 0">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod > 0">{{ recetaDetalle.r_B | number:'1.0-0' }}</div>
+    <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod > 0">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod > 0">{{ recetaDetalle.r_B | number:'1.2-2' }}</div>
     <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">{{ recetaDetalle.r_B_Prod | number:'1.2-2' }}</div>
 
-    <div class="receta-cell">Peso de muestra (gr)</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.pes_Mue | number:'1.0-0' }}</div>
+    <div class="receta-cell">Peso de muestra (gr)</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.pes_Mue | number:'1.2-2' }}</div>
 
 
 
@@ -60,12 +60,14 @@
     <div class="receta-table3">
       <div class="header">Nombre</div>
       <div class="header">%</div>
+      <div class="header">Ajuste %</div>
       <div class="header">gr</div>
 
       <ng-container *ngFor="let col of recetaDetalle.colorantes">
         <div class="cell" [ngClass]="{'rojo': col.ingreso_Manual === 1}">{{ col.col_Des }}</div>
-        <div class="cell" [ngClass]="{'rojo': col.ingreso_Manual === 1}">{{ col.por_Fin | number:'1.2-2' }}</div>
-        <div class="cell" [ngClass]="{'rojo': col.ingreso_Manual === 1}">{{ (col.por_Fin * recetaDetalle.pes_Mue) / 100 | number:'1.2-2' }}</div>
+        <div class="cell" [ngClass]="{'rojo': col.ingreso_Manual === 1}">{{ col.por_Fin | number:'1.5-5' }}</div>
+        <div class="cell" [ngClass]="{'rojo': col.ingreso_Manual === 1}">{{ col.por_Aju | number:'1.5-5' }}</div>
+        <div class="cell" [ngClass]="{'rojo': col.ingreso_Manual === 1}">{{ (col.por_Fin * recetaDetalle.pes_Mue) / 100 | number:'1.5-5' }}</div>
       </ng-container>
     </div>
   </div>

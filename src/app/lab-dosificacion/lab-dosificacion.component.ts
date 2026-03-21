@@ -93,7 +93,8 @@ export class LabDosificacionComponent implements OnInit {
     'soda',
     'sec',
     'correlativo',
-    'ph_Fin'
+    'ph_Fin',
+    'reenvio'
   ];
 
   ingresarPH(row: any): void {
@@ -284,6 +285,32 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
         }
       },
       error: (error: any) => {
+      }
+    });
+  }
+
+  patchActualizarEstadoDeColorTricomia(row: any): void {
+    let Corr_Carta: string = row.corr_Carta;
+    let Sec: number = row.sec;
+    let Correlativo: number = row.correlativo;
+
+    const data = {
+      corr_Carta: Corr_Carta,
+      sec: Sec,
+      correlativo: Correlativo,
+      flg_Est_Lab: '05'
+    }
+
+    console.log('::::::::::::::::.', data);
+
+    this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(data).subscribe({
+      next: (response: any) => {
+        if(response.success){
+          this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+        }
+      },
+      error: (error: any) => {
+
       }
     });
   }

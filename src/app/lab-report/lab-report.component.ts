@@ -12,6 +12,10 @@ interface Insumo {
   correlativo: number;
 }
 
+interface Ph {
+  ph_Ini: number;
+}
+
 interface Ruta {
   descripcion: string;
 }
@@ -216,6 +220,18 @@ export class LabReportComponent implements OnInit {
       });
       return { descripcion: des, valores };
     });
+
+
+    // const filaPhIni = {
+    //   descripcion: 'Ph_Ini',
+    //   valores: this.grupos.map(grupo => ({
+    //     correlativo: grupo.correlativo,
+    //     porcentaje: grupo.Ph?.ph_Ini ?? '0.0000'
+    //   }))
+    // };
+
+    // this.colorantesTabla.push(filaPhIni);
+
 
     this.correlativos = this.grupos.map(g => g.correlativo);
   } 

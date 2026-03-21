@@ -67,6 +67,7 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
     'num_sec',
     'color',
     'fec_Asignacion',
+    'fec_Entrega',
     'dias_Lab',
     'est_ton_com',
     'formulado',
@@ -85,7 +86,7 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
   pintarEnvio(row: any): string {
     const est_lab = row.flg_Est_Lab;
     if (est_lab === '02') {
-      return 'Color-Verde'
+      return 'Color-Amarillo'
     } else if (est_lab === '03') {
       return 'Color-Verde'
     } else if (est_lab === '04') {

@@ -234,8 +234,8 @@
 
         <!-- Peso Muestra -->
         <ng-container matColumnDef="pes_Mue">
-          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Peso Muestra</th>
-          <td mat-cell *matCellDef="let row" class="centrado">{{ row.pes_Mue }}</td>
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Peso Muestra</th> 
+          <td mat-cell *matCellDef="let row" class="centrado">{{ row.pes_Mue | number:'1.2-2'}}</td>
         </ng-container>
 
         <!-- pH Inicio -->
@@ -252,6 +252,15 @@
           <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Detalle</th>
           <td mat-cell *matCellDef="let row" class="centrado">
             <button mat-button color="primary" (click)="verReceta(row)">VER</button>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="reenvio">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Reenviar</th>
+          <td mat-cell *matCellDef="let row" class="centrado">
+            <button mat-button color="primary" (click)="patchActualizarEstadoDeColorTricomia(row)">
+              <mat-icon>autorenew</mat-icon>
+            </button>
           </td>
         </ng-container>
 

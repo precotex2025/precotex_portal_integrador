@@ -18,7 +18,8 @@ interface data {
 export class DialogEntregaAjusteComponent implements OnInit {
 
   colorantesDetalle: any[] = [];
-  displayedColumns: string[] = ['col_Cod', 'col_Des', ...this.data.correlativos];
+  //displayedColumns: string[] = ['col_Cod', 'col_Des', ...this.data.correlativos];
+  displayedColumns: string[] = ['col_Cod', 'col_Des'];
   colorantes: any[] = [];
   CorrelativoNuevo: number = 0;
   Familia: string = '';
@@ -30,10 +31,14 @@ export class DialogEntregaAjusteComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.displayedColumns = ['col_Cod', 'col_Des', ...this.data.correlativos.map(c => c.toString())];
+    //this.displayedColumns = ['col_Cod', 'col_Des', ...this.data.correlativos.map(c => c.toString())];
+    this.displayedColumns = ['col_Cod', 'col_Des'];
     console.log('Columnas definidas:', this.displayedColumns);
 
     for (const corr of this.data.correlativos) {
+      this.displayedColumns.push('inicial');
+      this.displayedColumns.push('ajuste');
+      this.displayedColumns.push('final');
       this.getCargarColoranteParaDetalle(this.data.corr_Carta, this.data.sec, corr);
     }
   }
@@ -56,10 +61,18 @@ export class DialogEntregaAjusteComponent implements OnInit {
 
           if (existente) {
             if (!existente.valores) existente.valores = {};
-            existente.valores[correlativo.toString()] = { por_Fin: c.por_Fin ?? 0 };
+            existente.valores[correlativo.toString()] = { 
+              por_Ini: (c.por_Fin).toFixed(5) ?? 0,
+              por_Aju: 0,
+              por_Fin: (c.por_Fin).toFixed(5) ?? 0
+            };
           } else {
             if (!c.valores) c.valores = {};
-            c.valores[correlativo.toString()] = { por_Fin: c.por_Fin ?? 0 };
+            c.valores[correlativo.toString()] = { 
+              por_Ini: (c.por_Fin).toFixed(5) ?? 0,
+              por_Aju: 0,
+              por_Fin: (c.por_Fin).toFixed(5) ?? 0
+            };
             this.colorantes.push(c);
           }
         });
@@ -174,18 +187,25 @@ export class DialogEntregaAjusteComponent implements OnInit {
       console.log(`Procesando correlativo ${corr} con secuencia ${correlativoNuevo} y familia ${familia}`);
 
       for (const colorante of this.colorantes) {
-        const valor = colorante.valores[corr]?.por_Fin ?? 0;
+        
+        const valor_Ini = colorante.valores[corr]?.por_Ini ?? 0;
+        const valor_Aju = colorante.valores[corr]?.por_Aju ?? 0;
+        const valor_Fin = colorante.valores[corr]?.por_Fin ?? 0;
+
         const registro = {
           corr_Carta: corr_Carta,
           sec: 1,
           correlativo: corr,
           col_Cod: colorante.col_Cod,
-          por_Fin: valor,
+          por_Ini: valor_Ini,
+          por_Aju: valor_Aju,
+          por_Fin: valor_Fin,
           correlativo_Nuevo: correlativoNuevo
         };
         console.log('Guardando colorante:', registro);
         await this.postColorante(registro);
       }
+      let procedencia: string = 'Mosquito' + corr.toString();
 
       const registroAuxiliares = {
         corr_Carta: corr_Carta,
@@ -193,8 +213,9 @@ export class DialogEntregaAjusteComponent implements OnInit {
         correlativo: correlativoNuevo,
         familia: familia,
         cambio: 0,
-        procedenciaHardCodeada: 'Mosquito'
+        procedenciaHardCodeada: procedencia
       };
+      
       console.log('Guardando auxiliares:', registroAuxiliares);
       await this.postAuxiliares(registroAuxiliares);
     }
@@ -234,7 +255,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
       const entrega = {
         cod_OrdTra: Cod_OrdTra
       }
-
+      console.log
       await this.patchEntrega(entrega);
 
     }catch(error){
@@ -242,8 +263,12 @@ export class DialogEntregaAjusteComponent implements OnInit {
     }
   }
 
-
-
+  validarNumero(event: KeyboardEvent) {
+    const char = event.key;
+    if (!/[0-9.]/.test(char)) {
+      event.preventDefault();
+    }
+  }
 
 
 }

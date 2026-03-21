@@ -61,13 +61,13 @@ export class LabColTrabajoComponent implements OnInit {
   ngOnInit(): void {
 
     if (this.authService.isLoggedIn()) {
-      console.log('Usuario activo: -------', this.authService.getUsuario());
+      // console.log('Usuario activo: -------', this.authService.getUsuario());
       this.Usuario = this.authService.getUsuario()!;
     } else {
       this.router.navigate(['/login']);
     }
     this.usuario = this.authService.getUsuario();
-    console.log('EL USUARIO EN ESTE PUNTO ES: ---------', this.usuario);
+    // console.log('EL USUARIO EN ESTE PUNTO ES: ---------', this.usuario);
     // this.onGetListaSDC();
     // this.getObtenerDatosProduccion();
     this.estadoSeleccionado = '01';
@@ -106,6 +106,7 @@ export class LabColTrabajoComponent implements OnInit {
     //'dias_comp',
     'cod_Color',
     'des_Color',
+    'partidas',
     'estado',
     'reformular'
   ]
@@ -210,7 +211,7 @@ export class LabColTrabajoComponent implements OnInit {
           if (response.success) {
             if (response.totalElements > 0) {
               this.dataListadoProduccion = response.elements;
-              console.log('dataListadoProduccion: -------------------------', this.dataListadoProduccion);
+              //console.log('dataListadoProduccion: -------------------------', this.dataListadoProduccion);
               this.dataSourceProduccion.data = this.dataListadoProduccion;
               this.dataSourceProduccion.sort = this.sortProduccion;
               this.SpinnerService.hide();
@@ -272,7 +273,12 @@ export class LabColTrabajoComponent implements OnInit {
 
   aplicarFiltrarTodo(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    this.dataSource.filter = filterValue;
+    if(this.estadoSeleccionadoChild === '05'){
+      this.dataSourceProduccion.filter = filterValue;
+    }else{
+      this.dataSource.filter = filterValue;
+    }
+    
   }
 
   filtrarTodo(): void {

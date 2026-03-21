@@ -1,6 +1,8 @@
 <div class="agregar-opcion-container">
   <div class="selector-botones-wrapper">
-    
+    <div *ngIf="data.Title === 'Copiar'">
+      <h2>Copia de Corrida # {{ this.correlativoAnterior}}</h2>
+    </div>
 
     <!-- SELECTOR FAMILIA -->
     <div class="tipo-formulacion-wrapper">
@@ -60,15 +62,36 @@
                 <input class="colorante-inicial" 
                 type="number"
                 [(ngModel)]="colorante.inicial"
-                (ngModelChange)="limitarDecimales(colorante)"
-                step="0.01"/>
+                (ngModelChange)="limitarDecimales(colorante); actualizarFinal(colorante)"
+                step="0.01"
+                (keypress)="validarNumero($event)" 
+                (blur)="formatearDosDecimales(colorante)"
+                [disabled]="data.Title === 'Copiar'"/>
               </div>
               <div class="colorante-cell ajuste">
-              <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.5); actualizarTotalFinal()">−</button>
-              <input type="number" [(ngModel)]="colorante.ajuste" step="0.01" (ngModelChange)="actualizarTotalFinal()" />
-              <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.5); actualizarTotalFinal()" >+</button>
+              <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.5); actualizarFinal(colorante)">−</button>
+              <input class="casillaAjuste" 
+                    type="number" 
+                    [(ngModel)]="colorante.ajuste" 
+                    step="0.01" 
+                    (ngModelChange)="actualizarFinal(colorante)" 
+                    (keypress)="validarNumero($event)"
+                    (blur)="formatearDosDecimales(colorante)" />
+              <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.5); actualizarFinal(colorante); " >+</button>
               </div>
-              <div class="colorante-cell final">{{ calcularFinal(colorante).toFixed(5) }}</div>
+              <!-- <div class="colorante-cell final">{{ calcularFinal(colorante).toFixed(5) }}</div> -->
+              
+              <div class="colorante-cell final">
+                <input type="number"
+                      class="colorante-final"
+                      [(ngModel)]="colorante.final"
+                      step="0.00001"
+                      (ngModelChange)="actualizarDesdeFinal(colorante)"}
+                      (keypress)="validarNumero($event)" 
+                      (blur)="formatearDosDecimales(colorante)"
+                      [disabled]="data.Title === 'Insertar'" />
+              </div>
+
               <div class="colorante-cell accion">
               <button mat-button (click)="quitarColorante(colorante)">
                 <a><mat-icon>delete</mat-icon></a>
@@ -134,12 +157,12 @@
       <h3>Baño - Peso - Volumen</h3>
       <mat-form-field appearance="fill">
         <mat-label>Relación baño</mat-label>
-        <input matInput type="number" [(ngModel)]="datos.relacionBano" step="1" min="0" [disabled]="!cambiosHabilitados"/>
+        <input matInput type="number" [ngModel]="datos.relacionBano | number:'1.2-2'" step="1" min="0" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Peso de muestra</mat-label>
-        <input matInput type="number" [(ngModel)]="datos.pesoMuestra" (ngModelChange)="calcularRelacionBano()" [disabled]="!cambiosHabilitados"/>
+        <input matInput type="number" [ngModel]="datos.pesoMuestra | number: '1.2-2'" (ngModelChange)="calcularRelacionBano()" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
 
       <mat-form-field appearance="fill">

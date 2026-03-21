@@ -92,7 +92,9 @@
                      <ng-container *ngIf="fila.key === 'detalle'; else valorNormal"> <button mat-button color="primary" (click)="verDetalle(f)">VER</button> </ng-container>
                      <ng-template #valorNormal>
                         <span *ngSwitchCase="'texto'">{{ getValor(f, fila.key) }}</span> 
-                        <span *ngSwitchCase="'numero'"> {{ fila.key === 'cur_Jabo' ? (getValor(f, fila.key) | number:'1.2-2') : 
+                        <span *ngSwitchCase="'numero'"> {{ 
+                        fila.key === 'cur_Jabo' ? (getValor(f, fila.key) | number:'1.2-2') : 
+                        fila.key === 'pes_Mue' ? (getValor(f, fila.key) | number:'1.2-2') :
                         fila.key.startsWith('SAL') ? getValorColorantePorCodigo(f.colorantes, fila.key) : 
                         fila.key.startsWith('SULFATO') ? getValorColorantePorCodigo(f.colorantes, fila.key) : 
                         ( fila.key.startsWith('QC') || fila.key.startsWith('SM') || fila.key.startsWith('QQ') || fila.key.startsWith('QA') ? (getValorColorantePorCodigo(f.colorantes, fila.key) | number:'1.5-5') : 

@@ -73,8 +73,6 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
       next:(response: any) => {
         if(response.success){
           
-          
-          // variable booleana
           let empiezaConNumero = !isNaN(Number(Corr_Carta.charAt(0))) && Corr_Carta.charAt(0) !== "0";
 
           if (empiezaConNumero) {
