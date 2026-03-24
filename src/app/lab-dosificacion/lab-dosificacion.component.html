@@ -17,10 +17,13 @@
   <div class="tabla-contenido">
     
     <div class="titulo-con-botones">
-      <h2>{{ tituloCurva }}</h2>
+      <div>
+        <h2>{{ tituloCurva }}</h2>
+      </div>
       <div class="botones-extra">
         <button mat-raised-button color="primary" (click)="IniciarProceso()" [disabled]="btnIniciarDisabled">Iniciar</button>
         <button mat-raised-button color="accent" (click)="FinalizarProceso()" [disabled]="btnFinalizarDisabled">Terminar</button>
+        <button mat-raised-button color="warn" mat-dialog-close>Cerrar</button>
       </div>
     </div>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 tabla-dosificacion">

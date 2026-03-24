@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { LabColTrabajoService } from '../../services/lab-col-trabajo/lab-col-trabajo.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 
 interface data {
   corr_Carta: any;
@@ -23,17 +24,19 @@ export class DialogEntregaAjusteComponent implements OnInit {
   colorantes: any[] = [];
   CorrelativoNuevo: number = 0;
   Familia: string = '';
+  esExitoso: number = 1;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: data,
     private dialogRef: MatDialogRef<DialogEntregaAjusteComponent>,
     private service: LabColTrabajoService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
     //this.displayedColumns = ['col_Cod', 'col_Des', ...this.data.correlativos.map(c => c.toString())];
     this.displayedColumns = ['col_Cod', 'col_Des'];
-    console.log('Columnas definidas:', this.displayedColumns);
+    //console.log('Columnas definidas:', this.displayedColumns);
 
     for (const corr of this.data.correlativos) {
       this.displayedColumns.push('inicial');
@@ -55,6 +58,8 @@ export class DialogEntregaAjusteComponent implements OnInit {
             }
           });
         }
+
+        console.log(':::::::::::::::::::::.', lista);
 
         lista.forEach((c: any) => {
           const existente = this.colorantes.find(x => x.col_Cod === c.col_Cod);
@@ -108,7 +113,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
   }
 
   async guardar() {
-    console.log('--- Iniciando registro correlativos ---');
+    //console.log('--- Iniciando registro correlativos ---');
     this.spinner.show();
 
     const correlativosOrdenados = [...this.data.correlativos].sort((a, b) => b - a);
@@ -119,7 +124,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
         const correlativoNuevo = response.elements[0].correlativo;
         const familia = response.elements[0].familia;
 
-        console.log(`Procesando correlativo ${corr} con secuencia ${correlativoNuevo} y familia ${familia}`);
+        //console.log(`Procesando correlativo ${corr} con secuencia ${correlativoNuevo} y familia ${familia}`);
 
         for (const colorante of this.colorantes) {
           const valor = colorante.valores[corr]?.por_Fin ?? 0;
@@ -133,7 +138,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
             correlativo_Nuevo: correlativoNuevo
           };
 
-          console.log('Guardando colorante:', registro);
+          //console.log('Guardando colorante:', registro);
           await this.postColorante(registro);
         }
 
@@ -146,13 +151,13 @@ export class DialogEntregaAjusteComponent implements OnInit {
           procedenciaHardCodeada: 'Mosquito'
         };
 
-        console.log('Guardando auxiliares:', registroAuxiliares);
+        //console.log('Guardando auxiliares:', registroAuxiliares);
         await this.postAuxiliares(registroAuxiliares);
       }
 
-      console.log('--- Registro finalizado ---');
+      //console.log('--- Registro finalizado ---');
     } catch (error) {
-      console.error('Error en el proceso:', error);
+      //console.error('Error en el proceso:', error);
     } finally {
       this.dialogRef.close();
       this.spinner.hide();
@@ -167,7 +172,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
     this.service.getObtenerUltimoCorrelativo(Corr_Carta, Sec).subscribe({
       next: (response: any) => {
         this.CorrelativoNuevo = response.elements[0].correlativo;
-        console.log(this.CorrelativoNuevo);
+        //console.log(this.CorrelativoNuevo);
       },
       error: (error: any) => {
 
@@ -178,19 +183,27 @@ export class DialogEntregaAjusteComponent implements OnInit {
 
   async guardarPorPartida(corr_Carta: string, sec: number): Promise<void> {
     const correlativosOrdenados = [...this.data.correlativos].sort((a, b) => b - a);
-
+    this.esExitoso = 1;
     for (const corr of correlativosOrdenados) {
       const response = await this.getUltimoCorrelativo(corr_Carta, sec);
       const correlativoNuevo = response.elements[0].correlativo;
       const familia = response.elements[0].familia;
 
-      console.log(`Procesando correlativo ${corr} con secuencia ${correlativoNuevo} y familia ${familia}`);
+      //console.log(`Procesando correlativo ${corr} con secuencia ${correlativoNuevo} y familia ${familia}`);
 
       for (const colorante of this.colorantes) {
         
         const valor_Ini = colorante.valores[corr]?.por_Ini ?? 0;
         const valor_Aju = colorante.valores[corr]?.por_Aju ?? 0;
         const valor_Fin = colorante.valores[corr]?.por_Fin ?? 0;
+
+        if(valor_Fin === 0){
+          this.esExitoso = 0;
+          this.toastr.warning('El porcentaje finial no puede ser cero', 'Alerta', {
+            timeOut: 2500
+          });
+          return;
+        }
 
         const registro = {
           corr_Carta: corr_Carta,
@@ -202,7 +215,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
           por_Fin: valor_Fin,
           correlativo_Nuevo: correlativoNuevo
         };
-        console.log('Guardando colorante:', registro);
+        //console.log('Guardando colorante:', registro);
         await this.postColorante(registro);
       }
       let procedencia: string = 'Mosquito' + corr.toString();
@@ -216,14 +229,14 @@ export class DialogEntregaAjusteComponent implements OnInit {
         procedenciaHardCodeada: procedencia
       };
       
-      console.log('Guardando auxiliares:', registroAuxiliares);
+      //console.log('Guardando auxiliares:', registroAuxiliares);
       await this.postAuxiliares(registroAuxiliares);
     }
   }
 
   async guardarAgrupado(): Promise<void> {
     this.spinner.show();
-    console.log('LAS PARTIDAS AGRUPADAS SON:::::::::::::::::::::::::::::::::::.', this.data.PartidasAgrupadasE);
+    //console.log('LAS PARTIDAS AGRUPADAS SON:::::::::::::::::::::::::::::::::::.', this.data.PartidasAgrupadasE);
     try {
       if (!this.data.PartidasAgrupadasE) {
 
@@ -236,17 +249,19 @@ export class DialogEntregaAjusteComponent implements OnInit {
           .filter(p => p.length > 0);
 
         for (const partida of partidas) {
-          console.log('Registrando partida secuencial:', partida);
+          //console.log('Registrando partida secuencial:', partida);
           await this.guardarPorPartida(partida, this.data.sec);
           await this.entregarPartida(partida);
         }
       }
 
     } catch (error) {
-      console.error('Error en el proceso:', error);
+      //console.error('Error en el proceso:', error);
     } finally {
       this.spinner.hide();
-      this.dialogRef.close();
+      if(this.esExitoso === 1){
+        this.dialogRef.close();
+      }
     }
   }
 
@@ -255,7 +270,6 @@ export class DialogEntregaAjusteComponent implements OnInit {
       const entrega = {
         cod_OrdTra: Cod_OrdTra
       }
-      console.log
       await this.patchEntrega(entrega);
 
     }catch(error){
@@ -268,6 +282,31 @@ export class DialogEntregaAjusteComponent implements OnInit {
     if (!/[0-9.]/.test(char)) {
       event.preventDefault();
     }
+  }
+
+  actualizarPorFin(element: any, corr: string) {
+    const porIni = parseFloat(element.valores[corr].por_Ini) || 0;
+    const porAju = parseFloat(element.valores[corr].por_Aju) || 0;
+    element.valores[corr].por_Fin = porIni + (porIni * porAju) / 100;
+  }
+
+  actualizarPorAju(element: any, corr: string) {
+    const porIni = parseFloat(element.valores[corr].por_Ini) || 0;
+    const porFin = parseFloat(element.valores[corr].por_Fin) || 0;
+
+    if (porIni !== 0) {
+      if(porFin > 0){
+        element.valores[corr].por_Aju = (((porFin - porIni) * 100) / porIni).toFixed(2);
+      }else{
+        element.valores[corr].por_Aju = 0;
+      }
+    } else {
+      element.valores[corr].por_Aju = 0;
+    }
+  }
+
+  ajustar(element: any, corr: string, delta: number): void {
+    element.valores[corr].por_Aju = parseFloat((element.valores[corr].por_Aju + delta).toFixed(2));
   }
 
 

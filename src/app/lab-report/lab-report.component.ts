@@ -3,7 +3,7 @@ import { LabColTrabajoService } from '../services/lab-col-trabajo/lab-col-trabaj
 import html2canvas from 'html2canvas';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
-
+import jsPDF from 'jspdf';
 
 interface Insumo {
   col_Cod: string;
@@ -167,38 +167,85 @@ export class LabReportComponent implements OnInit {
     return index;
   }
 
+  // imprimirReporte() {
+  //   const element = document.querySelector('.report-only') as HTMLElement;
+
+  //   html2canvas(element, { scale: 2 }).then(canvas => {
+  //     const imgData = canvas.toDataURL('image/png');
+
+  //     const printWindow = window.open('', '_blank');
+  //     if (printWindow) {
+  //       printWindow.document.write(`
+  //       <html>
+  //         <head>
+  //           <title>Reporte</title>
+  //           <style>
+  //             body { margin: 0; display: flex; justify-content: center; }
+  //             img { max-width: 100%; height: auto; }
+  //           </style>
+  //         </head>
+  //         <body>
+  //           <img src="${imgData}" />
+  //           <script>
+  //             window.onload = function() {
+  //               window.print();
+  //               window.onafterprint = function() { window.close(); };
+  //             }
+  //           </script>
+  //         </body>
+  //       </html>
+  //     `);
+  //       printWindow.document.close();
+  //     }
+  //   });
+  // }
+
   imprimirReporte() {
     const element = document.querySelector('.report-only') as HTMLElement;
 
     html2canvas(element, { scale: 2 }).then(canvas => {
       const imgData = canvas.toDataURL('image/png');
 
-      const printWindow = window.open('', '_blank');
-      if (printWindow) {
-        printWindow.document.write(`
-        <html>
-          <head>
-            <title>Reporte</title>
-            <style>
-              body { margin: 0; display: flex; justify-content: center; }
-              img { max-width: 100%; height: auto; }
-            </style>
-          </head>
-          <body>
-            <img src="${imgData}" />
-            <script>
-              window.onload = function() {
-                window.print();
-                window.onafterprint = function() { window.close(); };
-              }
-            </script>
-          </body>
-        </html>
-      `);
-        printWindow.document.close();
-      }
+      // Crear un iframe oculto para imprimir directamente
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = '0';
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        const doc = iframe.contentWindow?.document;
+        if (doc) {
+          doc.open();
+          doc.write(`
+          <html>
+            <head>
+              <title>Reporte</title>
+              <style>
+                body { margin: 0; display: flex; justify-content: center; }
+                img { max-width: 100%; height: auto; }
+              </style>
+            </head>
+            <body>
+              <img src="${imgData}" />
+              <script>
+                window.onload = function() {
+                  window.print();
+                  window.onafterprint = function() { window.close(); };
+                }
+              </script>
+            </body>
+          </html>
+        `);
+          doc.close();
+        }
+      };
     });
   }
+
 
   Cerrar(): void {
     this.router.navigate(['/ColaTrabajo']);
@@ -234,5 +281,39 @@ export class LabReportComponent implements OnInit {
 
 
     this.correlativos = this.grupos.map(g => g.correlativo);
-  } 
+  }
+
+  generarPDF(): void {
+    const element = document.querySelector('.report-only') as HTMLElement;
+
+    html2canvas(element, { scale: 2 }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('l', 'mm', 'a4');
+
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      const ratio = Math.min(pdfWidth / imgProps.width, pdfHeight / imgProps.height);
+
+      const imgWidth = imgProps.width * ratio;
+      const imgHeight = imgProps.height * ratio;
+
+      const x = (pdfWidth - imgWidth) / 2;
+      const y = (pdfHeight - imgHeight) / 2;
+
+      pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+
+      const blob = pdf.output('blob');
+      const formData = new FormData();
+      formData.append('file', blob, 'reporte.pdf');
+
+      this.labColTrabajoService.enviarPDF(formData).subscribe({
+        next: () => console.log('PDF enviado al backend'),
+        error: (err: any) => console.error('Error al enviar PDF', err)
+      });
+    });
+  }
+
+
 }

@@ -22,21 +22,42 @@
         <ng-container matColumnDef="inicial">
             <th mat-header-cell *matHeaderCellDef> Inicial </th>
             <td mat-cell *matCellDef="let element">
-                <input class="inputCentrado" matInput type="number" [(ngModel)]="element.valores[corr].por_Ini" step="0.000001" (keypress)="validarNumero($event)" />
+                <input class="inputCentrado" 
+                matInput type="number" 
+                [(ngModel)]="element.valores[corr].por_Ini" 
+                step="0.000001" 
+                (keypress)="validarNumero($event)" 
+                [disabled]="true"/>
             </td>
         </ng-container>
     
         <ng-container matColumnDef="ajuste">
             <th mat-header-cell *matHeaderCellDef> Ajuste </th>
             <td mat-cell *matCellDef="let element">
-                <input class="inputCentrado" matInput type="number" [(ngModel)]="element.valores[corr].por_Aju" step="0.000001" (keypress)="validarNumero($event)" />
+                <div class="ajuste-wrapper">
+                    <button mat-mini-button color="primary" (click)="ajustar(element, corr, -0.50); actualizarPorFin(element, corr)">−</button>
+
+                    <input class="inputCentrado" 
+                    matInput type="number" 
+                    [(ngModel)]="element.valores[corr].por_Aju" 
+                    step="0.5" 
+                    (keypress)="validarNumero($event)"
+                    (ngModelChange)="actualizarPorFin(element, corr)"  />
+                    
+                    <button mat-mini-button color="primary" (click)="ajustar(element, corr, 0.50); actualizarPorFin(element, corr); " >+</button>
+                </div>
             </td>
         </ng-container>
     
         <ng-container matColumnDef="final">
             <th mat-header-cell *matHeaderCellDef> Final </th>
             <td mat-cell *matCellDef="let element">
-                <input class="inputCentrado" matInput type="number" [(ngModel)]="element.valores[corr].por_Fin" step="0.000001" (keypress)="validarNumero($event)" />
+                <input class="inputCentrado" 
+                matInput type="number" 
+                [(ngModel)]="element.valores[corr].por_Fin" 
+                step="0.000001" 
+                (keypress)="validarNumero($event)"
+                (ngModelChange)="actualizarPorAju(element, corr)" />
             </td>
         </ng-container>
     </ng-container>

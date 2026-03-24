@@ -1,8 +1,8 @@
 .tabla-ajuste {
     width: 100%;
     border-collapse: collapse;
-    background: #fff; // fondo blanco limpio
-    color: #000; // texto negro
+    background: #fff;
+    color: #000;
     font-family: 'Roboto', sans-serif;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 
@@ -15,8 +15,8 @@
     }
 
     th {
-        background: #e3f2fd; // azul claro
-        color: #1565c0; // azul fuerte
+        background: #e3f2fd;
+        color: #1565c0;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -31,7 +31,6 @@
         }
     }
 
-    // Inputs dentro de la tabla
     .valor-input {
         width: 80%;
         background: #fff;
@@ -51,7 +50,6 @@
         }
     }
 
-    // Filas alternas
     tr:nth-child(even) td {
         background: #fdfdfd;
     }
@@ -64,7 +62,6 @@
     gap: 1rem;
 }
 
-// Botones estilo laboratorio
 .boton-lab {
     background: #1565c0;
     color: #fff;
@@ -86,7 +83,7 @@
 }
 
 .boton-cancelar {
-    background: #e53935; // rojo laboratorio para cancelar
+    background: #e53935;
     color: #fff;
     font-weight: bold;
     border: none;
@@ -139,7 +136,6 @@
         font-size: 0.8rem;
     }
 
-    // Scroll horizontal para pantallas pequeñas
     .tabla-ajuste {
         display: block;
         overflow-x: auto;
@@ -226,4 +222,16 @@
     width: 6px;
     height: 6px;
     animation: animloader1 6s linear infinite;
+}
+
+.ajuste-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.ajuste-wrapper input {
+    width: 70px;
+    text-align: center;
 }

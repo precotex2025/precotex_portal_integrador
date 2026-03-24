@@ -73,7 +73,7 @@ export class AppComponent {
     private router: Router,
     public SpinnerService: NgxSpinnerService,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private authService: AuthService,
+    public authService: AuthService,
     private dialog: MatDialog,
     private LabColTrabajoService: LabColTrabajoService
   ) {
@@ -86,14 +86,13 @@ export class AppComponent {
   }
   
   ngOnInit(): void {
-    // if (isPlatformBrowser(this.platformId)) {
-    //   const isTablet = window.innerWidth >= 768 && window.innerWidth <= 1280;
-    //   if (isTablet) {
-    //     document.body.classList.add('modo-tablet');
-    //   }
-    // }
     if (this.authService.isLoggedIn()) { 
       console.log('Usuario activo:', this.authService.getUsuario()); 
+      
+      this.authService.nombreUsuario$.subscribe(nombre => {
+        console.log('Nombre de Usuario activo', nombre);
+      });
+
       this.router.navigate(['/ColaTrabajo']);
     } else { 
       this.router.navigate(['/login']); 
@@ -139,28 +138,6 @@ export class AppComponent {
   }
 
   dataListadoDetalle = []
-  // onGetDetalle(){
-  //   this.SpinnerService.show();
-  //   this.dataListadoDetalle = [];
-  //   this.LabColTrabajoService.getListaSDCDetalle(Corr_Carta).subscribe({
-  //     next:(response: any) => {
-  //       if(response.success){
-  //         if(response.totalElements > 0){
-  //           this.dataListadoDetalle = response.elements;
-  //           console.log(this.dataListadoDetalle);
-  //           this.dataSource.data = this.dataListadoDetalle;
-  //           this.SpinnerService.hide();
-  //         }else{
-  //           this.SpinnerService.hide();
-  //         };
-  //       }
-  //     },
-  //     error:(error) => {
-  //       this.SpinnerService.hide();
-  //     }
-  //   })
-  // }
-
   onGetDetalle() {
     this.SpinnerService.show();
     this.secuencias = [];
@@ -195,5 +172,10 @@ export class AppComponent {
     }
   }
 
+  menuVisible = false;
+
+  toggleMenu() {
+    this.menuVisible = !this.menuVisible;
+  }
 
 }

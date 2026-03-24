@@ -2,7 +2,7 @@
 <!-- <div class="contenedor-scroll"> -->
 <router-outlet></router-outlet>
 
-<button 
+<!-- <button 
     *ngIf="!isLoginRoute" 
     class="boton-flotante" 
     (click)="irAMantenimientos()" > 
@@ -15,8 +15,6 @@
     (click)="cerrarSesion()"> 
     <mat-icon>logout</mat-icon> 
 </button>
-
-<!-- <router-outlet></router-outlet> -->
 
 <button 
     *ngIf="!isLoginRoute" 
@@ -33,14 +31,46 @@
         (click)="abrirModal()" 
         matTooltip="Imprimir reporte"> 
         <mat-icon>print</mat-icon> 
-</button>
+</button> -->
+
+<div class="menu-flotante">
+
+  <div class="usuario-nombre" [ngClass]="{ 'oculto': !menuVisible }" [title]="authService.nombreUsuario$ | async" *ngIf="!isLoginRoute">
+    {{ authService.nombreUsuario$ | async }}
+  </div>
+
+  <!-- Botón principal -->
+  <button mat-fab color="primary" (click)="toggleMenu()" class="boton-principal" *ngIf="!isLoginRoute">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <!-- Opciones desplegables -->
+  <div class="opciones" [ngClass]="{ 'oculto': !menuVisible }">
+    <button class="boton-flotante fullscreen" (click)="alternarPantallaCompleta()" matTooltip="Pantalla completa" *ngIf="!isLoginRoute">
+      <mat-icon>fullscreen</mat-icon>
+    </button>
+    <button class="boton-flotante reporte" (click)="abrirModal()" matTooltip="Imprimir reporte" *ngIf="!isLoginRoute">
+      <mat-icon>print</mat-icon>
+    </button>
+    <button class="boton-flotante" (click)="irAMantenimientos()" matTooltip="Mantenimientos" *ngIf="!isLoginRoute">
+      <mat-icon>settings</mat-icon>
+    </button>
+    <button class="boton-flotante logout" (click)="cerrarSesion()" matTooltip="Cerrar sesión" *ngIf="!isLoginRoute">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
+</div>
+
+
+
 
 <!-- </div> -->
 
 <!-- Botón flotante -->
 <!-- Modal (contenido del diálogo) -->
 <ng-template #modalReporte>
-  <h2 mat-dialog-title>Generar reporte</h2>
+  <!-- <h2 mat-dialog-title>Generar reporte</h2> -->
+  <h2 class="title">Generar reporte</h2>
   <mat-dialog-content>
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Número SDC</mat-label>

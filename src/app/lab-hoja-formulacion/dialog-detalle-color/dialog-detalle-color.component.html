@@ -30,6 +30,7 @@
       <div class="header">Nombre</div>
       <div class="header">gr/l</div>
       <div class="header">ml</div>
+      <!-- <div class="header">gr</div> -->
       <ng-container *ngFor="let aux of recetaDetalle.auxiliares">
         <div class="cell">{{ aux.col_Des }}</div>
         <div class="cell">{{ aux.por_Fin | number:'1.2-2' }}</div>
@@ -45,11 +46,14 @@
       <div class="header">Nombre</div>
       <div class="header">gr/l</div>
       <div class="header">ml</div>
-
+      <div class="header">gr</div>
       <ng-container *ngFor="let qui of recetaDetalle.quimicos">
         <div class="cell">{{ qui.col_Des }}</div>
         <div class="cell">{{ qui.por_Fin | number:'1.2-2' }}</div>
-        <div class="cell">{{ (qui.por_Fin * recetaDetalle.r_B * recetaDetalle.pes_Mue * 10) / 1000 | number:'1.2-2' }}</div>
+        <div *ngIf="qui.col_Des !== 'SAL TEXTIL INGLESA'" class="cell">{{ (qui.por_Fin * recetaDetalle.r_B * recetaDetalle.pes_Mue * 10) / 1000 | number:'1.2-2' }}</div>
+        <div *ngIf="qui.col_Des === 'SAL TEXTIL INGLESA'" class="cell">0.00</div>
+        <div *ngIf="qui.col_Des === 'SAL TEXTIL INGLESA'" class="cell">{{ (qui.por_Fin * recetaDetalle.r_B * recetaDetalle.pes_Mue * 10) / 10000 | number:'1.2-2'}}</div>
+        <div *ngIf="qui.col_Des !== 'SAL TEXTIL INGLESA'" class="cell">0.00</div>
       </ng-container>
     </div>
   </div>

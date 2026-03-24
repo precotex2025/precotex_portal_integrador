@@ -608,6 +608,142 @@ export class LabDispAutolabComponent implements OnInit {
   }
 
   seleccionadasModal: any[] = [];
+  // abrirModalPosiciones(cantidad: number, ahiNombre: string) {
+  //   const cantidadSeleccionada = this.dataSourceDispensado.data
+  //     .filter((row: any) => row.seleccionado).length;
+
+  //   if (cantidadSeleccionada > cantidad) {
+  //     this.toastr.error(
+  //       `La AHIBA ${ahiNombre} solo permite ${cantidad} tubos. Ha seleccionado ${cantidadSeleccionada}.`,
+  //       'Error', { timeOut: 3000 }
+  //     );
+  //     this.ahibaSeleccionado = 0;
+  //     return;
+  //   }
+
+  //   this.cantidadRequerida = cantidadSeleccionada;
+  //   if (this.cantidadRequerida > 0) {
+  //     const seleccionadas = this.dataSourceDispensado.data.filter((row: any) => row.seleccionado);
+  //     const jabDesReferencia = seleccionadas[0].jab_Des;
+  //     const todosIguales = seleccionadas.every((row: any) => row.jab_Des === jabDesReferencia);
+
+  //     if (!todosIguales) {
+  //       this.ahibaSeleccionado = 0;
+  //       this.toastr.error('Los registros seleccionados deben tener la misma curva teñido', 'Error', {
+  //         timeOut: 3000
+  //       });
+  //       return;
+  //     }
+  //   }
+
+  //   this.seleccionadosActuales = 0;
+  //   this.posiciones = Array.from({ length: cantidad }, (_, i) => ({
+  //     numero: i + 1,
+  //     seleccionado: false,
+  //     ocupado: false
+  //   }));
+
+  //   if (this.cantidadRequerida == 0) {
+  //     this.toastr.warning('Seleccione al menos un item', 'Advertencia', {
+  //       timeOut: 3000
+  //     });
+  //     this.ahibaSeleccionado = 0;
+  //     return;
+  //   }
+
+  //   const seleccionadas = this.dataSourceDispensado.data.filter((row: any) => row.seleccionado);
+
+  //   // this.seleccionadasModal = [{ corr_Carta: 10025, descripcion_Color: 'WASHED BLACK' }, { corr_Carta: 10165, descripcion_Color: 'BLUE MIRAGE' }];
+
+  //   this.seleccionadasModal = seleccionadas.map((item: any) => ({
+  //     ...item,
+  //     tubo: ''
+  //   }));
+
+  //   this.listarDosificacionesXAhiba(this.ahibaSeleccionado);
+
+  //   this.dialog.open(this.modalPosiciones, {
+  //     width: '900px',
+  //     height: '585px'
+  //   });
+  //   // ahiNombre,
+  // }
+
+  // abrirModalPosiciones(cantidad: number, ahiNombre: string) {
+  //   const cantidadSeleccionada = this.dataSourceDispensado.data
+  //     .filter((row: any) => row.seleccionado).length;
+
+  //   if (cantidadSeleccionada > cantidad) {
+  //     this.toastr.error(
+  //       `La AHIBA ${ahiNombre} solo permite ${cantidad} tubos. Ha seleccionado ${cantidadSeleccionada}.`,
+  //       'Error', { timeOut: 3000 }
+  //     );
+  //     this.ahibaSeleccionado = 0;
+  //     return;
+  //   }
+
+  //   this.cantidadRequerida = cantidadSeleccionada;
+  //   if (this.cantidadRequerida > 0) {
+  //     const seleccionadas = this.dataSourceDispensado.data.filter((row: any) => row.seleccionado);
+
+  //     const curvas = [...new Set(this.dataListadoDosificaciones.map(item => item.cur_Des))];
+
+  //     const curva11 = '11_AVITERA / SUNFIX / NOVACRON OCEANO S-R 60°C';
+  //     const curva14 = '14_AVITERA/SUNFIX MEDIOS – OSCUROS - DIFICILES';
+  //     const curva81 = '81_TURQUESAS 50°-80°C';
+  //     const curva96 = '96_TURQUESAS 95°-80°C';
+
+  //     if (curvas.length > 2) {
+  //       this.toastr.error('Solo se permiten máximo 2 curvas distintas', 'Error', { timeOut: 3000 });
+  //       this.ahibaSeleccionado = 0;
+  //       return;
+  //     }
+
+  //     if (curvas.length === 2) {
+  //       if (curvas.includes(curva11) && curvas.includes(curva14)) {
+  //       }
+  //       else if (curvas.includes(curva81) && curvas.includes(curva96)) {
+  //       }
+  //       else {
+  //         this.toastr.error('La combinación de curvas seleccionada no está permitida', 'Error', { timeOut: 3000 });
+  //         this.ahibaSeleccionado = 0;
+  //         return;
+  //       }
+  //     } else if (curvas.length === 1) {
+  //       this.tituloCurva = curvas[0] || '';
+  //     }
+  //   }
+
+  //   this.seleccionadosActuales = 0;
+  //   this.posiciones = Array.from({ length: cantidad }, (_, i) => ({
+  //     numero: i + 1,
+  //     seleccionado: false,
+  //     ocupado: false
+  //   }));
+
+  //   if (this.cantidadRequerida == 0) {
+  //     this.toastr.warning('Seleccione al menos un item', 'Advertencia', {
+  //       timeOut: 3000
+  //     });
+  //     this.ahibaSeleccionado = 0;
+  //     return;
+  //   }
+
+  //   const seleccionadas = this.dataSourceDispensado.data.filter((row: any) => row.seleccionado);
+
+  //   this.seleccionadasModal = seleccionadas.map((item: any) => ({
+  //     ...item,
+  //     tubo: ''
+  //   }));
+
+  //   this.listarDosificacionesXAhiba(this.ahibaSeleccionado);
+
+  //   this.dialog.open(this.modalPosiciones, {
+  //     width: '900px',
+  //     height: '585px'
+  //   });
+  // }
+
   abrirModalPosiciones(cantidad: number, ahiNombre: string) {
     const cantidadSeleccionada = this.dataSourceDispensado.data
       .filter((row: any) => row.seleccionado).length;
@@ -624,15 +760,27 @@ export class LabDispAutolabComponent implements OnInit {
     this.cantidadRequerida = cantidadSeleccionada;
     if (this.cantidadRequerida > 0) {
       const seleccionadas = this.dataSourceDispensado.data.filter((row: any) => row.seleccionado);
-      const jabDesReferencia = seleccionadas[0].jab_Des;
-      const todosIguales = seleccionadas.every((row: any) => row.jab_Des === jabDesReferencia);
 
-      if (!todosIguales) {
+      const curvas = [...new Set(seleccionadas.map((row: any) => row.jab_Des))];
+      const curva11 = '11_AVITERA / SUNFIX / NOVACRON OCEANO S-R 60°C';
+      const curva14 = '14_AVITERA/SUNFIX MEDIOS – OSCUROS - DIFICILES';
+      const curva81 = '81_TURQUESAS 50°-80°C';
+      const curva96 = '96_TURQUESAS 95°-80°C';
+
+      if (curvas.length > 2) {
+        this.toastr.error('Solo se permiten máximo 2 curvas distintas', 'Error', { timeOut: 3000 });
         this.ahibaSeleccionado = 0;
-        this.toastr.error('Los registros seleccionados deben tener la misma curva teñido', 'Error', {
-          timeOut: 3000
-        });
         return;
+      }
+
+      if (curvas.length === 2) {
+        if ((curvas.includes(curva11) && curvas.includes(curva14)) ||
+          (curvas.includes(curva81) && curvas.includes(curva96))) {
+        } else {
+          this.toastr.warning('La combinación de curvas seleccionada no está permitida', 'Error', { timeOut: 3000 });
+          this.ahibaSeleccionado = 0;
+          return;
+        }
       }
     }
 
@@ -653,8 +801,6 @@ export class LabDispAutolabComponent implements OnInit {
 
     const seleccionadas = this.dataSourceDispensado.data.filter((row: any) => row.seleccionado);
 
-    // this.seleccionadasModal = [{ corr_Carta: 10025, descripcion_Color: 'WASHED BLACK' }, { corr_Carta: 10165, descripcion_Color: 'BLUE MIRAGE' }];
-
     this.seleccionadasModal = seleccionadas.map((item: any) => ({
       ...item,
       tubo: ''
@@ -666,8 +812,9 @@ export class LabDispAutolabComponent implements OnInit {
       width: '900px',
       height: '585px'
     });
-    // ahiNombre,
   }
+
+
 
   toggleSeleccion(pos: any): void {
     // Si ya estaba seleccionado, lo desmarcamos

@@ -222,8 +222,50 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
   }
 
 
+  // dataListadoDosificaciones: any[] = [];
+  // tituloCurva: string = '';
+  // listarDosificacionesXAhiba(Ahi_Id: number): void {
+  //   this.SpinnerService.show();
+  //   this.dataListadoDosificaciones = [];
+  //   this.LabColTrabajoService.getListarItemsEnAhiba(Ahi_Id).subscribe({
+  //     next: (response: any) => {
+  //       if (response.success) {
+  //         this.dataListadoDosificaciones = response.elements as any[];
+  //         this.dataSource.data = this.dataListadoDosificaciones;
+  //         this.dataSource.sort = this.sort;
+  //         //console.log('::::::::::::::::fffff:::::::::.', response.elements.cur_Des);
+  //         //this.tituloCurva = this.dataListadoDosificaciones[0]?.cur_Des || '';
+  //         //this.tituloCurva = this.dataListadoDosificaciones.cur_Des || '';
+
+  //         const curvas = [...new Set(this.dataListadoDosificaciones.map(item => item.cur_Des))];
+
+  //         const curva11 = '11_AVITERA / SUNFIX / NOVACRON OCEANO S-R 60°C';
+  //         const curva14 = '14_AVITERA/SUNFIX MEDIOS – OSCUROS - DIFICILES';
+
+  //         if (curvas.length === 2 && curvas.includes(curva11) && curvas.includes(curva14)) {
+  //           this.tituloCurva = curva14;
+  //         } else {
+  //           this.tituloCurva = curvas[0] || '';
+  //         }
+
+
+  //         this.SpinnerService.hide();
+  //       } else {
+  //         this.dataListadoDosificaciones = [];
+  //       }
+  //     },
+  //     error: (error: any) => {
+  //       this.SpinnerService.hide();
+  //       console.log(error.error.message, 'Cerrar', {
+  //         timeout: 2500
+  //       })
+  //     }
+  //   })
+  // }
+
   dataListadoDosificaciones: any[] = [];
   tituloCurva: string = '';
+
   listarDosificacionesXAhiba(Ahi_Id: number): void {
     this.SpinnerService.show();
     this.dataListadoDosificaciones = [];
@@ -234,7 +276,29 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
           this.dataSource.data = this.dataListadoDosificaciones;
           this.dataSource.sort = this.sort;
 
-          this.tituloCurva = this.dataListadoDosificaciones[0]?.cur_Des || '';
+          const curvas = [...new Set(this.dataListadoDosificaciones.map(item => item.cur_Des))];
+
+          const curva11 = '11_AVITERA / SUNFIX / NOVACRON OCEANO S-R 60°C';
+          const curva14 = '14_AVITERA/SUNFIX MEDIOS – OSCUROS - DIFICILES';
+          const curva81 = '81_TURQUESAS 50°-80°C';
+          const curva96 = '96_TURQUESAS 95°-80°C';
+
+          if (curvas.length === 2) {
+            if (curvas.includes(curva11) && curvas.includes(curva14)) {
+              this.tituloCurva = curva14;
+            }
+            else if (curvas.includes(curva81) && curvas.includes(curva96)) {
+              this.tituloCurva = curva96;
+            }
+            else {
+              this.tituloCurva = '';
+            }
+          } else {
+            this.tituloCurva = curvas[0] || '';
+          }
+
+          console.log('Título curva:', this.tituloCurva);
+
           this.SpinnerService.hide();
         } else {
           this.dataListadoDosificaciones = [];
@@ -244,10 +308,12 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
         this.SpinnerService.hide();
         console.log(error.error.message, 'Cerrar', {
           timeout: 2500
-        })
+        });
       }
-    })
+    });
   }
+
+
 
   btnIniciarDisabled: boolean = false; 
   btnFinalizarDisabled: boolean = true;
@@ -263,6 +329,17 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
         if (response.success) {
           this.btnIniciarDisabled = true; 
           this.btnFinalizarDisabled = false;
+
+          this.dataSource.data.forEach((row: any) => {
+            const dataFechas = {
+              corr_Carta: row.corr_Carta,
+              sec: row.sec,
+              correlativo: row.correlativo,
+              tip_Fec: 'I'
+            }
+
+            this.patchActualizarFechasTenido(dataFechas);
+          });
         }
       },
       error: (error: any) => {
@@ -282,6 +359,17 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
         if (response.success) {
           this.btnIniciarDisabled = false; 
           this.btnFinalizarDisabled = true;
+
+          this.dataSource.data.forEach((row: any) =>{
+            const dataFechas = {
+              corr_Carta: row.corr_Carta,
+              sec: row.sec,
+              correlativo: row.correlativo,
+              tip_Fec: 'F'
+            }
+
+            this.patchActualizarFechasTenido(dataFechas);
+          });
         }
       },
       error: (error: any) => {
@@ -308,6 +396,17 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
         if(response.success){
           this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
         }
+      },
+      error: (error: any) => {
+
+      }
+    });
+  }
+
+  patchActualizarFechasTenido(data: any): void{
+    this.LabColTrabajoService.patchActualizarFechasTenido(data).subscribe({
+      next: (response: any) => {
+
       },
       error: (error: any) => {
 

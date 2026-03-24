@@ -1,9 +1,8 @@
 <div class="agregar-opcion-container">
-  <div class="selector-botones-wrapper">
-    <div *ngIf="data.Title === 'Copiar'">
+  <div *ngIf="data.Title === 'Copiar'">
       <h2>Copia de Corrida # {{ this.correlativoAnterior}}</h2>
-    </div>
-
+  </div>
+  <div class="selector-botones-wrapper">
     <!-- SELECTOR FAMILIA -->
     <div class="tipo-formulacion-wrapper">
       <mat-form-field appearance="fill">
@@ -65,19 +64,17 @@
                 (ngModelChange)="limitarDecimales(colorante); actualizarFinal(colorante)"
                 step="0.01"
                 (keypress)="validarNumero($event)" 
-                (blur)="formatearDosDecimales(colorante)"
                 [disabled]="data.Title === 'Copiar'"/>
               </div>
               <div class="colorante-cell ajuste">
-              <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.5); actualizarFinal(colorante)">−</button>
+              <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.50); actualizarFinal(colorante)">−</button>
               <input class="casillaAjuste" 
                     type="number" 
                     [(ngModel)]="colorante.ajuste" 
                     step="0.01" 
                     (ngModelChange)="actualizarFinal(colorante)" 
-                    (keypress)="validarNumero($event)"
-                    (blur)="formatearDosDecimales(colorante)" />
-              <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.5); actualizarFinal(colorante); " >+</button>
+                    (keypress)="validarNumero($event)" />
+              <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.50); actualizarFinal(colorante); " >+</button>
               </div>
               <!-- <div class="colorante-cell final">{{ calcularFinal(colorante).toFixed(5) }}</div> -->
               
@@ -86,9 +83,8 @@
                       class="colorante-final"
                       [(ngModel)]="colorante.final"
                       step="0.00001"
-                      (ngModelChange)="actualizarDesdeFinal(colorante)"}
+                      (ngModelChange)="actualizarDesdeFinal(colorante)"
                       (keypress)="validarNumero($event)" 
-                      (blur)="formatearDosDecimales(colorante)"
                       [disabled]="data.Title === 'Insertar'" />
               </div>
 
@@ -101,7 +97,7 @@
           </div>
     
           <div class="colorantes-total">
-            <strong>Total % Final:</strong> {{ totalFinalColorantes.toFixed(4) }}
+            <strong>Total % Final:</strong> {{ totalFinalColorantes.toFixed(5) }}
           </div>
       </div>
     </section>

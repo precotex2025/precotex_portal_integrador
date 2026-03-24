@@ -291,6 +291,21 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerPartidasAgrupadas', { headers, params })
   }
 
+  getObtenerFamiliaDesdeCabecera(Corr_Carta: string, Sec: number){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Corr_Carta', Corr_Carta);
+    params = params.append('Sec', Sec);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerFamiliaDesdeCabecera', { headers, params })
+  }
+
+  getGetUsuarioWeb(Cod_Usuario: string | null){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Cod_Usuario', Cod_Usuario!);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getGetUsuarioWeb', { headers, params })
+  }
+
   postRegistrarDetalleColorSDC(data: any){
     const headers = this.Header;
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarDetalleColorSDC', data, { headers })
@@ -453,12 +468,17 @@ export class LabColTrabajoService {
 
   patchReformularPartida(data: any){
     const headers = this.Header;
-    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchReformularPartida', data, { headers })
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/padtchReformularPartida', data, { headers })
   }
 
   patchActualizarEstadoEntregaProduccion(data: any){
     const headers = this.Header;
     return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarEstadoEntregaProduccion', data, { headers })
+  }
+
+  patchActualizarFechasTenido(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarFechasTenido', data, { headers })
   }
 
   deleteEliminarOpcionColorante(Corr_Carta: any, Sec: number, Correlativo: number) {
@@ -468,5 +488,10 @@ export class LabColTrabajoService {
     params = params.append('Sec', Sec);
     params = params.append('Correlativo', Correlativo);
     return this.http.delete(this.baseUrlTinto + 'LbColaTrabajo/deleteEliminarOpcionColorante', { headers, params })
+  }
+
+  enviarPDF(formData: FormData): Observable<any> {
+    const headers = this.Header.delete('Content-type');
+    return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/print', formData, { headers });
   }
 }
