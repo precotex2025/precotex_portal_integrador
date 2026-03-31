@@ -10,6 +10,7 @@ interface Insumo {
   col_Des: string;
   por_Fin: number | string;
   correlativo: number;
+  id_secuencia: number;
 }
 
 interface Ph {
@@ -70,7 +71,7 @@ export class LabReportComponent implements OnInit {
   mostrarCabecera = true;
   colorantesTabla: {
     descripcion: string;
-    valores: { correlativo: number; porcentaje: string | number }[];
+    valores: { correlativo: number; porcentaje: string | number; id_secuencia: number  }[];
   }[] = [];
 
   correlativos: number[] = [];
@@ -110,8 +111,20 @@ export class LabReportComponent implements OnInit {
           ...response.elements[0],
           colorantes_Reporte: response.elements[0].colorantes_Reporte ?? [],
           ruta_Reporte: response.elements[0].ruta_Reporte ?? [],
-          solidez_Reporte: response.elements[0].solidez_Reporte ?? []
+          solidez_Reporte: response.elements[0].solidez_Reporte ?? [],
+          id_secuencia: response.elements.id_secuencia ?? 0
         };
+
+        reporte.colorantes_Reporte = (reporte.colorantes_Reporte ?? []).sort((a, b) => {
+          const prioridad = [1, 2, 3];
+          const aPrioridad = prioridad.includes(a.id_secuencia) ? 0 : 1;
+          const bPrioridad = prioridad.includes(b.id_secuencia) ? 0 : 1;
+
+          if (aPrioridad !== bPrioridad) {
+            return aPrioridad - bPrioridad; // primero los 1,2,3
+          }
+          return a.id_secuencia - b.id_secuencia; // luego orden normal
+        });
 
         console.log('EL REPORTE ES::::::::::::::::::::::::::::::.', reporte);
 
@@ -122,7 +135,7 @@ export class LabReportComponent implements OnInit {
 
         this.loading = false;
       }
-      
+
     });
   }
 
@@ -153,9 +166,12 @@ export class LabReportComponent implements OnInit {
           col_Cod: match?.col_Cod ?? '',
           col_Des: des,
           por_Fin: match?.por_Fin ?? '0.0000',
-          correlativo
+          correlativo,
+          id_secuencia: match?.id_secuencia ?? 0
         };
       });
+
+      normalizados.sort((a, b) => a.id_secuencia - b.id_secuencia);
 
       return { correlativo, insumos: normalizados, reporte };
     });
@@ -167,84 +183,84 @@ export class LabReportComponent implements OnInit {
     return index;
   }
 
-  // imprimirReporte() {
-  //   const element = document.querySelector('.report-only') as HTMLElement;
-
-  //   html2canvas(element, { scale: 2 }).then(canvas => {
-  //     const imgData = canvas.toDataURL('image/png');
-
-  //     const printWindow = window.open('', '_blank');
-  //     if (printWindow) {
-  //       printWindow.document.write(`
-  //       <html>
-  //         <head>
-  //           <title>Reporte</title>
-  //           <style>
-  //             body { margin: 0; display: flex; justify-content: center; }
-  //             img { max-width: 100%; height: auto; }
-  //           </style>
-  //         </head>
-  //         <body>
-  //           <img src="${imgData}" />
-  //           <script>
-  //             window.onload = function() {
-  //               window.print();
-  //               window.onafterprint = function() { window.close(); };
-  //             }
-  //           </script>
-  //         </body>
-  //       </html>
-  //     `);
-  //       printWindow.document.close();
-  //     }
-  //   });
-  // }
-
   imprimirReporte() {
     const element = document.querySelector('.report-only') as HTMLElement;
 
     html2canvas(element, { scale: 2 }).then(canvas => {
       const imgData = canvas.toDataURL('image/png');
 
-      // Crear un iframe oculto para imprimir directamente
-      const iframe = document.createElement('iframe');
-      iframe.style.position = 'fixed';
-      iframe.style.right = '0';
-      iframe.style.bottom = '0';
-      iframe.style.width = '0';
-      iframe.style.height = '0';
-      iframe.style.border = '0';
-      document.body.appendChild(iframe);
-
-      iframe.onload = () => {
-        const doc = iframe.contentWindow?.document;
-        if (doc) {
-          doc.open();
-          doc.write(`
-          <html>
-            <head>
-              <title>Reporte</title>
-              <style>
-                body { margin: 0; display: flex; justify-content: center; }
-                img { max-width: 100%; height: auto; }
-              </style>
-            </head>
-            <body>
-              <img src="${imgData}" />
-              <script>
-                window.onload = function() {
-                  window.print();
-                  window.onafterprint = function() { window.close(); };
-                }
-              </script>
-            </body>
-          </html>
-        `);
-          doc.close();
-        }
-      };
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
+        <html>
+          <head>
+            <title>Reporte</title>
+            <style>
+              body { margin: 0; display: flex; justify-content: center; }
+              img { max-width: 100%; height: auto; }
+            </style>
+          </head>
+          <body>
+            <img src="${imgData}" />
+            <script>
+              window.onload = function() {
+                window.print();
+                window.onafterprint = function() { window.close(); };
+              }
+            </script>
+          </body>
+        </html>
+      `);
+        printWindow.document.close();
+      }
     });
   }
+
+  // imprimirReporte() {
+  //   const element = document.querySelector('.report-only') as HTMLElement;
+
+  //   html2canvas(element, { scale: 2 }).then(canvas => {
+  //     const imgData = canvas.toDataURL('image/png');
+
+  //     // Crear un iframe oculto para imprimir directamente
+  //     const iframe = document.createElement('iframe');
+  //     iframe.style.position = 'fixed';
+  //     iframe.style.right = '0';
+  //     iframe.style.bottom = '0';
+  //     iframe.style.width = '0';
+  //     iframe.style.height = '0';
+  //     iframe.style.border = '0';
+  //     document.body.appendChild(iframe);
+
+  //     iframe.onload = () => {
+  //       const doc = iframe.contentWindow?.document;
+  //       if (doc) {
+  //         doc.open();
+  //         doc.write(`
+  //         <html>
+  //           <head>
+  //             <title>Reporte</title>
+  //             <style>
+  //               body { margin: 0; display: flex; justify-content: center; }
+  //               img { max-width: 100%; height: auto; }
+  //             </style>
+  //           </head>
+  //           <body>
+  //             <img src="${imgData}" />
+  //             <script>
+  //               window.onload = function() {
+  //                 window.print();
+  //                 window.onafterprint = function() { window.close(); };
+  //               }
+  //             </script>
+  //           </body>¿
+  //         </html>
+  //       `);
+  //         doc.close();
+  //       }
+  //     };
+  //   });
+  // }
 
 
   Cerrar(): void {
@@ -262,22 +278,18 @@ export class LabReportComponent implements OnInit {
         const match = grupo.insumos.find(i => i.col_Des === des);
         return {
           correlativo: grupo.correlativo,
-          porcentaje: match?.por_Fin ?? '0.0000'
+          porcentaje: match?.por_Fin ?? '0.0000',
+          id_secuencia: match?.id_secuencia ?? 999
         };
       });
       return { descripcion: des, valores };
     });
 
-
-    // const filaPhIni = {
-    //   descripcion: 'Ph_Ini',
-    //   valores: this.grupos.map(grupo => ({
-    //     correlativo: grupo.correlativo,
-    //     porcentaje: grupo.Ph?.ph_Ini ?? '0.0000'
-    //   }))
-    // };
-
-    // this.colorantesTabla.push(filaPhIni);
+    this.colorantesTabla.sort((a, b) => {
+      const aSeq = Math.min(...a.valores.map(v => v.id_secuencia));
+      const bSeq = Math.min(...b.valores.map(v => v.id_secuencia));
+      return aSeq - bSeq;
+    });
 
 
     this.correlativos = this.grupos.map(g => g.correlativo);

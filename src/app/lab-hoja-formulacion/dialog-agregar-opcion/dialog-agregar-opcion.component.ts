@@ -370,7 +370,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           Procedencia: "Opcion Agregada",
           Por_Ini: c.inicial.toFixed(5),
           Por_Aju: c.ajuste,
-          Por_Fin: c.final.toFixed(5)
+          Por_Fin: c.final
         };
       } else {
         datitos = {
@@ -385,7 +385,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       
       //console.log('::::::::::::::::::::::::::.', comunes)
       //console.log('::::::::::::::::::::::::::::::.', comunes2)
-      //console.log(':::::::::::::::::::::::::::::::::::.', datitos)
+      console.log(':::::::::::::::::::::::::::::::::::.', datitos)
       
       this.LabColTraService.postAgregarOpcionColorante(datitos).subscribe({
         next: (response: any) => {

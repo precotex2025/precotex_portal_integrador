@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogAgregarPhComponent } from './dialog-agregar-ph/dialog-agregar-ph.component';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { LabColTrabajoService } from '../services/lab-col-trabajo/lab-col-trabajo.service';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { compileDeclareClassMetadata } from '@angular/compiler';
 import { endWith } from 'rxjs';
@@ -48,6 +48,7 @@ interface data_dosificacion {
 export class LabDosificacionComponent implements OnInit {
 
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatTable) table!: MatTable<any>;
   constructor(
     private dialog: MatDialog,
     private SpinnerService: NgxSpinnerService,
@@ -55,7 +56,8 @@ export class LabDosificacionComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef,
     private authService: AuthService,
     private router: Router,
-    @Optional() @Inject(MAT_DIALOG_DATA) public data: data
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: data,
+    private cdRef: ChangeDetectorRef
   ) { }
 
   dataSource: MatTableDataSource<data_dosificacion> = new MatTableDataSource();
@@ -64,6 +66,7 @@ export class LabDosificacionComponent implements OnInit {
   menuItems: { codigo: number, nombre: string, estado: string }[] = [];
 
   columnas: string[] = [];
+  usandoPhColumns: boolean = false;
 
   ngOnInit(): void {
 
@@ -83,21 +86,21 @@ export class LabDosificacionComponent implements OnInit {
   }
 
   columnsToDisplay: string[] = [
-    'corr_Carta',
-    'nro_Tubo',
-    'descripcion_Color',
-    'jab_Des',
-    'dosificacion1',
-    'dosificacion2',
-    'dosificacion3',
-    'soda',
-    'sec',
-    'correlativo',
-    'ph_Fin',
-    'reenvio'
+    // 'nro_Tubo',
+    // 'dosificacion1',
+    // 'dosificacion2',
+    // 'dosificacion3',
+    // 'soda',
+    // 'ph_Fin',
+    // 'reenvio',
+    // 'corr_Carta',
+    // 'descripcion_Color',
+    // 'jab_Des',
+    // 'sec',
+    // 'correlativo'
   ];
 
-  ingresarPH(row: any): void {
+  ingresarPHFinal(row: any): void {
     let num_sdc = row.corr_Carta;
     let sec = row.sec;
     let correlativo = row.correlativo;
@@ -116,6 +119,31 @@ export class LabDosificacionComponent implements OnInit {
       }
     });
 
+    dialogref.afterClosed().subscribe(result => {
+      this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+    });
+  }
+
+  ingresarPH(row: any, jabIndex: number): void {
+    let num_sdc = row.corr_Carta;
+    let sec = row.sec;
+    let correlativo = row.correlativo;
+
+    let dialogref = this.dialog.open(DialogAgregarPhComponent, {
+      width: '500px',
+      height: '300px',
+      disableClose: false,
+      panelClass: 'my-class',
+      data: {
+        Title: `PH Jabonado ${jabIndex}`,
+        Corr_Carta: num_sdc,
+        Sec: sec,
+        Correlativo: correlativo,
+        JabonadoIndex: jabIndex,
+        Condicion: 3
+      }
+    });
+    
     dialogref.afterClosed().subscribe(result => {
       this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
     });
@@ -159,23 +187,25 @@ export class LabDosificacionComponent implements OnInit {
   itemSeleccionado: any = null;
 
   seleccionarAhiba(item: any): void {
-  this.itemSeleccionado = item;
-  let nroAhiba = item.codigo;
+    this.itemSeleccionado = item;
+    let nroAhiba = item.codigo;
 
-  this.changeDetectorRef.detectChanges();
-  this.listarDosificacionesXAhiba(nroAhiba);
+    this.changeDetectorRef.detectChanges();
+    this.listarDosificacionesXAhiba(nroAhiba);
 
 
-  this.validarEstadoahibaPorCodigo(nroAhiba).then((estado: number) => {
-    if (estado === 1) {
-      this.btnIniciarDisabled = true;
-      this.btnFinalizarDisabled = false;
-    } else {
-      this.btnIniciarDisabled = false;
-      this.btnFinalizarDisabled = true;
-    }
-  }).catch(err => console.error(err));
-}
+    this.validarEstadoahibaPorCodigo(nroAhiba).then((estado: number) => {
+      if (estado === 1) {
+        this.btnIniciarDisabled = true;
+        this.btnFinalizarDisabled = false;
+
+      } else {
+        this.btnIniciarDisabled = false;
+        this.btnFinalizarDisabled = true;
+      }
+      this.itemSeleccionado = this.menuItems.find(m => m.codigo === nroAhiba);
+    }).catch(err => console.error(err));
+  }
 
 curvasAhiba: { codigo: number, nombre: string, cantidadPosiciones: number, estado: string }[] = [];
 validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
@@ -221,97 +251,115 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     });
   }
 
-
-  // dataListadoDosificaciones: any[] = [];
-  // tituloCurva: string = '';
-  // listarDosificacionesXAhiba(Ahi_Id: number): void {
-  //   this.SpinnerService.show();
-  //   this.dataListadoDosificaciones = [];
-  //   this.LabColTrabajoService.getListarItemsEnAhiba(Ahi_Id).subscribe({
-  //     next: (response: any) => {
-  //       if (response.success) {
-  //         this.dataListadoDosificaciones = response.elements as any[];
-  //         this.dataSource.data = this.dataListadoDosificaciones;
-  //         this.dataSource.sort = this.sort;
-  //         //console.log('::::::::::::::::fffff:::::::::.', response.elements.cur_Des);
-  //         //this.tituloCurva = this.dataListadoDosificaciones[0]?.cur_Des || '';
-  //         //this.tituloCurva = this.dataListadoDosificaciones.cur_Des || '';
-
-  //         const curvas = [...new Set(this.dataListadoDosificaciones.map(item => item.cur_Des))];
-
-  //         const curva11 = '11_AVITERA / SUNFIX / NOVACRON OCEANO S-R 60°C';
-  //         const curva14 = '14_AVITERA/SUNFIX MEDIOS – OSCUROS - DIFICILES';
-
-  //         if (curvas.length === 2 && curvas.includes(curva11) && curvas.includes(curva14)) {
-  //           this.tituloCurva = curva14;
-  //         } else {
-  //           this.tituloCurva = curvas[0] || '';
-  //         }
-
-
-  //         this.SpinnerService.hide();
-  //       } else {
-  //         this.dataListadoDosificaciones = [];
-  //       }
-  //     },
-  //     error: (error: any) => {
-  //       this.SpinnerService.hide();
-  //       console.log(error.error.message, 'Cerrar', {
-  //         timeout: 2500
-  //       })
-  //     }
-  //   })
-  // }
-
   dataListadoDosificaciones: any[] = [];
   tituloCurva: string = '';
 
   listarDosificacionesXAhiba(Ahi_Id: number): void {
     this.SpinnerService.show();
     this.dataListadoDosificaciones = [];
+
     this.LabColTrabajoService.getListarItemsEnAhiba(Ahi_Id).subscribe({
       next: (response: any) => {
         if (response.success) {
-          this.dataListadoDosificaciones = response.elements as any[];
-          this.dataSource.data = this.dataListadoDosificaciones;
-          this.dataSource.sort = this.sort;
+          // Transformar PHs en array
+          this.dataListadoDosificaciones = response.elements.map((item: any) => {
+            const phArray = Array(item.can_Jabo).fill(null);
+            if (item.ph_Jab && item.ph_Jab !== 0) phArray[0] = item.ph_Jab;
+            if (item.ph_Jab2) phArray[1] = item.ph_Jab2;
+            if (item.ph_Jab3) phArray[2] = item.ph_Jab3;
+            return { ...item, ph_Jab: phArray };
+          });
 
-          const curvas = [...new Set(this.dataListadoDosificaciones.map(item => item.cur_Des))];
+          const tieneTubos = this.dataListadoDosificaciones.some(
+            item => item.nro_Tubo_Jab !== null && item.nro_Tubo_Jab !== 0
+          );
 
-          const curva11 = '11_AVITERA / SUNFIX / NOVACRON OCEANO S-R 60°C';
-          const curva14 = '14_AVITERA/SUNFIX MEDIOS – OSCUROS - DIFICILES';
-          const curva81 = '81_TURQUESAS 50°-80°C';
-          const curva96 = '96_TURQUESAS 95°-80°C';
-
-          if (curvas.length === 2) {
-            if (curvas.includes(curva11) && curvas.includes(curva14)) {
-              this.tituloCurva = curva14;
-            }
-            else if (curvas.includes(curva81) && curvas.includes(curva96)) {
-              this.tituloCurva = curva96;
-            }
-            else {
-              this.tituloCurva = '';
-            }
+          if (tieneTubos) {
+            // this.columnsToDisplay = [
+            //   'nro_Tubo',
+            //   'jab_Des',
+            //   ...this.getPhColumns(),
+            //   'corr_Carta',
+            //   'sec',
+            //   'correlativo',
+            //   'descripcion_Color'
+            // ].slice();
+            setTimeout(() => {
+              this.columnsToDisplay = [
+                'nro_Tubo',
+                'jab_Des',
+                ...this.getPhColumns(),
+                'corr_Carta',
+                'sec',
+                'correlativo',
+                'descripcion_Color'
+              ];
+              this.dataSource.data = this.dataListadoDosificaciones;
+            }, 0);
+            this.tituloCurva = 'Jabonados';
           } else {
-            this.tituloCurva = curvas[0] || '';
+
+            const curvas = [...new Set(this.dataListadoDosificaciones.map(item => item.cur_Des))];
+
+            const curva11 = '11_AVITERA / SUNFIX / NOVACRON OCEANO S-R 60°C';
+            const curva14 = '14_AVITERA/SUNFIX MEDIOS – OSCUROS - DIFICILES';
+            const curva81 = '81_TURQUESAS 50°-80°C';
+            const curva96 = '96_TURQUESAS 95°-80°C';
+
+            if (curvas.length >= 2) {
+              if (curvas.includes(curva11) && curvas.includes(curva14)) {
+                this.tituloCurva = curva14;
+              }
+              else if (curvas.includes(curva81) && curvas.includes(curva96)) {
+                this.tituloCurva = curva96;
+              }
+              else if (curvas.length === 3) {
+                this.tituloCurva = curvas[0] || '';
+              }
+              else {
+                this.tituloCurva = curvas[0] || '';
+              }
+            } else {
+              this.tituloCurva = curvas[0] || '';
+            }
+
+            this.columnsToDisplay = [
+              'nro_Tubo',
+              'dosificacion1',
+              'dosificacion2',
+              'dosificacion3',
+              'soda',
+              'ph_Fin',
+              'reenvio',
+              'corr_Carta',
+              'descripcion_Color',
+              'jab_Des',
+              'sec',
+              'correlativo'
+            ].slice();
           }
 
-          console.log('Título curva:', this.tituloCurva);
-
+          this.dataSource.data = this.dataListadoDosificaciones;
+          this.dataSource.sort = this.sort;
+          this.table.renderRows();
           this.SpinnerService.hide();
         } else {
           this.dataListadoDosificaciones = [];
+          this.SpinnerService.hide();
+        }
+        if (this.dataListadoDosificaciones.length === 0) {
+          // this.itemSeleccionado = Ahi_Id;
+          this.patchActualizarEstadoCargaAhiba(Ahi_Id);
+          this.SpinnerService.hide();
         }
       },
       error: (error: any) => {
         this.SpinnerService.hide();
-        console.log(error.error.message, 'Cerrar', {
-          timeout: 2500
-        });
+        console.log(error.error.message, 'Cerrar', { timeout: 2500 });
       }
     });
   }
+
 
 
 
@@ -345,6 +393,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
       error: (error: any) => {
       }
     });
+
   }
 
   FinalizarProceso(): void {
@@ -375,6 +424,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
       error: (error: any) => {
       }
     });
+
   }
 
   patchActualizarEstadoDeColorTricomia(row: any): void {
@@ -413,6 +463,25 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
       }
     });
   }
+
+  getPhColumns(): string[] {
+    const max = Math.max(...this.dataSource.data.map((r: any) => r.can_Jabo || 1));
+    return Array.from({ length: max }, (_, i) => 'ph_Jab' + (i + 1));
+  }
+
+  patchActualizarEstadoCargaAhiba(Ahi_Id: number){
+    const data = {
+      ahi_Id: Ahi_Id
+    }
+    console.log('::::::::::::::::::::::::::::::::.', data);
+    this.LabColTrabajoService.patchActualizarEstadoCargaAhiba(data).subscribe({
+      next: (response: any) => {
+
+      },
+      error: (error: any) => {}
+    });
+  }
+  
 
 
 }

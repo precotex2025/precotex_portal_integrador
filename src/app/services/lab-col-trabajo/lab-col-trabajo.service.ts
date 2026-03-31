@@ -306,6 +306,18 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getGetUsuarioWeb', { headers, params })
   }
 
+  getObtenerFijadosTipo(){
+    const headers = this.Header;
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerFijadosTipo', { headers })
+  }
+
+  getListarJabonadoExcluidoDescarga(Usr_Cod: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Usr_Cod', Usr_Cod);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarJabonadoExcluidoDescarga', { headers, params })
+  }
+
   postRegistrarDetalleColorSDC(data: any){
     const headers = this.Header;
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarDetalleColorSDC', data, { headers })
@@ -479,6 +491,16 @@ export class LabColTrabajoService {
   patchActualizarFechasTenido(data: any){
     const headers = this.Header;
     return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarFechasTenido', data, { headers })
+  }
+
+  patchActualizarFijadoTipo(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarFijadoTipo', data, { headers })
+  }
+
+  patchActualizarEstadoCargaAhiba(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarEstadoCargaAhiba', data, { headers })
   }
 
   deleteEliminarOpcionColorante(Corr_Carta: any, Sec: number, Correlativo: number) {

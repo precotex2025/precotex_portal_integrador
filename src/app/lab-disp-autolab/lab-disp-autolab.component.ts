@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, Inject, AfterViewInit } from '@angular/core';
 import { LabDosificacionComponent } from '../lab-dosificacion/lab-dosificacion.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogAgregarPhComponent } from '../lab-dosificacion/dialog-agregar-ph/dialog-agregar-ph.component';
@@ -18,6 +18,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NonNullableFormBuilder } from '@angular/forms';
 import { response } from 'express';
 import { log } from 'console';
+import { MatPaginator } from '@angular/material/paginator';
 interface data_colaautolab {
   corr_Carta: any,
   sec: number,
@@ -45,12 +46,17 @@ interface data_dispensado {
   templateUrl: './lab-disp-autolab.component.html',
   styleUrl: './lab-disp-autolab.component.scss'
 })
-export class LabDispAutolabComponent implements OnInit {
+export class LabDispAutolabComponent implements OnInit, AfterViewInit {
   @ViewChild('modalPosiciones') modalPosiciones!: TemplateRef<any>;
   // @ViewChild('modalListaSeleccionados') modalListaSeleccionados!: TemplateRef<any>;
   @ViewChild(MatTable) table!: MatTable<any>;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('sortColaAutolab') sortColaAutolab!: MatSort;
+  @ViewChild('sortDispensado') sortDispensado!: MatSort;
+  @ViewChild('paginatorColaAutolab') paginatorColaAutolab!: MatPaginator;
+  @ViewChild('paginatorDispensado') paginatorDispensado!: MatPaginator;
   Usuario: string = '';
+
   constructor(
     private dialog: MatDialog,
     private SpinnerService: NgxSpinnerService,
@@ -78,6 +84,17 @@ export class LabDispAutolabComponent implements OnInit {
     this.ahibaSeleccionado = 0;
     this.onListarColaAutolab(this.Usuario);
     // this.onListarDispensado();
+  }
+
+  ngAfterViewInit(): void {
+    
+    this.dataSource.paginator = this.paginatorColaAutolab;
+    this.dataSource.sort = this.sortColaAutolab;
+
+    this.dataSourceDispensado.paginator = this.paginatorDispensado;
+    this.dataSourceDispensado.sort = this.sortDispensado;
+    // this.paginatorColaAutolab.pageSize = 12;
+    // this.paginatorDispensado.pageSize = 12;
   }
 
   estadoSeleccionado: 'cola' | 'dispensado' = 'cola';
@@ -123,7 +140,7 @@ export class LabDispAutolabComponent implements OnInit {
             seleccionado: false
           }));
           this.dataSource.data = this.dataListadoColaAutolab;
-          this.dataSource.sort = this.sort;
+          this.dataSource.sort = this.sortColaAutolab;
 
           this.dataSource.data.forEach(row => {
             this.cargarItemsManuales(row);
@@ -254,7 +271,7 @@ export class LabDispAutolabComponent implements OnInit {
 
 
   ahibaSeleccionado: number = 1;
-  curvasAhiba: { codigo: number, nombre: string, cantidadPosiciones: number, estado: string }[] = [];
+  curvasAhiba: { codigo: number, nombre: string, cantidadPosiciones: number, estado: string, estadoCarga: string }[] = [];
 
   dataSourceDispensado: MatTableDataSource<data_dispensado> = new MatTableDataSource();
 
@@ -291,7 +308,7 @@ export class LabDispAutolabComponent implements OnInit {
             seleccionado: false
           }));
           this.dataSourceDispensado.data = this.dataListadoDispensado;
-          this.dataSourceDispensado.sort = this.sort;
+          this.dataSourceDispensado.sort = this.sortDispensado;
 
           this.dataSourceDispensado.data.forEach(row => {
             this.cargarItemsManuales(row);
@@ -345,6 +362,11 @@ export class LabDispAutolabComponent implements OnInit {
 
   async cargarAAHIBA(): Promise<void> {
 
+    if(this.cantidadRequerida - this.seleccionadosActuales > 0){
+      this.toastr.warning('Pendientes por asignar: ' + (this.cantidadRequerida - this.seleccionadosActuales).toString());
+      return;
+    }
+
     const seleccionados = this.posiciones
       .filter(p => p.seleccionado)
       .map(p => p.numero);
@@ -388,7 +410,8 @@ export class LabDispAutolabComponent implements OnInit {
           sec: item.sec,
           correlativo: item.correlativo,
           ahi_Id: this.ahibaSeleccionado,
-          nro_Tubo: tubo
+          nro_Tubo: tubo,
+          tip_Carga: 'D'
         };
 
         try {
@@ -457,7 +480,8 @@ export class LabDispAutolabComponent implements OnInit {
       data: {
         Title: "Detalle",
         Num_SDC: "",
-        Estado: estado
+        Estado: estado,
+        TipoCarga: 'D'
       }
     });
   }
@@ -497,7 +521,8 @@ export class LabDispAutolabComponent implements OnInit {
               codigo: c.ahi_Id,
               nombre: c.ahi_Des,
               cantidadPosiciones: c.ahi_Pos_Can,
-              estado: c.ahi_Est_Pro
+              estado: c.ahi_Est_Pro,
+              estadoCarga: c.ahi_Est_Carga
             }));
             this.SpinnerService.hide();
           } else {
@@ -517,7 +542,51 @@ export class LabDispAutolabComponent implements OnInit {
     })
   }
 
-  validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
+  // validarEstadoahibaPorCodigo(codigo: number, tipoCarga: 'D' | 'J'): Promise<number> {
+  //   this.SpinnerService.show();
+
+  //   return new Promise((resolve, reject) => {
+  //     this.LabColTrabajoService.getListaAhibas().subscribe({
+  //       next: (response: any) => {
+  //         if (response.success && response.totalElements > 0) {
+  //           this.curvasAhiba = response.elements.map((c: any) => ({
+  //             codigo: c.ahi_Id,
+  //             nombre: c.ahi_Des,
+  //             cantidadPosiciones: c.ahi_Pos_Can,
+  //             estado: c.ahi_Est_Pro,
+  //             estadoCarga: c.ahi_Est_Carga
+  //           }));
+
+  //           const ahibaEncontrada = this.curvasAhiba.find(c => c.codigo === codigo);
+
+  //           if (ahibaEncontrada) {
+  //             if (ahibaEncontrada.estado === 'I') {
+  //               resolve(1);
+  //             } else {
+  //               resolve(0);
+  //             }
+  //           } else {
+  //             this.toastr.error('No se encontró la ahiba con ese código');
+  //             resolve(0);
+  //           }
+
+  //           this.SpinnerService.hide();
+  //         } else {
+  //           this.curvasAhiba = [];
+  //           this.SpinnerService.hide();
+  //           resolve(0);
+  //         }
+  //       },
+  //       error: (error: any) => {
+  //         this.SpinnerService.hide();
+  //         console.log(error.error.message, 'Cerrar', { timeout: 2500 });
+  //         reject(error);
+  //       }
+  //     });
+  //   });
+  // }
+
+  validarEstadoahibaPorCodigo(codigo: number, tipoCarga: 'D' | 'J'): Promise<number> {
     this.SpinnerService.show();
 
     return new Promise((resolve, reject) => {
@@ -528,21 +597,29 @@ export class LabDispAutolabComponent implements OnInit {
               codigo: c.ahi_Id,
               nombre: c.ahi_Des,
               cantidadPosiciones: c.ahi_Pos_Can,
-              estado: c.ahi_Est_Pro
+              estado: c.ahi_Est_Pro,
+              estadoCarga: c.ahi_Est_Carga
             }));
 
-            const ahibaEncontrada = this.curvasAhiba.find(c => c.codigo === codigo);
+            const ahiba = this.curvasAhiba.find(c => c.codigo === codigo);
 
-            if (ahibaEncontrada) {
-              if (ahibaEncontrada.estado === 'I') {
-                resolve(1);
+            if (ahiba) {
+
+              if (ahiba.estadoCarga === 'N' || ahiba.estadoCarga === tipoCarga) {
+
+                if (ahiba.estado === 'I') {
+                  resolve(1);
+                } else {
+                  resolve(0);
+                }
               } else {
-                resolve(0);
+                resolve(2);
               }
             } else {
               this.toastr.error('No se encontró la ahiba con ese código');
-              resolve(0);
+              resolve(3);
             }
+
 
             this.SpinnerService.hide();
           } else {
@@ -553,12 +630,12 @@ export class LabDispAutolabComponent implements OnInit {
         },
         error: (error: any) => {
           this.SpinnerService.hide();
-          console.log(error.error.message, 'Cerrar', { timeout: 2500 });
           reject(error);
         }
       });
     });
   }
+
 
 
 
@@ -595,155 +672,24 @@ export class LabDispAutolabComponent implements OnInit {
 
     this.ahiSeleccionadoNombre = ahiba!.nombre;
 
-    const estado = await this.validarEstadoahibaPorCodigo(this.ahibaSeleccionado);
+    const estado = await this.validarEstadoahibaPorCodigo(this.ahibaSeleccionado, 'D');
 
     if (this.ahibaSeleccionado > 0) {
 
       if (estado === 1) {
         this.toastr.warning('La ahiba ya cuenta con un proceso iniciado');
-      } else {
+      } else if (estado === 2){
+        this.toastr.warning('No se puede mezclar AHIBA con diferente tipo de carga');
+      } else if (estado === 3){
+        this.toastr.warning('Seleccione una AHIBA válida');
+      }
+      else {
         this.abrirModalPosiciones(ahiba!.cantidadPosiciones, ahiba!.nombre);
       }
     }
   }
 
   seleccionadasModal: any[] = [];
-  // abrirModalPosiciones(cantidad: number, ahiNombre: string) {
-  //   const cantidadSeleccionada = this.dataSourceDispensado.data
-  //     .filter((row: any) => row.seleccionado).length;
-
-  //   if (cantidadSeleccionada > cantidad) {
-  //     this.toastr.error(
-  //       `La AHIBA ${ahiNombre} solo permite ${cantidad} tubos. Ha seleccionado ${cantidadSeleccionada}.`,
-  //       'Error', { timeOut: 3000 }
-  //     );
-  //     this.ahibaSeleccionado = 0;
-  //     return;
-  //   }
-
-  //   this.cantidadRequerida = cantidadSeleccionada;
-  //   if (this.cantidadRequerida > 0) {
-  //     const seleccionadas = this.dataSourceDispensado.data.filter((row: any) => row.seleccionado);
-  //     const jabDesReferencia = seleccionadas[0].jab_Des;
-  //     const todosIguales = seleccionadas.every((row: any) => row.jab_Des === jabDesReferencia);
-
-  //     if (!todosIguales) {
-  //       this.ahibaSeleccionado = 0;
-  //       this.toastr.error('Los registros seleccionados deben tener la misma curva teñido', 'Error', {
-  //         timeOut: 3000
-  //       });
-  //       return;
-  //     }
-  //   }
-
-  //   this.seleccionadosActuales = 0;
-  //   this.posiciones = Array.from({ length: cantidad }, (_, i) => ({
-  //     numero: i + 1,
-  //     seleccionado: false,
-  //     ocupado: false
-  //   }));
-
-  //   if (this.cantidadRequerida == 0) {
-  //     this.toastr.warning('Seleccione al menos un item', 'Advertencia', {
-  //       timeOut: 3000
-  //     });
-  //     this.ahibaSeleccionado = 0;
-  //     return;
-  //   }
-
-  //   const seleccionadas = this.dataSourceDispensado.data.filter((row: any) => row.seleccionado);
-
-  //   // this.seleccionadasModal = [{ corr_Carta: 10025, descripcion_Color: 'WASHED BLACK' }, { corr_Carta: 10165, descripcion_Color: 'BLUE MIRAGE' }];
-
-  //   this.seleccionadasModal = seleccionadas.map((item: any) => ({
-  //     ...item,
-  //     tubo: ''
-  //   }));
-
-  //   this.listarDosificacionesXAhiba(this.ahibaSeleccionado);
-
-  //   this.dialog.open(this.modalPosiciones, {
-  //     width: '900px',
-  //     height: '585px'
-  //   });
-  //   // ahiNombre,
-  // }
-
-  // abrirModalPosiciones(cantidad: number, ahiNombre: string) {
-  //   const cantidadSeleccionada = this.dataSourceDispensado.data
-  //     .filter((row: any) => row.seleccionado).length;
-
-  //   if (cantidadSeleccionada > cantidad) {
-  //     this.toastr.error(
-  //       `La AHIBA ${ahiNombre} solo permite ${cantidad} tubos. Ha seleccionado ${cantidadSeleccionada}.`,
-  //       'Error', { timeOut: 3000 }
-  //     );
-  //     this.ahibaSeleccionado = 0;
-  //     return;
-  //   }
-
-  //   this.cantidadRequerida = cantidadSeleccionada;
-  //   if (this.cantidadRequerida > 0) {
-  //     const seleccionadas = this.dataSourceDispensado.data.filter((row: any) => row.seleccionado);
-
-  //     const curvas = [...new Set(this.dataListadoDosificaciones.map(item => item.cur_Des))];
-
-  //     const curva11 = '11_AVITERA / SUNFIX / NOVACRON OCEANO S-R 60°C';
-  //     const curva14 = '14_AVITERA/SUNFIX MEDIOS – OSCUROS - DIFICILES';
-  //     const curva81 = '81_TURQUESAS 50°-80°C';
-  //     const curva96 = '96_TURQUESAS 95°-80°C';
-
-  //     if (curvas.length > 2) {
-  //       this.toastr.error('Solo se permiten máximo 2 curvas distintas', 'Error', { timeOut: 3000 });
-  //       this.ahibaSeleccionado = 0;
-  //       return;
-  //     }
-
-  //     if (curvas.length === 2) {
-  //       if (curvas.includes(curva11) && curvas.includes(curva14)) {
-  //       }
-  //       else if (curvas.includes(curva81) && curvas.includes(curva96)) {
-  //       }
-  //       else {
-  //         this.toastr.error('La combinación de curvas seleccionada no está permitida', 'Error', { timeOut: 3000 });
-  //         this.ahibaSeleccionado = 0;
-  //         return;
-  //       }
-  //     } else if (curvas.length === 1) {
-  //       this.tituloCurva = curvas[0] || '';
-  //     }
-  //   }
-
-  //   this.seleccionadosActuales = 0;
-  //   this.posiciones = Array.from({ length: cantidad }, (_, i) => ({
-  //     numero: i + 1,
-  //     seleccionado: false,
-  //     ocupado: false
-  //   }));
-
-  //   if (this.cantidadRequerida == 0) {
-  //     this.toastr.warning('Seleccione al menos un item', 'Advertencia', {
-  //       timeOut: 3000
-  //     });
-  //     this.ahibaSeleccionado = 0;
-  //     return;
-  //   }
-
-  //   const seleccionadas = this.dataSourceDispensado.data.filter((row: any) => row.seleccionado);
-
-  //   this.seleccionadasModal = seleccionadas.map((item: any) => ({
-  //     ...item,
-  //     tubo: ''
-  //   }));
-
-  //   this.listarDosificacionesXAhiba(this.ahibaSeleccionado);
-
-  //   this.dialog.open(this.modalPosiciones, {
-  //     width: '900px',
-  //     height: '585px'
-  //   });
-  // }
-
   abrirModalPosiciones(cantidad: number, ahiNombre: string) {
     const cantidadSeleccionada = this.dataSourceDispensado.data
       .filter((row: any) => row.seleccionado).length;
@@ -767,21 +713,21 @@ export class LabDispAutolabComponent implements OnInit {
       const curva81 = '81_TURQUESAS 50°-80°C';
       const curva96 = '96_TURQUESAS 95°-80°C';
 
-      if (curvas.length > 2) {
-        this.toastr.error('Solo se permiten máximo 2 curvas distintas', 'Error', { timeOut: 3000 });
+      if (curvas.length > 3) {
+        this.toastr.error('Solo se permiten máximo 3 curvas distintas', 'Error', { timeOut: 3000 });
         this.ahibaSeleccionado = 0;
         return;
       }
 
-      if (curvas.length === 2) {
-        if ((curvas.includes(curva11) && curvas.includes(curva14)) ||
-          (curvas.includes(curva81) && curvas.includes(curva96))) {
-        } else {
-          this.toastr.warning('La combinación de curvas seleccionada no está permitida', 'Error', { timeOut: 3000 });
-          this.ahibaSeleccionado = 0;
-          return;
-        }
-      }
+      // if (curvas.length === 2) {
+      //   if ((curvas.includes(curva11) && curvas.includes(curva14)) ||
+      //     (curvas.includes(curva81) && curvas.includes(curva96))) {
+      //   } else {
+      //     this.toastr.warning('La combinación de curvas seleccionada no está permitida', 'Error', { timeOut: 3000 });
+      //     this.ahibaSeleccionado = 0;
+      //     return;
+      //   }
+      // }
     }
 
     this.seleccionadosActuales = 0;
@@ -813,8 +759,6 @@ export class LabDispAutolabComponent implements OnInit {
       height: '585px'
     });
   }
-
-
 
   toggleSeleccion(pos: any): void {
     // Si ya estaba seleccionado, lo desmarcamos
@@ -887,10 +831,6 @@ export class LabDispAutolabComponent implements OnInit {
     this.seleccionadasModal.forEach(item => item.tubo = '');
   }
 
-
-
-
-
   tubos: { numero: number, ocupado: boolean }[] = [];
   dataListadoDosificaciones: any[] = [];
   tituloCurva: string = '';
@@ -903,7 +843,7 @@ export class LabDispAutolabComponent implements OnInit {
         if (response.success) {
           this.dataListadoDosificaciones = response.elements as any[];
           this.dataSource.data = this.dataListadoDosificaciones;
-          this.dataSource.sort = this.sort;
+          this.dataSource.sort = this.sortDispensado;
 
           this.posiciones.forEach(p => p.ocupado = false);
 
