@@ -41,8 +41,18 @@
       <button mat-raised-button color="primary" (click)="ejecutarPorPartidasAgrupadasSecuencial()">Guardar</button>
       <button mat-raised-button color="warn" (click)="cerrar()">Cerrar</button>
     </div>
+    
   </div>
-
+  <div>
+      <mat-form-field appearance="fill">
+        <mat-label>Curva</mat-label>
+        <mat-select [(ngModel)]="curvaTenido" (selectionChange)="actualizarTotalFinal()">
+          <mat-option *ngFor="let c of curvasTenido" [value]="c.codigo">
+            {{ c.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  </div>
     <section class="colorantes-section">
       <h3>Colorantes</h3>
       <div class="colorantes-scroll-wrapper">

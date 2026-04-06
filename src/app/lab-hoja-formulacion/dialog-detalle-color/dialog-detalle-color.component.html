@@ -5,7 +5,15 @@
     <div class="receta-cell">SDC</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.corr_Carta }}</div>
     <div class="receta-cell">Tipo teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.tip_Tenido }}</div>
     <div class="receta-cell">Curva teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.cur_Tenido }}</div>
-    <div class="receta-cell">Previo</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.previo }}</div>
+    <div class="receta-cell">Previo</div>
+      <div class="receta-cell" class="receta-cell valor">
+        <!-- {{ recetaDetalle.previo }} -->
+          <mat-select [(value)]="previoSeleccionado" (selectionChange)="patchActualizarPrevio()">
+            <mat-option *ngFor="let p of previo" [value]="p.codigo">
+              {{ p.nombre }}
+            </mat-option>
+          </mat-select>
+      </div>
 
     <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod > 0">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod > 0">{{ recetaDetalle.r_B | number:'1.2-2' }}</div>
     <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">{{ recetaDetalle.r_B_Prod | number:'1.2-2' }}</div>
@@ -21,6 +29,9 @@
     <div class="receta-cell">pH inicio</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.ph_Ini | number:'1.2-2' }}</div>
     <div class="receta-cell">pH final</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.ph_Fin | number:'1.2-2' }}</div>
     <div class="receta-cell">pH jabonado</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.ph_Jab | number:'1.2-2' }}</div>
+    <div class="receta-cell" [hidden]="recetaDetalle.can_Jabo < 2">pH jabonado 2</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.can_Jabo < 2">{{ recetaDetalle.ph_Jab2 | number:'1.2-2' }}</div>
+    <div class="receta-cell" [hidden]="recetaDetalle.can_Jabo < 3">pH jabonado 3</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.can_Jabo < 3">{{ recetaDetalle.ph_Jab3 | number:'1.2-2' }}</div>
+    <div class="receta-cell">pH descarga</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.ph_Des | number:'1.2-2' }}</div>
   </div>
 
   <!-- Auxiliares -->

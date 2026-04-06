@@ -11,6 +11,7 @@ import { getJSON } from 'jquery';
 import { AuthService } from '../authentication/auth.service';
 import { Router } from '@angular/router';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { response } from 'express';
 
 interface data {
   Title: string;
@@ -67,6 +68,7 @@ export class LabDosificacionComponent implements OnInit {
 
   columnas: string[] = [];
   usandoPhColumns: boolean = false;
+  TipoEnvio: string = '';
 
   ngOnInit(): void {
 
@@ -261,7 +263,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     this.LabColTrabajoService.getListarItemsEnAhiba(Ahi_Id).subscribe({
       next: (response: any) => {
         if (response.success) {
-          // Transformar PHs en array
+          
           this.dataListadoDosificaciones = response.elements.map((item: any) => {
             const phArray = Array(item.can_Jabo).fill(null);
             if (item.ph_Jab && item.ph_Jab !== 0) phArray[0] = item.ph_Jab;
@@ -284,8 +286,10 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
             //   'correlativo',
             //   'descripcion_Color'
             // ].slice();
+            this.TipoEnvio = 'J';
             setTimeout(() => {
               this.columnsToDisplay = [
+                'seleccion',
                 'nro_Tubo',
                 'jab_Des',
                 ...this.getPhColumns(),
@@ -298,7 +302,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
             }, 0);
             this.tituloCurva = 'Jabonados';
           } else {
-
+            this.TipoEnvio = 'D';
             const curvas = [...new Set(this.dataListadoDosificaciones.map(item => item.cur_Des))];
 
             const curva11 = '11_AVITERA / SUNFIX / NOVACRON OCEANO S-R 60°C';
@@ -431,7 +435,14 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     let Corr_Carta: string = row.corr_Carta;
     let Sec: number = row.sec;
     let Correlativo: number = row.correlativo;
+    let Flg_Est_Lab: string = '';
 
+    if(this.TipoEnvio === 'D'){
+      Flg_Est_Lab = '05';
+    }else{
+      Flg_Est_Lab = '10';
+    }
+    
     const data = {
       corr_Carta: Corr_Carta,
       sec: Sec,
@@ -481,7 +492,61 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
       error: (error: any) => {}
     });
   }
-  
 
+  toggleAllRows(checked: boolean): void {
+    this.dataSource.data.forEach((row: any) => row.seleccionado = checked);
+  }
+
+
+  isAllSelected(): boolean {
+    return this.dataSource.data.every((row: any) => row.seleccionado);
+  }
+
+  isIndeterminate(): boolean {
+    const selected = this.dataSource.data.filter((row: any) => row.seleccionado);
+    return selected.length > 0 && selected.length < this.dataSource.data.length;
+  }
+
+
+  async Descargar(): Promise<void> {
+      const seleccionados = this.dataSource.data.filter((row: any) => row.seleccionado);
+  
+      // const confirmacion = await Swal.fire({
+      //   title: '¿Enviar a Dispensar?',
+      //   icon: 'question',
+      //   showCancelButton: true,
+      //   confirmButtonColor: '#3085d6',
+      //   cancelButtonColor: '#d33',
+      //   confirmButtonText: 'Sí',
+      //   cancelButtonText: 'No'
+      // });
+  
+      // if (!confirmacion.isConfirmed) return;
+  
+      this.SpinnerService.show();
+  
+      try {
+        for (let i = 0; i < seleccionados.length; i++) {
+          const item = seleccionados[i];
+          const dataEnviar = {
+            corr_Carta: item.corr_Carta,
+            sec: item.sec,
+            correlativo: item.correlativo,
+            flg_Est_Lab: '10'
+          };
+
+          console.log(':::::::::::::::::::::.', dataEnviar);
+          try {
+            const respuesta = await this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(dataEnviar).toPromise();
+          } catch (error) {
+            console.log('Error al actualizar el estado', error);
+          }
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      } finally {
+        this.SpinnerService.hide();
+        this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+      }
+    }
 
 }
