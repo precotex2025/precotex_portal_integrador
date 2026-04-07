@@ -101,7 +101,7 @@ import { NgChartsModule } from 'ng2-charts';
     NgxSpinnerModule,
     MatMomentDateModule,
     MatTooltipModule,
-    NgChartsModule,   
+    NgChartsModule,
     ToastrModule.forRoot({
       timeOut: 10000,
       positionClass: 'toast-bottom-right',

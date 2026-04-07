@@ -119,6 +119,10 @@ export class AppComponent {
     } 
   }
 
+  irVentanaDelta(): void {
+    this.router.navigate(['/AnalisisDelta']);
+  }
+
   abrirModal(): void{
     this.dialog.open(this.modalReporte, { width: '400px' });
   }

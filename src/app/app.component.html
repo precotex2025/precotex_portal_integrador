@@ -49,6 +49,9 @@
     <button class="boton-flotante fullscreen" (click)="alternarPantallaCompleta()" matTooltip="Pantalla completa" *ngIf="!isLoginRoute">
       <mat-icon>fullscreen</mat-icon>
     </button>
+    <button class="boton-flotante delta" (click)="irVentanaDelta()" matTooltip="Delta D" *ngIf="!isLoginRoute">
+      <mat-icon>bar_chart</mat-icon>
+    </button>
     <button class="boton-flotante reporte" (click)="abrirModal()" matTooltip="Imprimir reporte" *ngIf="!isLoginRoute">
       <mat-icon>print</mat-icon>
     </button>

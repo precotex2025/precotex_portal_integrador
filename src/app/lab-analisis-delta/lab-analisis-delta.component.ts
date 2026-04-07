@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChartConfiguration } from 'chart.js';
+import { Router } from '@angular/router';
 
 interface combo {
   codigo: string;
@@ -82,6 +83,7 @@ export class LabAnalisisDeltaComponent implements OnInit {
     private LabColaTrabajoService : LabColTrabajoService,
     private authService           : AuthService         ,
     private toastr                : ToastrService       ,
+    private router                : Router              ,
     
   ){
     
@@ -518,6 +520,10 @@ export class LabAnalisisDeltaComponent implements OnInit {
 
     console.log('this.concatenado', this.concatenado);
   }   
+
+  onCerrar(): void {
+    this.router.navigate(['/ColaTrabajo']);
+  }
 
 
 }
