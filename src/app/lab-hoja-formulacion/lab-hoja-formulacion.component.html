@@ -41,10 +41,21 @@
    <button mat-raised-button color="primary"
       (click)="onActualizarHojaFormulacion()">Actualizar
    </button> 
-   <button mat-raised-button style="background-color: green; color: white;">
-      <p>Reactivo</p>
-      <p>Disperso</p>
-   </button>
+   <ng-container *ngIf="this.TipoReceta === 'R'">
+      <div>
+         <button mat-raised-button style="background-color: green; color: white;" (click)="BuscarReactivo()">
+            Reactivo
+         </button>
+      </div>
+   </ng-container>
+   <ng-container *ngIf="this.TipoReceta === 'D'">
+   <div>
+      <button mat-raised-button style="background-color: green; color: white;" (click)="BuscarDisperso()">
+         Disperso
+      </button>
+   
+   </div>
+   </ng-container>
 </div>
 <!-- Grilla de formulaciones con scroll horizontal --> 
 <div class="tabla-wrapper-scale">

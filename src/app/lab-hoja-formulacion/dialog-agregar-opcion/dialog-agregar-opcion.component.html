@@ -45,6 +45,15 @@
   </div>
   <div>
       <mat-form-field appearance="fill">
+        <mat-label>Tenido</mat-label>
+        <mat-select [(ngModel)]="TipoTenidoSeleccionado" (selectionChange)="SeleccionarTipoTenido($event)">
+          <mat-option *ngFor="let t of TipoTenido" [value]="t.codigo">
+            {{ t.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <mat-form-field appearance="fill">
         <mat-label>Curva</mat-label>
         <mat-select [(ngModel)]="curvaTenido" (selectionChange)="actualizarTotalFinal()">
           <mat-option *ngFor="let c of curvasTenido" [value]="c.codigo">
@@ -53,6 +62,7 @@
         </mat-select>
       </mat-form-field>
   </div>
+
     <section class="colorantes-section">
       <h3>Colorantes</h3>
       <div class="colorantes-scroll-wrapper">
@@ -112,7 +122,7 @@
       </div>
     </section>
 
-    <section class="parametros-section">
+    <section class="parametros-section" *ngIf="TipoTenidoSeleccionado === 'R'">
       <h3>Jabonado - Curva - Fijado</h3>
 
       <mat-form-field appearance="fill">
@@ -136,7 +146,7 @@
     </section>
 
   <div class="seccion-doble">
-    <section class="quimicos-section">
+    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'R'">
       <h3>Carbonato / Soda</h3>
     <div class="quimico-row" *ngFor="let producto of productos">
       <span class="col-nombre">{{ producto.nombre }}</span>
@@ -158,8 +168,23 @@
       </mat-form-field>
     </div>
     </section>
+    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'D'">
+      <h3>Antireductor</h3>
+      <div class="quimico-row">
+        <mat-form-field appearance="outline" class="col-gr">
+          <mat-label>Cantidad (gr)</mat-label>
+          <input matInput type="number" [(ngModel)]="antiReductorCantidad" [disabled]="!cambiosHabilitados" />
+        </mat-form-field>
+      
+        <mat-form-field appearance="outline" class="col-porcentaje">
+          <mat-label>Ajuste</mat-label>
+          <input matInput type="number" [(ngModel)]="antiReductorPorcentaje" (ngModelChange)="actualizarCantidadAntireductor()"
+            step="0.5" [disabled]="!cambiosHabilitados" />
+        </mat-form-field>
+      </div>
+    </section>
 
-    <section class="datos-section" >
+    <section class="datos-section" *ngIf="TipoTenidoSeleccionado === 'R' || TipoTenidoSeleccionado === 'D'">
       <h3>Baño - Peso - Volumen</h3>
       <mat-form-field appearance="fill">
         <mat-label>Relación baño</mat-label>

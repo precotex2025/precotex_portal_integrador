@@ -80,11 +80,12 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarInformeSDC', { headers, params })
   }
 
-  getCargarGridHojaFormulacion(Corr_Carta: any, Sec: number){
+  getCargarGridHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
+    params = params.append('Tip_Ten', TipoReceta);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarGridHojaFormulacion', { headers, params })
   }
 
@@ -321,6 +322,23 @@ export class LabColTrabajoService {
   getListarPrevios(){
     const headers = this.Header;
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarPrevios', { headers })
+  }
+
+  getListarTiposTenido(Familia: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Familia', Familia);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarTiposTenido', { headers, params })
+  }
+
+  getObtenerUltimoCorrelativoXTipoTenido(Corr_Carta: string, Sec: number, Tip_Ten: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Corr_Carta', Corr_Carta);
+    params = params.append('Sec', Sec);
+    params = params.append('Tip_Ten', Tip_Ten);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerUltimoCorrelativoXTipoTenido', { headers, params })
+
   }
 
   postRegistrarDetalleColorSDC(data: any){
