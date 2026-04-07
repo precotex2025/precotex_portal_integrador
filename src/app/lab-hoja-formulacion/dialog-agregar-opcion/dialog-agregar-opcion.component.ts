@@ -70,7 +70,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   coloranteSeleccionado: any = null;
   correlativoAnterior: number = 0;
   colorantesSeleccionados: any[] = [];
-
+  curvasTenido: { nombre: string, codigo: number }[] = [];
+  curvaTenido: number = 0;
   parametros = {
     jabonadas: 0,
     curva: 0,
@@ -250,7 +251,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, this.Familia);
     this.GetFijadosCalculado(this.totalFinalColorantes, this.Familia);
     this.GetCarbonatoSodaCalculado(this.totalFinalColorantes, this.Familia, this.condicion);
-
+    this.getListarCurvas();
   }
 
   actualizarTotalFinalDesdeCopiar(Familia: string): void {
@@ -311,7 +312,103 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   }
 
 
-  guardarColorantesConParametros(): void {
+  // guardarColorantesConParametros(): void {
+  //   if (this.colorantesSeleccionados.length === 0) {
+  //     this.toastr.warning('Debe agregar al menos un colorante', '', { timeOut: 2500 });
+  //     return;
+  //   }
+
+  //   const carbonato = this.productos.find(p => p.nombre.toUpperCase().includes('CARBONATO'));
+  //   const soda = this.productos.find(p => p.nombre.toUpperCase().includes('SODA'));
+  //   const familia = this.parametros.tiposFormulacion.toString();
+
+
+  //   const comunes = {
+  //     Corr_Carta: this.data?.Num_SDC?.toString() || '',
+  //     Sec: this.data?.Num_Sec?.toString() || '0',
+  //     Correlativo: this.correlativo,
+  //     Can_Jabo: this.parametros.jabonadas.toString(),
+  //     Cur_Jabo: this.parametros.curva.toString(),
+  //     Fijado: this.parametros.fijado.toString(),
+  //     Rel_Ban: this.datos.relacionBano.toString(),
+  //     Pes_Mue: this.datos.pesoMuestra.toString(),
+  //     Volumen: this.datos.volumen.toString(),
+  //     // Acidulado: this.parametros.acidulado.toString(),
+  //     Car_Gr: carbonato?.cantidad.toString() || '0',
+  //     Car_Por: carbonato?.porcentaje.toString() || '0',
+  //     Sod_Gr: soda?.cantidad.toString() || '0',
+  //     Sod_Por: soda?.porcentaje.toString() || '0',
+  //     Familia: familia,
+  //     Cambio: this.estadoCambio
+  //   };
+
+  //   let ProcedenciaHardCodeada: string = "";
+
+  //   if (this.data.Title === 'Copiar') {
+  //     ProcedenciaHardCodeada = "Copia de Corrida #" + this.data.CorrelativoAnterior?.toString();
+  //   }
+
+  //   const comunes2 = {
+  //     Corr_Carta: this.data?.Num_SDC?.toString() || '',
+  //     Sec: this.data?.Num_Sec?.toString() || '0',
+  //     Correlativo: this.correlativo,
+  //     Familia: familia,
+  //     Cambio: this.estadoCambio,
+  //     ProcedenciaHardCodeada: ProcedenciaHardCodeada
+  //   };
+  //   this.SpinnerService.show();
+
+  //   let pendientes = this.colorantesSeleccionados.length;
+  //   let errores = 0;
+
+  //   this.colorantesSeleccionados.forEach((c, index) => {
+      
+  //     let datitos
+  //     if (this.data.Title === 'Copiar') {
+  //       datitos = {
+  //         ...comunes,
+  //         Col_Cod: c.codigo,
+  //         Procedencia: "Opcion Agregada",
+  //         Por_Ini: c.inicial.toFixed(5),
+  //         Por_Aju: c.ajuste,
+  //         Por_Fin: c.final
+  //       };
+  //     } else {
+  //       datitos = {
+  //         ...comunes,
+  //         Col_Cod: c.codigo,
+  //         Procedencia: "Opcion Agregada",
+  //         Por_Ini: c.inicial.toFixed(5),
+  //         Por_Aju: c.ajuste,
+  //         Por_Fin: this.calcularFinal(c).toFixed(5)
+  //       };
+  //     }
+      
+  //     //console.log('::::::::::::::::::::::::::.', comunes)
+  //     //console.log('::::::::::::::::::::::::::::::.', comunes2)
+  //     //console.log(':::::::::::::::::::::::::::::::::::.', datitos)
+      
+  //     this.LabColTraService.postAgregarOpcionColorante(datitos).subscribe({
+  //       next: (response: any) => {
+  //         if (!response.success) errores++;
+  //         pendientes--;
+  //         if (pendientes === 0) {
+  //           this.finalizarGuardado(errores)
+  //           this.guardarAuxiliares(comunes2);
+  //         };
+  //       },
+  //       error: () => {
+  //         errores++;
+  //         pendientes--;
+  //         if (pendientes === 0) {
+  //           this.finalizarGuardado(errores);
+  //         }
+  //       }
+  //     });
+  //   });
+  // }
+
+  async guardarColorantesConParametros(): Promise<void> {
     if (this.colorantesSeleccionados.length === 0) {
       this.toastr.warning('Debe agregar al menos un colorante', '', { timeOut: 2500 });
       return;
@@ -320,7 +417,6 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     const carbonato = this.productos.find(p => p.nombre.toUpperCase().includes('CARBONATO'));
     const soda = this.productos.find(p => p.nombre.toUpperCase().includes('SODA'));
     const familia = this.parametros.tiposFormulacion.toString();
-
 
     const comunes = {
       Corr_Carta: this.data?.Num_SDC?.toString() || '',
@@ -332,7 +428,6 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       Rel_Ban: this.datos.relacionBano.toString(),
       Pes_Mue: this.datos.pesoMuestra.toString(),
       Volumen: this.datos.volumen.toString(),
-      // Acidulado: this.parametros.acidulado.toString(),
       Car_Gr: carbonato?.cantidad.toString() || '0',
       Car_Por: carbonato?.porcentaje.toString() || '0',
       Sod_Gr: soda?.cantidad.toString() || '0',
@@ -341,71 +436,55 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       Cambio: this.estadoCambio
     };
 
-    let ProcedenciaHardCodeada: string = "";
-
-    if (this.data.Title === 'Copiar') {
-      ProcedenciaHardCodeada = "Copia de Corrida #" + this.data.CorrelativoAnterior?.toString();
-    }
-
     const comunes2 = {
       Corr_Carta: this.data?.Num_SDC?.toString() || '',
       Sec: this.data?.Num_Sec?.toString() || '0',
       Correlativo: this.correlativo,
       Familia: familia,
       Cambio: this.estadoCambio,
-      ProcedenciaHardCodeada: ProcedenciaHardCodeada
+      ProcedenciaHardCodeada: this.data.Title === 'Copiar'
+        ? "Copia de Corrida #" + this.data.CorrelativoAnterior?.toString()
+        : ""
     };
-    this.SpinnerService.show();
 
-    let pendientes = this.colorantesSeleccionados.length;
+    this.SpinnerService.show();
     let errores = 0;
 
-    this.colorantesSeleccionados.forEach((c, index) => {
-      
-      let datitos
-      if (this.data.Title === 'Copiar') {
-        datitos = {
+    try {
+      for (let i = 0; i < this.colorantesSeleccionados.length; i++) {
+        const c = this.colorantesSeleccionados[i];
+
+        const datitos = {
           ...comunes,
           Col_Cod: c.codigo,
           Procedencia: "Opcion Agregada",
           Por_Ini: c.inicial.toFixed(5),
           Por_Aju: c.ajuste,
-          Por_Fin: c.final
+          Por_Fin: this.data.Title === 'Copiar'
+            ? c.final
+            : this.calcularFinal(c).toFixed(5)
         };
-      } else {
-        datitos = {
-          ...comunes,
-          Col_Cod: c.codigo,
-          Procedencia: "Opcion Agregada",
-          Por_Ini: c.inicial.toFixed(5),
-          Por_Aju: c.ajuste,
-          Por_Fin: this.calcularFinal(c).toFixed(5)
-        };
-      }
-      
-      //console.log('::::::::::::::::::::::::::.', comunes)
-      //console.log('::::::::::::::::::::::::::::::.', comunes2)
-      console.log(':::::::::::::::::::::::::::::::::::.', datitos)
-      
-      this.LabColTraService.postAgregarOpcionColorante(datitos).subscribe({
-        next: (response: any) => {
+
+        try {
+          const response: any = await this.LabColTraService.postAgregarOpcionColorante(datitos).toPromise();
           if (!response.success) errores++;
-          pendientes--;
-          if (pendientes === 0) {
-            this.finalizarGuardado(errores)
-            this.guardarAuxiliares(comunes2);
-          };
-        },
-        error: () => {
+        } catch {
           errores++;
-          pendientes--;
-          if (pendientes === 0) {
-            this.finalizarGuardado(errores);
-          }
         }
-      });
-    });
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      this.finalizarGuardado(errores);
+      this.guardarAuxiliares(comunes2);
+
+    } finally {
+      this.SpinnerService.hide();
+    }
   }
+
+
+
 
   finalizarGuardado(errores: number): void {
     this.SpinnerService.hide();
@@ -695,7 +774,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           }
         ];
 
-        console.log('Productos cargados: ', this.productos);
+        //console.log('Productos cargados: ', this.productos);
         this.colorantesSeleccionados = (datos.colorantes ?? []).map((c: any) => ({
           codigo: c.col_Cod,
           nombre: c.col_Des,
@@ -933,6 +1012,22 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           this.parametros.tiposFormulacion = familia;
         }
       }
+    });
+  }
+
+  getListarCurvas(): void {
+    this.LabColTraService.getListarCurvas(this.parametros.tiposFormulacion).subscribe({
+      next: (response: any) => {
+        if(response.success){
+          if(response.totalElements > 0) {
+            this.curvasTenido = response.elements.map((c: any) => ({
+              codigo: c.codigo,
+              nombre: c.descripcion
+            }));
+          }
+        }
+      },
+      error: (error: any) => {}
     });
   }
 

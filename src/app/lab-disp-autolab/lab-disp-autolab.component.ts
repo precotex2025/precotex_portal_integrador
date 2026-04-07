@@ -326,34 +326,52 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
   }
 
   // toggleAll(checked: boolean): void {
-  //   this.dataSourceDispensado.data.forEach((row: any) => row.seleccionado = checked);
+  //   this.dataSourceDispensado.data
+  //     .filter((row: any) => row.ph_Ini !== 0)
+  //     .forEach((row: any) => row.seleccionado = checked);
   // }
 
   // isAllSelectedDispensado(): boolean {
-  //   return this.dataSourceDispensado.data.every((row: any) => row.seleccionado);
+  //   const enabledRows = this.dataSourceDispensado.data.filter((row: any) => row.ph_Ini !== 0);
+  //   return enabledRows.every((row: any) => row.seleccionado);
   // }
 
   // isIndeterminateDispensado(): boolean {
-  //   const selected = this.dataSourceDispensado.data.filter((row: any) => row.seleccionado);
-  //   return selected.length > 0 && selected.length < this.dataSourceDispensado.data.length;
+  //   const enabledRows = this.dataSourceDispensado.data.filter((row: any) => row.ph_Ini !== 0);
+  //   const selected = enabledRows.filter((row: any) => row.seleccionado);
+  //   return selected.length > 0 && selected.length < enabledRows.length;
   // }
 
+  private isGroupEnabled(row: any): boolean {
+    const group = this.dataSourceDispensado.data.filter(
+      (r: any) => r.corr_Carta === row.corr_Carta && r.sec === row.sec
+    );
+    return group.some((r: any) => r.ph_Ini !== 0);
+  }
+
   toggleAll(checked: boolean): void {
-    this.dataSourceDispensado.data
-      .filter((row: any) => row.ph_Ini !== 0) // solo habilitados
-      .forEach((row: any) => row.seleccionado = checked);
+    this.dataSourceDispensado.data.forEach((row: any) => {
+      if (this.isGroupEnabled(row)) {
+        row.seleccionado = checked;
+      }
+    });
   }
 
   isAllSelectedDispensado(): boolean {
-    const enabledRows = this.dataSourceDispensado.data.filter((row: any) => row.ph_Ini !== 0);
-    return enabledRows.every((row: any) => row.seleccionado);
+    const enabledRows = this.dataSourceDispensado.data.filter((row: any) =>
+      this.isGroupEnabled(row)
+    );
+    return enabledRows.length > 0 && enabledRows.every((row: any) => row.seleccionado);
   }
 
   isIndeterminateDispensado(): boolean {
-    const enabledRows = this.dataSourceDispensado.data.filter((row: any) => row.ph_Ini !== 0);
+    const enabledRows = this.dataSourceDispensado.data.filter((row: any) =>
+      this.isGroupEnabled(row)
+    );
     const selected = enabledRows.filter((row: any) => row.seleccionado);
     return selected.length > 0 && selected.length < enabledRows.length;
   }
+
 
 
   haySeleccionadosDispensados(): boolean {
@@ -619,7 +637,6 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
               this.toastr.error('No se encontró la ahiba con ese código');
               resolve(3);
             }
-
 
             this.SpinnerService.hide();
           } else {

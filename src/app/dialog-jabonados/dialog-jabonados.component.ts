@@ -115,10 +115,10 @@ export class DialogJabonadosComponent {
             'sec',
             'correlativo',
             'descripcion_Color',
+            'ph_Neu',
             'jab_Des',
-            'can_Jabo',
+            'can_Jabo'
             //...this.getPhColumns(),
-            //'ph_Des'
           ];
 
           this.SpinnerService.hide();
@@ -160,10 +160,10 @@ export class DialogJabonadosComponent {
             'correlativo',
             'descripcion_Color',
             'jab_Des',
-            'dosificacion1',
-            'dosificacion2',
-            'dosificacion3',
-            'sod_gr',
+            // 'dosificacion1',
+            // 'dosificacion2',
+            // 'dosificacion3',
+            // 'sod_gr',
             'can_Jabo',
             ...this.getPhColumns(),
             'descarga',
@@ -240,6 +240,35 @@ export class DialogJabonadosComponent {
     });
   }
 
+  ingresarPHNeutralizado(row: any): void {
+    let num_sdc = row.corr_Carta;
+    let sec = row.sec;
+    let correlativo = row.correlativo;
+
+    // if (this.filtroSeleccionado === 'completosDescarga'){
+    //   this.toastr.warning('No se puede modificar una corrida completa');
+    //   return;
+    // }
+
+    let dialogref = this.dialog.open(DialogAgregarPhComponent, {
+      width: '500px',
+      height: '300px',
+      disableClose: false,
+      panelClass: 'my-class',
+      data: {
+        Title: `PH Neutralizado`,
+        Corr_Carta: num_sdc,
+        Sec: sec,
+        Correlativo: correlativo,
+        Condicion: 5
+      }
+    });
+
+    dialogref.afterClosed().subscribe(result => {
+      this.onListarJabonado(this.Usuario); 
+    });
+  }
+
 
   aplicarFiltrarTodo(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
@@ -296,7 +325,7 @@ export class DialogJabonadosComponent {
 
     this.LabColTrabajoService.patchActualizarFijadoTipo(data).subscribe({
       next: (response: any) => {
-        console.log(':::::::::::::::::::::.', data);
+        //console.log(':::::::::::::::::::::.', data);
         this.toastr.success(response.message, 'Exito', {
           timeOut: 2500
         });
@@ -420,21 +449,22 @@ export class DialogJabonadosComponent {
             const ahiba = this.curvasAhiba.find(c => c.codigo === codigo);
 
             if (ahiba) {
-              if (ahiba.estado === 'I') {
 
-                if (ahiba.estadoCarga === 'N' || ahiba.estadoCarga === tipoCarga) {
+              if (ahiba.estadoCarga === 'N' || ahiba.estadoCarga === tipoCarga) {
+
+                if (ahiba.estado === 'I') {
                   resolve(1);
                 } else {
-                  this.toastr.error('No se puede mezclar AHIBA con diferente tipo de carga');
                   resolve(0);
                 }
               } else {
-                resolve(0);
+                resolve(2);
               }
             } else {
               this.toastr.error('No se encontró la ahiba con ese código');
-              resolve(0);
+              resolve(3);
             }
+
 
             this.SpinnerService.hide();
           } else {
@@ -462,11 +492,15 @@ export class DialogJabonadosComponent {
       const estado = await this.validarEstadoahibaPorCodigo(this.ahibaSeleccionado, 'J');
   
       if (this.ahibaSeleccionado > 0) {
-  
+
         if (estado === 1) {
           this.toastr.warning('La ahiba ya cuenta con un proceso iniciado');
-          //this.filtroSeleccionado = 'pendientes';
-        } else {
+        } else if (estado === 2) {
+          this.toastr.warning('No se puede mezclar AHIBA con diferente tipo de carga');
+        } else if (estado === 3) {
+          this.toastr.warning('Seleccione una AHIBA válida');
+        }
+        else {
           this.abrirModalPosiciones(ahiba!.cantidadPosiciones, ahiba!.nombre);
         }
       }

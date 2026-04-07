@@ -28,7 +28,21 @@
         <button mat-raised-button color="warn" mat-dialog-close>Cerrar</button>
       </div>
     </div>
+    <div>
+      <button mat-raised-button color="primary" [hidden]="tituloCurva !== 'Jabonados'" (click)="Descargar()">Descarga</button>
+    </div>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 tabla-dosificacion">
+
+      <ng-container matColumnDef="seleccion">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">
+          <mat-checkbox [checked]="isAllSelected()" [indeterminate]="isIndeterminate()"
+            (change)="toggleAllRows($event.checked)">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row" class="centrado">
+          <mat-checkbox [(ngModel)]="row.seleccionado" ></mat-checkbox>
+        </td>
+      </ng-container>
 
       <!-- Columnas -->
       <ng-container matColumnDef="corr_Carta">

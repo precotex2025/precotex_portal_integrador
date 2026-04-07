@@ -318,6 +318,11 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarJabonadoExcluidoDescarga', { headers, params })
   }
 
+  getListarPrevios(){
+    const headers = this.Header;
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarPrevios', { headers })
+  }
+
   postRegistrarDetalleColorSDC(data: any){
     const headers = this.Header;
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarDetalleColorSDC', data, { headers })
@@ -501,6 +506,11 @@ export class LabColTrabajoService {
   patchActualizarEstadoCargaAhiba(data: any){
     const headers = this.Header;
     return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarEstadoCargaAhiba', data, { headers })
+  }
+
+  patchActualizarPrevio(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarPrevio', data, { headers })
   }
 
   deleteEliminarOpcionColorante(Corr_Carta: any, Sec: number, Correlativo: number) {
