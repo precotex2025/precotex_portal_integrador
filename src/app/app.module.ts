@@ -30,6 +30,7 @@ import { RouterModule } from '@angular/router';
 import { MY_DATE_FORMATS } from '../app/my-date-formats';
 import { getCustomPaginatorIntl } from './paginacion-custom';
 
+
 /*DECLARAR MODULOS*/
 import { LabColTrabajoComponent } from './lab-col-trabajo/lab-col-trabajo/lab-col-trabajo.component';
 import { DialogLabColTrabajoDetalleComponent } from './lab-col-trabajo/lab-col-trabajo/dialog-lab-col-trabajo-detalle/dialog-lab-col-trabajo-detalle.component';
@@ -51,6 +52,8 @@ import { DetalleJabFijComponent } from './mantenimientos/mantenimientos-lst/deta
 import { DetalleCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/detalle-comp-extra.component';
 import { DialogNuevoCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/dialog-nuevo-comp-extra/dialog-nuevo-comp-extra.component';
 import { DialogEntregaAjusteComponent } from './lab-hoja-formulacion/dialog-entrega-ajuste/dialog-entrega-ajuste.component';
+import { LabAnalisisDeltaComponent } from './lab-analisis-delta/lab-analisis-delta.component';
+import { NgChartsModule } from 'ng2-charts';
 
 
 @NgModule({
@@ -73,7 +76,8 @@ import { DialogEntregaAjusteComponent } from './lab-hoja-formulacion/dialog-entr
     DetalleJabFijComponent,
     DetalleCompExtraComponent,
     DialogNuevoCompExtraComponent,
-    DialogEntregaAjusteComponent
+    DialogEntregaAjusteComponent,
+    LabAnalisisDeltaComponent
   ],
   imports: [
     BrowserModule,
@@ -97,6 +101,7 @@ import { DialogEntregaAjusteComponent } from './lab-hoja-formulacion/dialog-entr
     NgxSpinnerModule,
     MatMomentDateModule,
     MatTooltipModule,
+    NgChartsModule,   
     ToastrModule.forRoot({
       timeOut: 10000,
       positionClass: 'toast-bottom-right',

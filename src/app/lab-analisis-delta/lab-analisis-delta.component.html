@@ -1,0 +1,188 @@
+
+
+<mat-card class="contenedor-card">
+    <form [formGroup]="formulario" #formDirective="ngForm">
+        <div class="grid-container">
+            <!-- Fila 1 -->
+            <div class="grid-row">
+            <!-- Columna 1: input text -->
+            <div class="grid-col">
+                <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Partida</mat-label>
+                <input matInput formControlName="ctrol_CodOrdTra" placeholder="Ingrese texto" maxlength="5" (keyup)="MostrarDatosPartida()"/>
+                </mat-form-field>
+            </div>
+
+            <!-- (keyup)="MostrarDatosPartida()"  -->
+            
+            <!-- Columna 2: mat-select multiselect -->
+            <div class="grid-col">
+                <mat-form-field appearance="outline" class="full-width">
+                <mat-label> <Table>Tipo muestra :</Table></mat-label>
+                <mat-select multiple (selectionChange)="onSeleccionChange()" formControlName="ctrol_tipoMuestra">
+                    <mat-option *ngFor="let tipoMuestra of lstTipoMuestra" [value]="tipoMuestra.codigo">
+                    {{ tipoMuestra.descripcion }}
+                    </mat-option>
+                </mat-select>
+                </mat-form-field>
+            </div>
+
+            <!-- Columna 3: mat-select normal -->
+            <div class="grid-col">
+                <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Código de color :</mat-label>
+                <mat-select formControlName="ctrol_color">
+                    <mat-option *ngFor="let color of lstColor" [value]="color.codigo">
+                    {{ color.descripcion }}
+                    </mat-option>
+                </mat-select>
+                </mat-form-field>
+            </div>
+
+            <!-- Columna 4: mat-select normal -->
+            <div class="grid-col">
+                <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Artículo :</mat-label>
+                <mat-select formControlName="ctrol_articulo">
+                    <mat-option *ngFor="let articulo of lstArticulo" [value]="articulo.codigo">
+                    {{ articulo.descripcion }}
+                    </mat-option>
+                </mat-select>
+                </mat-form-field>
+            </div>
+            </div>
+
+            <!-- Fila 2 (puedes agregar más controles aquí) -->
+            <div class="grid-row">
+            
+                <div class="grid-col">
+                    <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Cant. Estandar :</mat-label>
+                    <input matInput formControlName="ctrol_CanStandar" [ngClass]="colorClase"  readonly />
+                    </mat-form-field>
+                </div>    
+                
+                <div class="grid-col">
+                    <mat-form-field appearance="outline" class="full-width">
+                    <mat-label> <Table>Estandar :</Table></mat-label>
+                    <mat-select formControlName="ctrol_estandar">
+                        <mat-option *ngFor="let estandar of lstEstandar" [value]="estandar.codigo">
+                        {{ estandar.descripcion }}
+                        </mat-option>
+                    </mat-select>
+                    </mat-form-field>
+                </div>       
+                
+                <div class="grid-col">
+                    <button mat-raised-button color="primary" class="btn-action" (click)="onBuscar()">
+                        <!-- <mat-icon>Search</mat-icon> -->
+                        Buscar
+                    </button>                    
+                </div>
+                    
+            <!-- Ejemplo: un textarea ocupando toda la fila -->
+            <!-- <div class="grid-col" style="grid-column: span 4;">
+                
+                <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Descripción</mat-label>
+                <textarea matInput rows="3"></textarea>
+                </mat-form-field>
+            </div> -->
+            </div>
+        </div>
+
+
+        <div class="tabla-wrapper">
+            <div class="tabla-scroll">
+                <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 tabla-ph">
+
+                    <ng-container matColumnDef="Name">
+                        <th mat-header-cell *matHeaderCellDef class="centradoCabecera ">Estandar</th>
+                        <td mat-cell *matCellDef="let r" class="centrado ">{{ r.name }}</td>
+                    </ng-container>               
+                    
+                    <ng-container matColumnDef="Est_CIE_L">
+                        <th mat-header-cell *matHeaderCellDef class="centradoCabecera ">Est. Cie L</th>
+                        <td mat-cell *matCellDef="let r" class="centrado ">{{ r.est_CIE_L }}</td>
+                    </ng-container>    
+                    
+                    <ng-container matColumnDef="Est_CIE_a">
+                        <th mat-header-cell *matHeaderCellDef class="centradoCabecera ">Est. Cie A</th>
+                        <td mat-cell *matCellDef="let r" class="centrado ">{{ r.est_CIE_a }}</td>
+                    </ng-container>    
+                    
+                    <ng-container matColumnDef="Est_CIE_b">
+                        <th mat-header-cell *matHeaderCellDef class="centradoCabecera ">Est. Cie B</th>
+                        <td mat-cell *matCellDef="let r" class="centrado ">{{ r.est_CIE_b }}</td>
+                    </ng-container>      
+                    
+                    <ng-container matColumnDef="Est_CIE_C">
+                        <th mat-header-cell *matHeaderCellDef class="centradoCabecera ">Est. Cie C</th>
+                        <td mat-cell *matCellDef="let r" class="centrado ">{{ r.est_CIE_C }}</td>
+                    </ng-container>               
+                    
+                    <ng-container matColumnDef="Est_CIE_h">
+                        <th mat-header-cell *matHeaderCellDef class="centradoCabecera ">Est. Cie H</th>
+                        <td mat-cell *matCellDef="let r" class="centrado ">{{ r.est_CIE_h }}</td>
+                    </ng-container>    
+                    
+                    <ng-container matColumnDef="Especularidad">
+                        <th mat-header-cell *matHeaderCellDef class="centradoCabecera ">Especularidad</th>
+                        <td mat-cell *matCellDef="let r" class="centrado ">{{ r.especularidad }}</td>
+                    </ng-container>    
+                    
+                    <ng-container matColumnDef="Filtro_UV">
+                        <th mat-header-cell *matHeaderCellDef class="centradoCabecera ">Filtro UV</th>
+                        <td mat-cell *matCellDef="let r" class="centrado ">{{ r.filtro_UV }}</td>
+                    </ng-container>    
+                    
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>                        
+
+                </table>
+            </div>
+        </div>
+
+        <div class="tabla-wrapper" *ngIf="dataSource_UP.data && dataSource_UP.data.length > 0">
+            <div class="tabla-scroll">
+            <table mat-table [dataSource]="dataSource_UP" class="mat-elevation-z8">
+
+            <!-- Columna Campo -->
+            <ng-container matColumnDef="Campo">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let element"
+                [ngClass]="{'bloque-titulo': element.isTitulo, 'campo-columna': !element.isTitulo}"
+       
+                > {{element.Campo}} </td>
+            </ng-container>
+
+            <!-- Columnas dinámicas -->
+            <ng-container *ngFor="let col of displayedColumns_UP.slice(1)" [matColumnDef]="col">
+                <th mat-header-cell *matHeaderCellDef > {{col}} </th>
+                <td mat-cell *matCellDef="let element"> {{element[col]}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns_UP"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns_UP;"></tr>
+            </table>        
+        </div>    
+        </div>
+
+
+        <!-- <div style="display: block;">
+            <canvas baseChart
+                    [data]="scatterChartData"
+                    [options]="scatterChartOptions"
+                    chartType="'scatter'">
+            </canvas>
+        </div>         -->
+
+    </form>
+</mat-card>
+
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="medium" type="custom" [fullScreen]="true">
+   <div class="spinner-wrapper">
+      <p class="spinner-text">CARGANDO INFORMACIÓN</p>
+      <div class="loader"></div>
+   </div>
+</ngx-spinner>

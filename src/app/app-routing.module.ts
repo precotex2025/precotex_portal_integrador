@@ -14,6 +14,7 @@ import { LabReportComponent } from './lab-report/lab-report.component';
 import { DetalleJabFijComponent } from './mantenimientos/mantenimientos-lst/detalle-jab-fij/detalle-jab-fij.component';
 import { DetalleCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/detalle-comp-extra.component';
 import { DialogNuevoCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/dialog-nuevo-comp-extra/dialog-nuevo-comp-extra.component';
+import { LabAnalisisDeltaComponent } from './lab-analisis-delta/lab-analisis-delta.component';
 
 const routes: Routes = [
   // { path: '', redirectTo: 'Login', pathMatch: 'full' },
@@ -32,6 +33,7 @@ const routes: Routes = [
   { path: 'DetalleCompExtra', component: DetalleCompExtraComponent },
   { path: 'NuevoCompExtra', component: DialogNuevoCompExtraComponent },
   { path: 'Reporte', component: LabReportComponent },
+  { path: 'AnalisisDelta', component: LabAnalisisDeltaComponent },
   
   { path: '**', redirectTo: 'Login' }
 ];

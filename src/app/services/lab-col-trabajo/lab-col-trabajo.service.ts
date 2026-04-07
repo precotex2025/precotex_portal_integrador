@@ -516,4 +516,59 @@ export class LabColTrabajoService {
     const headers = this.Header.delete('Content-type');
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/print', formData, { headers });
   }
+
+  /*
+  string? sCod_OrdTra, string? sCod_Tela, string? sCod_Color, string? sText_Cod_Muestra, int? iStandardId, string? sCod_Usuario
+  */
+  getAnalisisDelta01_ObtieneDatosxPartida(sCod_OrdTra: string, sCod_Tela: string, sCod_Color: string, sText_Cod_Muestra: string, iStandardId: number, sCod_Usuario: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('sCod_OrdTra', sCod_OrdTra)
+    params = params.append('sCod_Tela', sCod_Tela)
+    params = params.append('sCod_Color', sCod_Color)
+    params = params.append('sText_Cod_Muestra', sText_Cod_Muestra)
+    params = params.append('iStandardId', iStandardId)
+    params = params.append('sCod_Usuario', sCod_Usuario)
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getAnalisisDelta01_ObtieneDatosxPartida', { headers, params })
+  }  
+
+  getAnalisisDelta02_CombosGrles(sTipo: string, sCod_OrdTra: string, sCod_Tela: string, sCod_Color: string, sText_Cod_Muestra: string, iStandardId: number, sCod_Usuario: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('sTipo', sTipo)
+    params = params.append('sCod_OrdTra', sCod_OrdTra)
+    params = params.append('sCod_Tela', sCod_Tela)
+    params = params.append('sCod_Color', sCod_Color)
+    params = params.append('sText_Cod_Muestra', sText_Cod_Muestra)
+    params = params.append('iStandardId', iStandardId)
+    params = params.append('sCod_Usuario', sCod_Usuario)
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getAnalisisDelta02_CombosGrles', { headers, params })
+  }    
+
+  getAnalisisDelta06_ObtieneMuestraStandar(sCod_OrdTra: string, sCod_Tela: string, sCod_Color: string, sText_Cod_Muestra: string, iStandardId: number, sCod_Usuario: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('sCod_OrdTra', sCod_OrdTra)
+    params = params.append('sCod_Tela', sCod_Tela)
+    params = params.append('sCod_Color', sCod_Color)
+    params = params.append('sText_Cod_Muestra', sText_Cod_Muestra)
+    params = params.append('iStandardId', iStandardId)
+    params = params.append('sCod_Usuario', sCod_Usuario)
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getAnalisisDelta06_ObtieneMuestraStandar', { headers, params })
+  }    
+
+  getAnalisisDelta_ObtienePartidaDespachadas(sCod_OrdTra: string, sCod_Tela: string, sCod_Color: string, sText_Cod_Muestra: string, iStandardId: number, sCod_Usuario: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('sCod_OrdTra', sCod_OrdTra)
+    params = params.append('sCod_Tela', sCod_Tela)
+    params = params.append('sCod_Color', sCod_Color)
+    params = params.append('sText_Cod_Muestra', sText_Cod_Muestra)
+    params = params.append('iStandardId', iStandardId)
+    params = params.append('sCod_Usuario', sCod_Usuario)
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getAnalisisDelta_ObtienePartidaDespachadas', { headers, params })
+  }     
+
+
+
 }
