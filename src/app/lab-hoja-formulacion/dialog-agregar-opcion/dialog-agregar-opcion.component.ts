@@ -10,6 +10,7 @@ import { FormControl } from '@angular/forms';
 import { MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Console } from 'console';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MatSelectChange } from '@angular/material/select';
 
 
 interface data {
@@ -50,6 +51,12 @@ interface Datos {
   volumen: number;
 }
 
+interface Antireductores{
+  nombre: string,
+  cantidad: number,
+  porcentaje: number
+}
+
 
 @Component({
   selector: 'app-dialog-agregar-opcion',
@@ -72,6 +79,14 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   colorantesSeleccionados: any[] = [];
   curvasTenido: { nombre: string, codigo: number }[] = [];
   curvaTenido: number = 0;
+  TipoTenido: {nombre: string, codigo: number}[] = [];
+  TipoTenidoSeleccionado: string = '';
+  //antireductores: {nombre: string, cantidad: number, porcentaje: number}[] = [];
+  //antiReductores: Array<Antireductores> = [];
+  antiReductorCantidad: number = 1.0;
+  antiReductorPorcentaje: number = 0.5;
+  baseAntireductor: number = 0;
+
   parametros = {
     jabonadas: 0,
     curva: 0,
@@ -149,7 +164,6 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     this.GetFijados();
     this.getObtenerFamiliaDesdeCabecera(this.data.Num_SDC, this.data.Num_Sec);
     this.quitarFocus();
-
     if (this.data.Title === 'Copiar') {
       //console.log('Cargando datos para modificar...');
       this.correlativoAnterior = this.data.CorrelativoAnterior!;
@@ -251,7 +265,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, this.Familia);
     this.GetFijadosCalculado(this.totalFinalColorantes, this.Familia);
     this.GetCarbonatoSodaCalculado(this.totalFinalColorantes, this.Familia, this.condicion);
-    this.getListarCurvas();
+    this.getListarCurvas(this.Familia);
+    this.getListarTiposTenido(this.Familia);
   }
 
   actualizarTotalFinalDesdeCopiar(Familia: string): void {
@@ -309,6 +324,12 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     }
 
     producto.cantidad = +(baseCantidad + producto.porcentaje).toFixed(2);
+  }
+
+  actualizarCantidadAntireductor(): void {
+
+    this.antiReductorCantidad = (this.baseAntireductor + this.antiReductorPorcentaje); /// 100;
+
   }
 
 
@@ -812,7 +833,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
         console.log('::::::::::::::::::::::::::::::::::::::.', this.datos);
         
-
+        this.getListarTiposTenido(datos.familia.toString());
         this.actualizarTotalFinalDesdeCopiar(datos.familia.toString());
 
       },
@@ -1009,14 +1030,17 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       next: (response: any) => {
         if(response.success){
           familia = response.elements[0].familia;
+          console.log(familia);
           this.parametros.tiposFormulacion = familia;
+          this.getListarTiposTenido(familia.toString());
+          this.getListarCurvas(familia.toString());
         }
       }
     });
   }
 
-  getListarCurvas(): void {
-    this.LabColTraService.getListarCurvas(this.parametros.tiposFormulacion).subscribe({
+  getListarCurvas(Pro_Cod: string): void {
+    this.LabColTraService.getListarCurvas(Pro_Cod).subscribe({
       next: (response: any) => {
         if(response.success){
           if(response.totalElements > 0) {
@@ -1030,5 +1054,59 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       error: (error: any) => {}
     });
   }
+
+  getListarTiposTenido(Familia: string): void {
+    //Familia = this.FamiliaReferencia;
+    this.LabColTraService.getListarTiposTenido(Familia).subscribe({
+      next: (response: any) => {
+        if(response.success){
+          if(response.totalElements > 0){
+            console.log('::::::::::::::..', response.elements);
+            this.TipoTenido = response.elements.map((t: any) => ({
+              codigo: t.tip_Ten_Acr,
+              nombre: t.tip_Ten_Des
+            }));
+          }
+        }
+      },
+      error: (error: any) => {}
+    }); 
+  }
+
+  // BuscarReactivo(): void {
+  //   this.TipoTenidoSeleccionado = 'D';
+  // }
+
+  // BuscarDisperso(): void {
+  //   this.TipoTenidoSeleccionado = 'R';
+  // }
+
+  SeleccionarTipoTenido(event: MatSelectChange): void {
+    this.TipoTenidoSeleccionado = event.value;
+    // let tipoTenido: string = '';
+    // if(this.TipoTenidoSeleccionado === 1){
+    //   tipoTenido = 'R'
+    // }else{
+    //   tipoTenido = 'D' 
+    // }
+    console.log('TIPO DE TENIDO SELECCIONADO----------', this.TipoTenidoSeleccionado);     
+    this.getObtenerUltimoCorrelativoXTipoTenido(this.data.Num_SDC, this.data.Num_Sec, this.TipoTenidoSeleccionado);
+  }
+  
+  nuevoCorrelativo: number = 0;
+  getObtenerUltimoCorrelativoXTipoTenido(Corr_Carta: string, Sec: number, Tip_Ten: string): void {
+    this.LabColTraService.getObtenerUltimoCorrelativoXTipoTenido(Corr_Carta, Sec, Tip_Ten).subscribe({
+      next: (response: any) => {
+        if(response.success){
+          if(response.totalElements > 0){
+            this.nuevoCorrelativo = response.elements[0].correlativo;
+            console.log('EL NUEVO CORRELATIVO ES:::::::::::::::::::..', this.nuevoCorrelativo);
+          }
+        }
+      },
+      error: (error: any) => {}
+    });
+  }
+
 
 }
