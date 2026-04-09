@@ -175,13 +175,24 @@
         </div>
 
 
-        <!-- <div style="display: block;">
-            <canvas baseChart
-                    [data]="scatterChartData"
-                    [options]="scatterChartOptions"
-                    chartType="'scatter'">
-            </canvas>
-        </div>         -->
+        <div class="graficos-container" *ngIf="bMuestraGrafico1!">
+            <!--GRAFICO 1 -->
+            <div class="grafico-grande">
+                <canvas baseChart
+                        [data]      ="scatterChartData"
+                        [options]   ="scatterChartOptions"
+                        [type]="scatterChartType">
+                </canvas>
+            </div>
+            <!--GRAFICO 2 -->
+            <div class="grafico-pequeno">
+                <canvas baseChart
+                        [data]      ="scatterChartData2"
+                        [options]   ="scatterChartOptions2"
+                        [type]="scatterChartType">
+                </canvas>
+            </div>
+        </div>        
 
     </form>
 </mat-card>

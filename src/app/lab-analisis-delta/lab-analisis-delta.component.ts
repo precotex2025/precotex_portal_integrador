@@ -6,7 +6,7 @@ import { AuthService } from '../authentication/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ChartConfiguration } from 'chart.js';
+import { ChartConfiguration, ChartType } from 'chart.js';
 import { Router } from '@angular/router';
 
 interface combo {
@@ -52,29 +52,55 @@ export class LabAnalisisDeltaComponent implements OnInit {
   tipoMuestraSeleccionada: string[] = [];
   concatenado: string = '';
 
+  bMuestraGrafico1: boolean = false;
 
-  scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
-    responsive: true,
-    scales: {
-      x: { min: -1, max: 1, title: { display: true, text: 'Δa' } },
-      y: { min: -1, max: 1, title: { display: true, text: 'Δb' } }
-    }
-  };      
+  //Variables para los graficos
+  scatterChartType: 'scatter' = 'scatter';
+  scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {};//Cargamos en Vacio   
   scatterChartData: ChartConfiguration<'scatter'>['data'] = {
     datasets: [
       {
-        label: 'Plano cartesiano',
-        data: [
-        { x: 0.33, y: 0.25 },
-        { x: 0.15, y: -0.38 },
-        { x: 0.48, y: -0.14 },
-        { x: 0.34, y: 0.21 }
+        label: 'Grafico CIE [DA - DB]',
+        data: [],//Empir
+        backgroundColor: 'blue',
+        showLine: false,
+        pointRadius: 5,
+        pointBackgroundColor: (ctx) => {
+          const point = ctx.raw as any;
 
-        ], //Se llena en el buscar
-        backgroundColor: 'blue'
+          if (!point?.x && !point?.y) return 'gray';
+
+          if (point.x > 0) return 'red';       // x+
+          if (point.x < 0) return 'green';     // x-
+          if (point.y > 0) return 'yellow';    // y+
+          if (point.y < 0) return 'blue';      // y-
+
+          return 'gray';
+        }        
+        
       }
     ]
   };  
+
+  //Variables de los Graficos
+  scatterChartOptions2: ChartConfiguration<'scatter'>['options'] = {};//Cargamos en Vacio     
+  scatterChartData2: ChartConfiguration<'scatter'>['data'] = {
+    datasets: [
+      {
+        label: 'Grafico CIE - DL',
+        data: [],//Empir
+        backgroundColor: 'blue',
+        showLine: false,
+        pointRadius: 5,
+        pointBackgroundColor: (ctx) => {
+          const point = ctx.raw as any;
+          if (!point?.x && !point?.y) return 'gray';
+          return 'gray';
+        }        
+        
+      }
+    ]
+  };    
 
   constructor(
     private formBuilder           : FormBuilder         ,
@@ -211,6 +237,11 @@ export class LabAnalisisDeltaComponent implements OnInit {
         this.lstColor       = [];
         this.lstArticulo    = [];
         this.lstEstandar    = [];
+
+        this.dataSource.data = [];
+        this.dataSource_UP.data = [];
+
+        this.bMuestraGrafico1 = false;
         this.formulario.get('ctrol_CanStandar')?.setValue('');
     }
   }
@@ -374,6 +405,8 @@ export class LabAnalisisDeltaComponent implements OnInit {
           if (response.totalElements > 0){
             const elementos = response.elements;
 
+            console.log('onLoadPartidasDespachadas', elementos);
+
             // 1. Definimos columnas solo con Bloque #1
             const elementosBloque1 = elementos.filter((d: any) => d.num_Bloque === 1);
 
@@ -475,7 +508,10 @@ export class LabAnalisisDeltaComponent implements OnInit {
             ];         
 
             //Llamar Funcion para Crear Grafico
-            this.GenerarGrafico(elementos)
+            this.GenerarGrafico(elementos);
+
+            //Llamar Funcion para crear Grafico 2
+            this.GenerarGrafico2(elementos);
 
             this.SpinnerService.hide();
           }
@@ -497,16 +533,120 @@ export class LabAnalisisDeltaComponent implements OnInit {
 
   }
 
+  GenerarGrafico2(data: any){
+
+    const elementosBloque3 = data.filter((d: any) => d.num_Bloque === 3);
+    const puntosBloque3 = elementosBloque3.map((d: any) => ({
+      x: 0,
+      y: d.foR_DL
+    }));
+
+    const ys = puntosBloque3.map((p:any) => p.y);
+    const maxAbsY = Math.max(...ys.map((y:any) => Math.abs(y)));
+    const padding = 0.2;
+
+
+
+    this.scatterChartOptions2 = {
+      ...this.scatterChartOptions2,
+      responsive: true,
+      scales: {
+            x: {
+              type: 'linear',
+              min: -0.5,
+              max: 0.5,
+              title: { display: true, text: 'ΔL' },
+              grid: {
+                color: (ctx) => ctx.tick.value === 0 ? 'black' : '#e0e0e0',
+                lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1
+              }
+            },
+            y: {
+              type: 'linear',
+              min: -(maxAbsY + padding),   // 👈 simétrico hacia abajo
+              max:  (maxAbsY + padding),   // 👈 simétrico hacia arriba
+              title: { display: true, text: '' },
+              // grid: {
+              //   color: (ctx) => ctx.tick.value === 0 ? 'black' : '#e0e0e0',
+              //   lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1
+              // }
+            }
+      }
+    };  
+
+    // Asignar al dataset principal
+    this.scatterChartData2 = {
+      datasets: [
+        {
+          label: 'Grafico CIE - DL',
+          data: puntosBloque3,
+          backgroundColor: 'blue',
+          pointRadius: 5,
+          showLine: false
+        }
+      ]
+    };
+
+    // Refrescar
+    this.scatterChartData2 = { ...this.scatterChartData2 };
+    this.scatterChartOptions2 = { ...this.scatterChartOptions2 };
+
+  }
+
   GenerarGrafico(data: any){
-    console.log('generar grafico', data);
+
     const elementosBloque3 = data.filter((d: any) => d.num_Bloque === 3);
     const puntosBloque3 = elementosBloque3.map((d: any) => ({
       x: d.foR_DA,
       y: d.foR_DB
     }));
-    console.log('generar grafico 2', puntosBloque3);
-    // Asignar al dataset
-    //this.scatterChartData.datasets[0].data = puntosBloque3;    
+
+    //Calculamos las escalas dinamicamente 
+    const xs = puntosBloque3.map((p:any) => p.x);
+    const ys = puntosBloque3.map((p:any) => p.y);   
+    
+    // obtener el valor más extremo en ambos lados
+    const maxAbsX = Math.max(...xs.map((x:any) => Math.abs(x)));
+    const maxAbsY = Math.max(...ys.map((y:any) => Math.abs(y)));    
+
+    const padding = 3;
+
+    this.scatterChartOptions = {
+      ...this.scatterChartOptions,
+      scales: {
+        x: { 
+              type: 'linear',
+              position: 'bottom',
+              min: -(maxAbsX + padding),
+              max: (maxAbsX + padding),
+              title: { display: true, text: 'Δa' },
+              grid: {
+                color: (ctx) => ctx.tick.value === 0 ? 'black' : '#e0e0e0',
+                lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1
+              }            
+            },
+        y: { 
+              type: 'linear',
+              min: -(maxAbsY + padding),
+              max: (maxAbsY + padding),
+              title: { display: true, text: 'Δb' },
+              grid: {
+                color: (ctx) => ctx.tick.value === 0 ? 'black' : '#e0e0e0',
+                lineWidth: (ctx) => ctx.tick.value === 0 ? 2 : 1
+              }            
+            }
+      }
+    };
+
+    // Asignar al dataset 
+    this.scatterChartData.datasets[0].data = puntosBloque3;    
+
+    //Refrescamos dataset
+    this.scatterChartData = { ...this.scatterChartData };    
+    this.scatterChartOptions = { ...this.scatterChartOptions };
+
+    //mostramos el grafico
+    this.bMuestraGrafico1 = true;
   }
 
   onSeleccionChange() {

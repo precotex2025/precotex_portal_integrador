@@ -222,3 +222,20 @@ background-color: #4180ab; /* verde claro */
 .mat-mdc-header-cell.ng-star-inserted {
   color: white !important;       /* letras blancas */
 }
+
+
+//GRAFICOS
+.graficos-container {
+  display: flex;
+  gap: 10px;
+}
+
+.grafico-grande {
+  flex: 7;
+  height: 450px;
+}
+
+.grafico-pequeno {
+  flex: 3;
+  height: 450px;
+}
