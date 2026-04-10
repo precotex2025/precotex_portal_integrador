@@ -42,12 +42,12 @@ export class DialogEntregaAjusteComponent implements OnInit {
       this.displayedColumns.push('inicial');
       this.displayedColumns.push('ajuste');
       this.displayedColumns.push('final');
-      this.getCargarColoranteParaDetalle(this.data.corr_Carta, this.data.sec, corr);
+      this.getCargarColoranteParaDetalle(this.data.corr_Carta, this.data.sec, corr, 'O');
     }
   }
 
-  getCargarColoranteParaDetalle(corr_Carta: any, sec: number, correlativo: number): void {
-    this.service.getCargarColoranteParaDetalle(corr_Carta, sec, correlativo).subscribe({
+  getCargarColoranteParaDetalle(corr_Carta: any, sec: number, correlativo: number, Tip_Ten: string): void {
+    this.service.getCargarColoranteParaDetalle(corr_Carta, sec, correlativo, Tip_Ten).subscribe({
       next: (response: any) => {
 
         const lista: any[] = [];
@@ -96,8 +96,8 @@ export class DialogEntregaAjusteComponent implements OnInit {
     });
   }
 
-  getUltimoCorrelativo(Corr_Carta: string, Sec: number): Promise<any> {
-    return this.service.getObtenerUltimoCorrelativo(Corr_Carta, Sec).toPromise();
+  getUltimoCorrelativo(Corr_Carta: string, Sec: number, Tip_Ten: string): Promise<any> {
+    return this.service.getObtenerUltimoCorrelativoXTipoTenido(Corr_Carta, Sec, Tip_Ten).toPromise();
   }
 
   postColorante(registro: any): Promise<any> {
@@ -120,7 +120,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
 
     try {
       for (const corr of correlativosOrdenados) {
-        const response = await this.getUltimoCorrelativo(this.data.corr_Carta, this.data.sec);
+        const response = await this.getUltimoCorrelativo(this.data.corr_Carta, this.data.sec, 'O');
         const correlativoNuevo = response.elements[0].correlativo;
         const familia = response.elements[0].familia;
 
@@ -135,7 +135,8 @@ export class DialogEntregaAjusteComponent implements OnInit {
             correlativo: corr,
             col_Cod: colorante.col_Cod,
             por_Fin: valor,
-            correlativo_Nuevo: correlativoNuevo
+            correlativo_Nuevo: correlativoNuevo,
+            tip_Ten: 'O'
           };
 
           //console.log('Guardando colorante:', registro);
@@ -148,7 +149,8 @@ export class DialogEntregaAjusteComponent implements OnInit {
           correlativo: correlativoNuevo,
           familia: familia,
           cambio: 0,
-          procedenciaHardCodeada: 'Mosquito'
+          procedenciaHardCodeada: 'Mosquito',
+          tip_Ten: 'O'
         };
 
         //console.log('Guardando auxiliares:', registroAuxiliares);
@@ -181,11 +183,11 @@ export class DialogEntregaAjusteComponent implements OnInit {
   }
 
 
-  async guardarPorPartida(corr_Carta: string, sec: number): Promise<void> {
+  async guardarPorPartida(corr_Carta: string, sec: number, Tip_Ten: string): Promise<void> {
     const correlativosOrdenados = [...this.data.correlativos].sort((a, b) => b - a);
     this.esExitoso = 1;
     for (const corr of correlativosOrdenados) {
-      const response = await this.getUltimoCorrelativo(corr_Carta, sec);
+      const response = await this.getUltimoCorrelativo(corr_Carta, sec, Tip_Ten);
       const correlativoNuevo = response.elements[0].correlativo;
       const familia = response.elements[0].familia;
 
@@ -240,7 +242,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
     try {
       if (!this.data.PartidasAgrupadasE) {
 
-        await this.guardarPorPartida(this.data.corr_Carta, this.data.sec);
+        await this.guardarPorPartida(this.data.corr_Carta, this.data.sec, 'O');
         await this.entregarPartida(this.data.corr_Carta);
       } else {
 
@@ -250,7 +252,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
 
         for (const partida of partidas) {
           //console.log('Registrando partida secuencial:', partida);
-          await this.guardarPorPartida(partida, this.data.sec);
+          await this.guardarPorPartida(partida, this.data.sec, 'O');
           await this.entregarPartida(partida);
         }
       }

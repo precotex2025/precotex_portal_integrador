@@ -94,7 +94,14 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
+
+    <mat-form-field appearance="outline" class="full-width"*ngIf="curvaSeleccionada !=='141.00000' && 
+                                                                    curvaSeleccionada !=='143.00000' && 
+                                                                    curvaSeleccionada !=='145.00000' &&
+                                                                    curvaSeleccionada !=='146.00000' &&
+                                                                    curvaSeleccionada !=='147.00000' &&
+                                                                    curvaSeleccionada !=='148.00000' &&
+                                                                    curvaSeleccionada !=='149.00000'">
       <mat-label>Curva Teñido</mat-label>
       <mat-select [(ngModel)]="curvaSeleccionadaDes" (selectionChange)="onSeleccionarCurvaDescripcion($event.value)">
         <mat-option *ngFor="let curva of curvasDescripcion" [value]="curva.codigo">
@@ -102,6 +109,22 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="curvaSeleccionada ==='141.00000' || 
+                                                                    curvaSeleccionada ==='143.00000' || 
+                                                                    curvaSeleccionada ==='145.00000' ||
+                                                                    curvaSeleccionada ==='146.00000' ||
+                                                                    curvaSeleccionada ==='147.00000' ||
+                                                                    curvaSeleccionada ==='148.00000' ||
+                                                                    curvaSeleccionada ==='149.00000'">
+      <mat-label>Curva Teñido</mat-label>
+      <mat-select [(ngModel)]="curvasSeleccionadasDes" multiple (selectionChange)="onSeleccionarCurvas($event)">
+        <mat-option *ngFor="let curva of curvasDescripcion" [value]="curva">
+          {{ curva.descripcion }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
 
   </mat-dialog-content>
   <mat-dialog-actions align="end">

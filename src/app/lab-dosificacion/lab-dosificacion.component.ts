@@ -12,6 +12,7 @@ import { AuthService } from '../authentication/auth.service';
 import { Router } from '@angular/router';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { response } from 'express';
+import { ToastrService } from 'ngx-toastr';
 
 interface data {
   Title: string;
@@ -38,7 +39,8 @@ interface data_dosificacion {
   dosificacion1: number,
   dosificacion2: number,
   dosificacion3: number,
-  ph_Fin: string
+  ph_Fin: string,
+  tip_Ten: string
 }
 
 @Component({
@@ -58,7 +60,8 @@ export class LabDosificacionComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: data,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private toastr: ToastrService
   ) { }
 
   dataSource: MatTableDataSource<data_dosificacion> = new MatTableDataSource();
@@ -106,6 +109,7 @@ export class LabDosificacionComponent implements OnInit {
     let num_sdc = row.corr_Carta;
     let sec = row.sec;
     let correlativo = row.correlativo;
+    let tip_Ten = row.tip_Ten;
 
     let dialogref = this.dialog.open(DialogAgregarPhComponent, {
       width: '500px',
@@ -117,7 +121,8 @@ export class LabDosificacionComponent implements OnInit {
         Corr_Carta: num_sdc,
         Sec: sec,
         Correlativo: correlativo,
-        Condicion: 2
+        Condicion: 2,
+        Tip_Ten: tip_Ten
       }
     });
 
@@ -130,7 +135,7 @@ export class LabDosificacionComponent implements OnInit {
     let num_sdc = row.corr_Carta;
     let sec = row.sec;
     let correlativo = row.correlativo;
-
+    let tip_Ten = row.tip_Ten;
     let dialogref = this.dialog.open(DialogAgregarPhComponent, {
       width: '500px',
       height: '300px',
@@ -142,7 +147,8 @@ export class LabDosificacionComponent implements OnInit {
         Sec: sec,
         Correlativo: correlativo,
         JabonadoIndex: jabIndex,
-        Condicion: 3
+        Condicion: 3,
+        Tip_Ten: tip_Ten
       }
     });
     
@@ -339,7 +345,8 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
               'descripcion_Color',
               'jab_Des',
               'sec',
-              'correlativo'
+              'correlativo',
+              'descargar'
             ].slice();
           }
 
@@ -371,10 +378,15 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
   btnFinalizarDisabled: boolean = true;
 
   IniciarProceso(): void {
+    
     const data = {
       ahi_Id: this.itemSeleccionado.codigo,
       ahi_Est_Pro: 'I'
     }
+
+    // if(this.tituloCurva === '29_BLQ QUIM 110x30' || this.tituloCurva === '30_BLQ QUIM 110x40' || this.tituloCurva === '31_BLQ QUIM 98x20'){
+      
+    // }
 
     this.LabColTrabajoService.patchProcesoAhiba(data).subscribe({
       next: (response: any) => {
@@ -387,7 +399,8 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
               corr_Carta: row.corr_Carta,
               sec: row.sec,
               correlativo: row.correlativo,
-              tip_Fec: 'I'
+              tip_Fec: 'I',
+              tip_Ten: row.tip_Ten
             }
 
             this.patchActualizarFechasTenido(dataFechas);
@@ -418,7 +431,8 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
               corr_Carta: row.corr_Carta,
               sec: row.sec,
               correlativo: row.correlativo,
-              tip_Fec: 'F'
+              tip_Fec: 'F',
+              tip_Ten: row.tip_Ten
             }
 
             this.patchActualizarFechasTenido(dataFechas);
@@ -436,6 +450,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     let Sec: number = row.sec;
     let Correlativo: number = row.correlativo;
     let Flg_Est_Lab: string = '';
+    let Tip_Ten: string = row.tip_Ten;
 
     if(this.TipoEnvio === 'D'){
       Flg_Est_Lab = '05';
@@ -447,7 +462,8 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
       corr_Carta: Corr_Carta,
       sec: Sec,
       correlativo: Correlativo,
-      flg_Est_Lab: '05'
+      flg_Est_Lab: '05',
+      tip_Ten: Tip_Ten
     }
 
     console.log('::::::::::::::::.', data);
@@ -532,7 +548,8 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
             corr_Carta: item.corr_Carta,
             sec: item.sec,
             correlativo: item.correlativo,
-            flg_Est_Lab: '10'
+            flg_Est_Lab: '10', 
+            tip_Ten: item.tip_Ten
           };
 
           console.log(':::::::::::::::::::::.', dataEnviar);
@@ -547,6 +564,46 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
         this.SpinnerService.hide();
         this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
       }
+    }
+
+    DescargarDosificacion(row: any): void {
+      let Corr_Carta: string = '';
+      let Sec: number = 0;
+      let Correlativo: number = 0;
+      let Flg_Est_Lab: string = '';
+      let Tip_Ten: string = '';
+
+      Corr_Carta = row.corr_Carta;
+      Sec = row.sec;
+      Correlativo = row.correlativo;
+      Flg_Est_Lab = '11';
+      Tip_Ten = row.tip_Ten;
+
+      const data = {
+        corr_Carta: Corr_Carta,
+        sec: Sec,
+        correlativo: Correlativo,
+        flg_Est_Lab: Flg_Est_Lab,
+        tip_Ten: Tip_Ten
+      }
+
+      this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(data).subscribe({
+        next: (response: any) => {
+          if(response.success){
+            if(response.message === 'Solo se pueden descargar los BLANCOS de esta forma'){
+              this.toastr.warning(response.message, '', {
+                timeOut: 2500
+              });
+              // this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+            }else if(response.message === 'No se ha completado su segundo tenido'){
+              this.toastr.warning(response.message, '', {
+                timeOut: 2500
+              });
+            }
+          }
+        },
+        error:(error: any) => {}
+      });
     }
 
 }

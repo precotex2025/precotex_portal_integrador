@@ -15,7 +15,8 @@ interface data {
   Sec: number,
   Correlativo: number,
   JabonadoIndex: number,
-  Condicion: number
+  Condicion: number,
+  Tip_Ten: string
 }
 
 @Component({
@@ -68,7 +69,8 @@ export class DialogAgregarPhComponent implements OnInit {
     correlativo: this.data.Correlativo,
     tip_Ph: this.data.Condicion,
     jabonadoIndex: this.data.JabonadoIndex,
-    ph_Val: parseFloat(valorPh)
+    ph_Val: parseFloat(valorPh),
+    tip_Ten: this.data.Tip_Ten
   };
 
   //console.log('-----------------------', payload);

@@ -103,7 +103,8 @@
       <ng-container matColumnDef="soda">
         <th mat-header-cell *matHeaderCellDef class="centradoCabecera col-achi2">Soda</th>
         <!-- <td mat-cell *matCellDef="let r" class="centrado">{{ r.sod_Gr | number:'1.1-1'}} (gr/l) | {{ (r.sod_Gr * ((r.volumen / r.pes_Mue) / r.pes_Mue)) | number:'1.1-1' }} (m/l)</td> -->
-        <td mat-cell *matCellDef="let r" class="centrado">{{ (r.sod_Gr * ((r.volumen / r.pes_Mue) / r.pes_Mue)) | number:'1.1-1' }} (m/l)</td>
+        <!-- <td mat-cell *matCellDef="let r" class="centrado">{{ (r.sod_Gr * ((r.volumen / r.pes_Mue) / r.pes_Mue)) | number:'1.1-1' }} (m/l)</td> -->
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.sod_Gr | number:'1.1-1' }} (m/l)</td>
       </ng-container>
 
       <ng-container matColumnDef="ph_Fin">
@@ -146,7 +147,17 @@
         </td>
       </ng-container>
 
+      <ng-container matColumnDef="descargar">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Descargar</th>
+        <td mat-cell *matCellDef="let r" class="centrado">
+          <a mat-button (click)="DescargarDosificacion(r)" class="Boton">Descargar</a>         
+        </td>
+      </ng-container>
 
+      <ng-container matColumnDef="tip_Ten">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Tipo Tenido</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.tip_Ten }}</td>
+      </ng-container>
 <!--         
       <ng-container matColumnDef="#Tubo">
         <th mat-header-cell *matHeaderCellDef class="centradoCabecera">3ra Dosf (CARB)</th>

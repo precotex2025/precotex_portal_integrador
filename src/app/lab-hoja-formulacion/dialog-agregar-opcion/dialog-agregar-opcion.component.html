@@ -146,7 +146,7 @@
     </section>
 
   <div class="seccion-doble">
-    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'R'">
+    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'R' && this.parametros.tiposFormulacion !== '1.00000' && this.parametros.tiposFormulacion !== '2.00000'">
       <h3>Carbonato / Soda</h3>
     <div class="quimico-row" *ngFor="let producto of productos">
       <span class="col-nombre">{{ producto.nombre }}</span>
@@ -168,23 +168,67 @@
       </mat-form-field>
     </div>
     </section>
-    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'D'">
+
+    <section class="quimicos-section" *ngIf="(this.parametros.tiposFormulacion === '1.00000' || this.parametros.tiposFormulacion === '2.00000') && (TipoTenidoSeleccionado === 'R' || TipoTenidoSeleccionado === 'D')">
+      <h3>Agua Oxigenada / Soda / Rucolase</h3>
+    <div class="quimico-row">
+      <span class="col-nombre">Agua Oxigenada</span>
+      <mat-form-field appearance="outline" class="col-gr">
+        <mat-label>Cantidad (gr)</mat-label>
+        <input matInput type="number" [(ngModel)]="aguaOxigenadaCantidad" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col-porcentaje">
+        <mat-label>Ajuste</mat-label>
+        <input matInput type="number" [(ngModel)]="aguaOxigenadaPorcentaje" (ngModelChange)="actualizarCantidadAguaOxigenada()"
+          step="1" />
+      </mat-form-field>
+    </div>
+    <div class="quimico-row">
+      <span class="col-nombre">Soda</span>
+      <mat-form-field appearance="outline" class="col-gr">
+        <mat-label>Cantidad (gr)</mat-label>
+        <input matInput type="number" [(ngModel)]="sodaCausticaCantidad" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col-porcentaje">
+        <mat-label>Ajuste</mat-label>
+        <input matInput type="number" [(ngModel)]="sodaCausticaPorcentaje" (ngModelChange)="actualizarCantidadSoda()"
+          step="1" />
+      </mat-form-field>
+    </div>
+    <div class="quimico-row">
+      <span class="col-nombre">Rucolase CAT-PE</span>
+      <mat-form-field appearance="fill">
+        <mat-label>Cantidad</mat-label>
+        <mat-select [(ngModel)]="rucolaseCantidadSeleccionada">
+          <mat-option *ngFor="let r of rucolaseCantidad" [value]="r.codigo">
+            {{ r.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    </section>
+
+    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'D' && this.parametros.tiposFormulacion !== '1.00000' && this.parametros.tiposFormulacion !== '2.00000'">
       <h3>Antireductor</h3>
       <div class="quimico-row">
         <mat-form-field appearance="outline" class="col-gr">
           <mat-label>Cantidad (gr)</mat-label>
-          <input matInput type="number" [(ngModel)]="antiReductorCantidad" [disabled]="!cambiosHabilitados" />
+          <!-- [disabled]="!cambiosHabilitados" -->
+          <input matInput type="number" [(ngModel)]="antiReductorCantidad" />
         </mat-form-field>
       
         <mat-form-field appearance="outline" class="col-porcentaje">
           <mat-label>Ajuste</mat-label>
+          <!-- [disabled]="!cambiosHabilitados" -->
           <input matInput type="number" [(ngModel)]="antiReductorPorcentaje" (ngModelChange)="actualizarCantidadAntireductor()"
-            step="0.5" [disabled]="!cambiosHabilitados" />
+            step="0.5" />
         </mat-form-field>
       </div>
     </section>
 
-    <section class="datos-section" *ngIf="TipoTenidoSeleccionado === 'R' || TipoTenidoSeleccionado === 'D'">
+    <section class="datos-section" *ngIf="(TipoTenidoSeleccionado === 'R' || TipoTenidoSeleccionado === 'D')">
       <h3>Baño - Peso - Volumen</h3>
       <mat-form-field appearance="fill">
         <mat-label>Relación baño</mat-label>
@@ -199,6 +243,11 @@
       <mat-form-field appearance="fill">
         <mat-label>Volumen</mat-label>
         <input matInput type="number" [(ngModel)]="datos.volumen" (ngModelChange)="calcularRelacionBano()" [disabled]="!cambiosHabilitados"/>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" *ngIf="TipoTenidoSeleccionado === 'D'">
+        <mat-label>Cantidad Lavado</mat-label>
+        <input matInput type="number" [(ngModel)]="cantidadLavados" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
     </section>
   </div>

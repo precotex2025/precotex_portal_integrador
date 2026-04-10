@@ -19,6 +19,7 @@ interface data_jabonado {
   descripcion_color: string;
   tela: string;
   ph_Jab: number[];
+  tip_Ten: string;
 }
 
 @Component({
@@ -184,7 +185,7 @@ export class DialogJabonadosComponent {
     let num_sdc = row.corr_Carta;
     let sec = row.sec;
     let correlativo = row.correlativo;
-
+    let tip_Ten = row.tip_Ten;
     if (this.filtroSeleccionado === 'completosDescarga'){
       this.toastr.warning('No se puede modificar una corrida completa');
       return;
@@ -201,7 +202,8 @@ export class DialogJabonadosComponent {
         Sec: sec,
         Correlativo: correlativo,
         JabonadoIndex: jabIndex,
-        Condicion: 3
+        Condicion: 3,
+        Tip_Ten: tip_Ten
       }
     });
 
@@ -215,7 +217,7 @@ export class DialogJabonadosComponent {
     let num_sdc = row.corr_Carta;
     let sec = row.sec;
     let correlativo = row.correlativo;
-
+    let tip_Ten = row.tip_Ten;
     if (this.filtroSeleccionado === 'completosDescarga'){
       this.toastr.warning('No se puede modificar una corrida completa');
       return;
@@ -231,7 +233,8 @@ export class DialogJabonadosComponent {
         Corr_Carta: num_sdc,
         Sec: sec,
         Correlativo: correlativo,
-        Condicion: 4
+        Condicion: 4,
+        Tip_Ten: tip_Ten
       }
     });
 
@@ -244,11 +247,11 @@ export class DialogJabonadosComponent {
     let num_sdc = row.corr_Carta;
     let sec = row.sec;
     let correlativo = row.correlativo;
-
-    // if (this.filtroSeleccionado === 'completosDescarga'){
-    //   this.toastr.warning('No se puede modificar una corrida completa');
-    //   return;
-    // }
+    let tip_Ten = row.tip_Ten;
+    if (this.filtroSeleccionado === 'completosDescarga') {
+      this.toastr.warning('No se puede modificar una corrida completa');
+      return;
+    }
 
     let dialogref = this.dialog.open(DialogAgregarPhComponent, {
       width: '500px',
@@ -260,7 +263,8 @@ export class DialogJabonadosComponent {
         Corr_Carta: num_sdc,
         Sec: sec,
         Correlativo: correlativo,
-        Condicion: 5
+        Condicion: 5,
+        Tip_Ten: tip_Ten
       }
     });
 
@@ -653,11 +657,12 @@ export class DialogJabonadosComponent {
     let Corr_Carta: string = row.corr_Carta;
     let Sec: number = row.sec;
     let Correlativo: number = row.correlativo;
-
+    let Tip_Ten: string = row.tip_Ten;
     const data = {
       corr_Carta: Corr_Carta,
       sec: Sec,
       correlativo: Correlativo,
+      tip_Ten: Tip_Ten
       //flg_Est_Lab: '05'
     }
 
@@ -738,7 +743,8 @@ export class DialogJabonadosComponent {
           correlativo: item.correlativo,
           ahi_Id: this.ahibaSeleccionado,
           nro_Tubo: tubo,
-          tip_Carga: 'J'
+          tip_Carga: 'J',
+          tip_Ten: item.tip_Ten
         };
 
         try {
@@ -805,6 +811,7 @@ export class DialogJabonadosComponent {
             'dosificacion3',
             'sod_gr',
             'can_Jabo',
+            'ph_Neu',
             ...this.getPhColumns(),
             'descarga',
             'tipo_fijado',

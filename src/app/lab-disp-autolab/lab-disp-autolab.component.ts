@@ -25,7 +25,8 @@ interface data_colaautolab {
   correlativo: number,
   descripcion_Color: string,
   jab_Des: string,
-  volumen: number
+  volumen: number,
+  tip_Ten: string
 }
 
 interface data_dispensado {
@@ -39,6 +40,7 @@ interface data_dispensado {
   sulfato: string,
   peso_Muestra: number,
   ph_Ini: number,
+  tip_Ten: string
 }
 
 @Component({
@@ -185,7 +187,8 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
           corr_Carta: item.corr_Carta,
           sec: item.sec,
           correlativo: item.correlativo,
-          posicion: 0
+          posicion: 0,
+          tip_Ten: item.tip_Ten
         };
         try {
           const respuesta = await this.LabColTrabajoService.patchEnviarADispensado(dataEnviar).toPromise();
@@ -204,7 +207,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
       try {
         const exitoso = await this.LabColTrabajoService.patchEnviarAutolab(dataEnviar).subscribe({});
       } catch (error) {
-        console.log('Error al enviar a Autolab:', error);
+        // console.log('Error al enviar a Autolab:', error);
       }
 
       if (this.estadoSeleccionado === 'cola') {
@@ -248,9 +251,9 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
   // }
 
   cargarItemsManuales(row: any): void {
-    const { corr_Carta, sec, correlativo } = row;
+    const { corr_Carta, sec, correlativo, tip_Ten } = row;
 
-    this.LabColTrabajoService.getListarIngresoManual(corr_Carta, sec, correlativo).subscribe({
+    this.LabColTrabajoService.getListarIngresoManual(corr_Carta, sec, correlativo, tip_Ten).subscribe({
       next: (response: any) => {
         if (response.success) {
           row.ingreso_Manual = response.elements
@@ -429,7 +432,8 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
           correlativo: item.correlativo,
           ahi_Id: this.ahibaSeleccionado,
           nro_Tubo: tubo,
-          tip_Carga: 'D'
+          tip_Carga: 'D',
+          tip_Ten: item.tip_Ten
         };
 
         try {
@@ -508,6 +512,8 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     let num_sdc = row.corr_Carta;
     let sec = row.sec;
     let correlativo = row.correlativo;
+    let tip_Ten = row.tip_Ten;
+
     let dialogref = this.dialog.open(DialogAgregarPhComponent, {
       width: '500px',
       height: '300px',
@@ -518,7 +524,8 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
         Corr_Carta: num_sdc,
         Sec: sec,
         Correlativo: correlativo,
-        Condicion: 1
+        Condicion: 1,
+        Tip_Ten: tip_Ten
       }
     });
 
@@ -894,12 +901,13 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     let Corr_Carta: string = row.corr_Carta;
     let Sec: number = row.sec;
     let Correlativo: number = row.correlativo;
-
+    let Tip_Ten: string = row.tip_Ten;
     const data = {
       corr_Carta: Corr_Carta,
       sec: Sec,
       correlativo: Correlativo,
-      flg_Est_Lab: '05'
+      flg_Est_Lab: '05',
+      tip_Ten: Tip_Ten
     }
 
     //console.log('la data para reenviar es:::::::::::::::::::::....', data);

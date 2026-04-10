@@ -14,6 +14,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../authentication/auth.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DialogEntregaAjusteComponent } from './dialog-entrega-ajuste/dialog-entrega-ajuste.component';
+import { MatSelectChange } from '@angular/material/select';
 
 interface Formulacion {
   numeroColumna: number;
@@ -67,8 +68,10 @@ export class LabHojaFormulacionComponent implements OnInit {
   TituloEstado: string = ''
   mostrarPartidas: boolean = false;
   PartidasAgrupadas: string = '';
-  TipoReceta: string = 'R';
-  TipoTenido: {nombre: string, codigo: number}[] = [];
+  //TipoReceta: string = 'R';
+  TipoReceta: string = '';
+  TipoTenido: { nombre: string, codigo: string }[] = [];
+  Familia: string = '';
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
@@ -103,13 +106,19 @@ export class LabHojaFormulacionComponent implements OnInit {
       const encontrada = this.recetas.find(r => r.corr_Carta === this.data.corr_CartaR && r.sec === this.data.secR)!;
       const empiezaConLetra = /^[A-Za-z]/.test(encontrada.corr_Carta);
       //if (encontrada) {
-        // this.recetaSeleccionada = encontrada;
-        // this.Corr_Carta_Remover = encontrada.corr_Carta;
-        // this.Sec_Remover = encontrada.sec;
-        this.mostrarPartidas = empiezaConLetra
-        this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
-        this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
+      // this.recetaSeleccionada = encontrada;
+      // this.Corr_Carta_Remover = encontrada.corr_Carta;
+      // this.Sec_Remover = encontrada.sec;
+      this.mostrarPartidas = empiezaConLetra
+      this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
+      this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
+      setTimeout(() => {
+        this.getListarTiposTenido(this.Familia);
+      }, 300);
+      console.log('::::::::::::::::..',this.TipoReceta)
+      setTimeout(() => {
         this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+      }, 800);
       //}
     }
   }
@@ -117,18 +126,24 @@ export class LabHojaFormulacionComponent implements OnInit {
   recetaSeleccionadaDesplegable() {
     const guardada = localStorage.getItem('recetaSeleccionada');
     //if (guardada) {
-      const encontrada = this.recetas.find(r => r.corr_Carta.toString() === guardada);
-      this.recetaSeleccionada = encontrada || this.recetas[0];
-      this.Corr_Carta_Remover = this.recetaSeleccionada.corr_Carta;
-      this.Sec_Remover = this.recetaSeleccionada.sec;
-      const empiezaConLetra = /^[A-Za-z]/.test(this.Corr_Carta_Remover);
-      this.mostrarPartidas = empiezaConLetra;
-      this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
-      this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
+    const encontrada = this.recetas.find(r => r.corr_Carta.toString() === guardada);
+    this.recetaSeleccionada = encontrada || this.recetas[0];
+    this.Corr_Carta_Remover = this.recetaSeleccionada.corr_Carta;
+    this.Sec_Remover = this.recetaSeleccionada.sec;
+    const empiezaConLetra = /^[A-Za-z]/.test(this.Corr_Carta_Remover);
+    this.mostrarPartidas = empiezaConLetra;
+    this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
+    this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
+    setTimeout(() => {
+      this.getListarTiposTenido(this.Familia);
+    }, 300);
+    console.log('::::::::::::::::..',this.TipoReceta)
+    setTimeout(() => {
       this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+    }, 300);
     //} else {
-      //this.mostrarPartidas = false;
-      //this.recetaSeleccionada = this.recetas[0];
+    //this.mostrarPartidas = false;
+    //this.recetaSeleccionada = this.recetas[0];
     //}
   }
 
@@ -156,7 +171,13 @@ export class LabHojaFormulacionComponent implements OnInit {
 
     this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
     this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
-    this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+    setTimeout(() => {
+      this.getListarTiposTenido(this.Familia);
+    }, 300);
+    console.log('::::::::::::::::..',this.TipoReceta)
+    setTimeout(() => {
+      this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+    }, 300);
     localStorage.setItem('recetaSeleccionada', receta.corr_Carta.toString());
   }
 
@@ -172,7 +193,7 @@ export class LabHojaFormulacionComponent implements OnInit {
           if (response.totalElements > 0) {
             //console.log('Entrando al metodo');
             this.recetas = response.elements;
-            
+
             this.onGetParams();
 
             if (!this.recetaSeleccionada) {
@@ -206,6 +227,7 @@ export class LabHojaFormulacionComponent implements OnInit {
       next: (response: any) => {
         if (response.success) {
           this.grillaExpandible = response.elements;
+          this.Familia = response.elements[0].familia;
           console.log('contenido que cargará en la grilla', this.grillaExpandible);
           this.SpinnerService.hide();
         }
@@ -234,23 +256,26 @@ export class LabHojaFormulacionComponent implements OnInit {
         if (!empiezaConLetra) {
           for (const item of this.indicesSeleccionados) {
             this.EntregarRecetaCabeceraColorante(this.Corr_Carta_Remover, this.Sec_Remover, '02');
-            this.EntregarRecetaColorante(this.Corr_Carta_Remover, this.Sec_Remover, item, '02');
+            this.EntregarRecetaColorante(this.Corr_Carta_Remover, this.Sec_Remover, item, '02', this.TipoReceta);
 
           }
-        }else{
+        } else {
           this.entregarSeleccionados();
         }
-        
+
       }
     })
   }
 
   onEnviarAutolab(index: number) {
+    let Tip_Ten = this.TipoReceta
+
     const data = {
       Corr_Carta: this.Corr_Carta_Remover || '',
       Sec: this.Sec_Remover || 0,
       Correlativo: index,
-      Flg_Est_Autolab: '05'
+      Flg_Est_Autolab: '05',
+      tip_Ten: Tip_Ten
     }
 
     this.LabColTrabajoService.patchActualizarEstadoDeColorTricomiaAutolab(data).subscribe({
@@ -387,16 +412,18 @@ export class LabHojaFormulacionComponent implements OnInit {
     })
   }
 
-  EntregarRecetaColorante(corr_carta: any, sec: number, correlativo: number, flg_est_lab: string) {
+  EntregarRecetaColorante(corr_carta: any, sec: number, correlativo: number, flg_est_lab: string, tip_ten: string) {
     const sCorr_Carta = corr_carta;
     const sSec = sec;
     const sCorrelativo = correlativo;
     const sFlg_Est_Lab = flg_est_lab;
+    const sTip_Ten = tip_ten
     let data: any = {
       "Corr_Carta": sCorr_Carta,
       "Sec": sSec,
       "Correlativo": sCorrelativo,
-      "Flg_Est_Lab": sFlg_Est_Lab
+      "Flg_Est_Lab": sFlg_Est_Lab,
+      "Tip_Ten": sTip_Ten
     };
 
     this.SpinnerService.show();
@@ -454,6 +481,8 @@ export class LabHojaFormulacionComponent implements OnInit {
       correlativo = 0;
     }
 
+
+
     this.router.navigate(['AgregarOpcion'],
       {
         queryParams: {
@@ -463,7 +492,8 @@ export class LabHojaFormulacionComponent implements OnInit {
           Correlativo: correlativo,
           CorrelativoAnterior: 0,
           //PartidasAgrupadasE: 'L8439/L5893/L6969'//this.PartidasAgrupadas
-          PartidasAgrupadasE: this.PartidasAgrupadas
+          PartidasAgrupadasE: this.PartidasAgrupadas,
+          TipoReceta: this.TipoReceta
         }
       }
     )
@@ -527,9 +557,10 @@ export class LabHojaFormulacionComponent implements OnInit {
                 can_Jabo: element.can_Jabo,
                 acidulado: element.acidulado,
                 pes_Mue: element.pes_Mue,
+                agu_Oxi: element.agu_Oxi ?? 0,
                 flg_Est_Lab: estado ?? null,
                 flg_Est_Autolab: estadoAutoLab ?? null,
-                antipilling: antipilling ?? '' 
+                antipilling: antipilling ?? ''
               });
             }
 
@@ -584,7 +615,7 @@ export class LabHojaFormulacionComponent implements OnInit {
 
         this.formulaciones = Array.from(correlativosMap.values())
           .sort((a, b) => Number(b.numeroColumna) - Number(a.numeroColumna));
-        
+
         // console.log('Formulaciones generadas:', this.formulaciones.map(f => ({
         //   correlativo: f.numeroColumna,
         //   estado: f.flg_Est_Autolab
@@ -659,52 +690,99 @@ export class LabHojaFormulacionComponent implements OnInit {
   // }
 
   generarFilasDesdeColorantes(): void {
-  const coloranteMap = new Map<number, { codigo: string, nombre: string }>();
-  const auxiliaresMap = new Map<string, string>();
+    const coloranteMap = new Map<number, { codigo: string, nombre: string }>();
+    const auxiliaresMap = new Map<string, string>();
 
-  this.formulaciones.forEach(f => {
-    f.colorantes.forEach((c: any) => {
-      if (c.col_Cod && c.col_Des) {
-        const nombre = c.col_Des.toUpperCase();
-        if (nombre.includes('SAL') || nombre.includes('SULFATO')) {
-          auxiliaresMap.set(c.col_Cod, c.col_Des);
-        } else {
-          coloranteMap.set(c.id_secuencia, { codigo: c.col_Cod, nombre: c.col_Des });
+    this.formulaciones.forEach(f => {
+      f.colorantes.forEach((c: any) => {
+        if (c.col_Cod && c.col_Des) {
+          const nombre = c.col_Des.toUpperCase();
+          if (nombre.includes('SAL') || nombre.includes('SULFATO')) {
+            auxiliaresMap.set(c.col_Cod, c.col_Des);
+          } else {
+            coloranteMap.set(c.id_secuencia, { codigo: c.col_Cod, nombre: c.col_Des });
+          }
         }
-      }
+      });
     });
-  });
 
-  const filasColorantes = Array.from(coloranteMap.entries())
-    .sort((a, b) => a[0] - b[0])
-    .map(([_, data]) => ({
-      etiqueta: data.nombre,
-      key: data.codigo,
-      tipo: 'numero'
-    }));
+    const filasColorantes = Array.from(coloranteMap.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([_, data]) => ({
+        etiqueta: data.nombre,
+        key: data.codigo,
+        tipo: 'numero'
+      }));
 
-  this.filas = [
-    { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
-    { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
 
-    ...filasColorantes,
+    if (this.TipoReceta === 'R') {
+      this.filas = [
+        { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
+        { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
 
-    { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+        ...filasColorantes,
 
-    ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
-      etiqueta: nombre,
-      key: codigo,
-      tipo: 'numero'
-    })),
+        { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
 
-    { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
-    { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
-    { etiqueta: 'TIPO DESCARGA', key: 'fijado', tipo: 'texto' },
-    { etiqueta: 'CANTIDAD JABONADO', key: 'can_Jabo', tipo: 'numero' },
-    { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
-    { etiqueta: 'ANTIPILLING', key: 'antipilling', tipo: 'texto' }
-  ];
-}
+        ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
+          etiqueta: nombre,
+          key: codigo,
+          tipo: 'numero'
+        })),
+
+        { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
+        { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
+        { etiqueta: 'TIPO DESCARGA', key: 'fijado', tipo: 'texto' },
+        { etiqueta: 'CANTIDAD JABONADO', key: 'can_Jabo', tipo: 'numero' },
+        { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
+        { etiqueta: 'ANTIPILLING', key: 'antipilling', tipo: 'texto' }
+      ];
+    }
+    else if (this.TipoReceta === 'D') {
+      this.filas = [
+        { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
+        { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
+
+        ...filasColorantes,
+
+        { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+
+        ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
+          etiqueta: nombre,
+          key: codigo,
+          tipo: 'numero'
+        })),
+
+        { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
+        { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
+        { etiqueta: 'CANTIDAD LAVADOS', key: 'can_Jabo', tipo: 'numero' },
+        { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
+      ];
+    }
+    else {
+      this.filas = [
+        { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
+        { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
+
+        ...filasColorantes,
+
+        { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+
+        ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
+          etiqueta: nombre,
+          key: codigo,
+          tipo: 'numero'
+        })),
+
+        { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
+        { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
+        { etiqueta: 'AGUA OXIGENADA', key: 'agu_Oxi', tipo: 'numero' },
+        { etiqueta: 'SODA CAUSTICA', key: 'sod_Gr', tipo: 'numero' },
+        { etiqueta: 'CANTIDAD JABONADO', key: 'can_Jabo', tipo: 'numero' },
+        { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
+      ];
+    }
+  }
 
 
   getSumaTotalColorantes(f: any): number {
@@ -726,6 +804,7 @@ export class LabHojaFormulacionComponent implements OnInit {
     let corre = formulacion.numeroColumna;
     let corr_carta = this.Corr_Carta_Remover;
     let sec1 = this.Sec_Remover;
+    let tipotenido = this.TipoReceta;
     let dialogref = this.dialog.open(DialogDetalleColorComponent, {
       width: '700px',
       height: '700px',
@@ -736,6 +815,7 @@ export class LabHojaFormulacionComponent implements OnInit {
         corr_Carta: corr_carta,
         sec: sec1,
         correlativo: corre,
+        tipoTenido: tipotenido
       }
     });
   }
@@ -777,7 +857,7 @@ export class LabHojaFormulacionComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
 
-        this.LabColTrabajoService.deleteEliminarOpcionColorante(this.Corr_Carta_Remover, this.Sec_Remover, index).subscribe({
+        this.LabColTrabajoService.deleteEliminarOpcionColorante(this.Corr_Carta_Remover, this.Sec_Remover, index, this.TipoReceta).subscribe({
           next: (response: any) => {
             this.onActualizarHojaFormulacion();
           }
@@ -831,8 +911,8 @@ export class LabHojaFormulacionComponent implements OnInit {
   getObtenerPartidasAgrupadas(Usr_Cod: string, Corr_Carta: any): void {
     this.LabColTrabajoService.getObtenerPartidasAgrupadas(Usr_Cod, Corr_Carta).subscribe({
       next: (response: any) => {
-        if(response.success){
-          if(response.totalElements > 0){
+        if (response.success) {
+          if (response.totalElements > 0) {
             this.PartidasAgrupadas = response.elements[0].partidas;
             console.log('::::::::::::::::::::::::::.', this.PartidasAgrupadas);
           }
@@ -844,30 +924,32 @@ export class LabHojaFormulacionComponent implements OnInit {
     });
   }
 
-  BuscarReactivo(): void {
-    this.TipoReceta = 'D';
+  BuscarCorridas(event: MatSelectChange): void {
+    this.TipoReceta = event.value;
     this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
   }
 
-  BuscarDisperso(): void {
-    this.TipoReceta = 'R';
-    this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
-  }
+  // BuscarDisperso(): void {
+  //   this.TipoReceta = event.value;
+  //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+  // }
 
   getListarTiposTenido(Familia: string): void {
     //Familia = this.FamiliaReferencia;
     this.LabColTrabajoService.getListarTiposTenido(Familia).subscribe({
       next: (response: any) => {
-        if(response.success){
-          if(response.elements > 0){
+        if (response.success) {
+          if (response.totalElements > 0) {
             this.TipoTenido = response.elements.map((t: any) => ({
-              codigo: t.tip_Ten_Id,
+              codigo: t.tip_Ten_Acr,
               nombre: t.tip_Ten_Des
             }));
+            this.TipoReceta = this.TipoTenido[0]?.codigo;
+            console.log(':>>>>>>>>>>>>>>>>>>:', this.TipoReceta);
           }
         }
       },
-      error: (error: any) => {}
-    }); 
+      error: (error: any) => { }
+    });
   }
 }
