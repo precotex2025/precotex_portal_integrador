@@ -6,8 +6,13 @@ import { AuthService } from '../authentication/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ChartConfiguration, ChartType } from 'chart.js';
+import { ChartConfiguration, ChartType, Chart } from 'chart.js';
 import { Router } from '@angular/router';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+//Esto habilitara los plugin labels en 
+//Chart.register(ChartDataLabels);
+
 
 interface combo {
   codigo: string;
@@ -110,7 +115,6 @@ export class LabAnalisisDeltaComponent implements OnInit {
     private authService           : AuthService         ,
     private toastr                : ToastrService       ,
     private router                : Router              ,
-    
   ){
     
   }
@@ -175,6 +179,16 @@ export class LabAnalisisDeltaComponent implements OnInit {
     //se ejecuta cuando tiene solo 5 digitos
     if (sCodOrdTra && sCodOrdTra.length === 5) {
 
+      // Limpia el array y el string concatenado
+      this.tipoMuestraSeleccionada = [];
+      this.concatenado = '';
+
+      // Limpia también el FormControl asociado
+      this.formulario.get('ctrol_tipoMuestra')?.reset();      
+      this.formulario.get('ctrol_color')?.reset(); 
+      this.formulario.get('ctrol_articulo')?.reset(); 
+      this.formulario.get('ctrol_estandar')?.reset(); 
+
       this.SpinnerService.show();
       this.dataInfoPartida = [];
       this.LabColaTrabajoService.getAnalisisDelta01_ObtieneDatosxPartida(sCodOrdTra, '', '', '', 0,this.Usuario!).subscribe({
@@ -202,7 +216,7 @@ export class LabAnalisisDeltaComponent implements OnInit {
               this.onLoadCombosGrls('5', sCodOrdTra, xCodTela, xCodColor);
               this.onLoadCombosGrls('3', sCodOrdTra, xCodTela, xCodColor);
         
-              this.SpinnerService.hide();
+              //this.SpinnerService.hide();
             } else {
 
                 this.toastr.info(response.message, '', {
@@ -247,10 +261,18 @@ export class LabAnalisisDeltaComponent implements OnInit {
   }
 
   onLoadCombosGrls(sTipo: string, sCodOrdTra: string, sCodTela: string, sCodCombo: string){
-    this.lstTipoMuestra = [];
-    this.lstColor = [];
-    this.lstArticulo = [];
 
+    if (sTipo == '2'){
+      this.lstTipoMuestra = [];
+    }else if(sTipo == '4'){
+      this.lstColor  = [];
+    }else if(sTipo == '5'){
+      this.lstArticulo = [];
+    }else if(sTipo == '3'){
+      this.lstEstandar = [];
+    }    
+
+    this.SpinnerService.show();
     this.LabColaTrabajoService.getAnalisisDelta02_CombosGrles(sTipo, sCodOrdTra, sCodTela, sCodCombo, '', 0,this.Usuario!).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -396,7 +418,8 @@ export class LabAnalisisDeltaComponent implements OnInit {
   }
 
   onLoadPartidasDespachadas(sCodOrdTra: string, sCodTela: string, sCodColor: string, sCodMotivos: string, nStandarId: number){
-
+    //oculta grafico
+    this.bMuestraGrafico1 = false;
     this.dataSource_UP.data = [];
     this.SpinnerService.show();
     this.LabColaTrabajoService.getAnalisisDelta_ObtienePartidaDespachadas(sCodOrdTra, sCodTela, sCodColor, sCodMotivos, nStandarId, this.Usuario!).subscribe({
@@ -484,7 +507,17 @@ export class LabAnalisisDeltaComponent implements OnInit {
               const colName = `columna${index + 1}`;
               filaEspecularidad[colName] = d.especularidad;
               filaFiltroUV[colName] = d.filtro_UV;
-            });                        
+            });       
+            
+            //FILAS dinamicas para bloque 5
+            const filaCalTono: any = { Campo: 'Calificación Tono' }
+            const filaObsInsCal: any = { Campo: 'Observación Insp. Calidad' }
+
+            bloques[5].forEach((d: any, index: number) => {
+              const colName = `columna${index + 1}`;
+              filaCalTono[colName] = d.calificacion_Tono;
+              filaObsInsCal[colName] = d.observacion;
+            });              
                 
             // asignar al datasource
             this.dataSource_UP.data = [
@@ -504,7 +537,10 @@ export class LabAnalisisDeltaComponent implements OnInit {
               filaCMC_DE,
               { Campo: 'Especificaciones Data Color', isTitulo: true },
               filaEspecularidad,
-              filaFiltroUV
+              filaFiltroUV,
+              { Campo: 'Resultado Calidad', isTitulo: true },
+              filaCalTono,
+              filaObsInsCal
             ];         
 
             //Llamar Funcion para Crear Grafico
@@ -545,11 +581,26 @@ export class LabAnalisisDeltaComponent implements OnInit {
     const maxAbsY = Math.max(...ys.map((y:any) => Math.abs(y)));
     const padding = 0.2;
 
-
-
     this.scatterChartOptions2 = {
       ...this.scatterChartOptions2,
       responsive: true,
+      // plugins: {
+      //   datalabels: {
+      //     align: (ctx) => {
+      //       // alterna derecha/izquierda según el índice del punto
+      //       return ctx.dataIndex % 2 === 0 ? 'right' : 'left';
+      //     },
+      //     anchor: 'end',
+      //     formatter: (value, ctx) => {
+      //       // value es {x, y}
+      //       return `(${value.y.toFixed(2)})`;
+      //     },
+      //     color: 'black',
+      //     font: {
+      //       size: 10
+      //     }
+      //   }
+      // },        
       scales: {
             x: {
               type: 'linear',
@@ -609,16 +660,39 @@ export class LabAnalisisDeltaComponent implements OnInit {
     const maxAbsX = Math.max(...xs.map((x:any) => Math.abs(x)));
     const maxAbsY = Math.max(...ys.map((y:any) => Math.abs(y)));    
 
-    const padding = 3;
+    //const padding = 3;
+    
+    // Tomamos el mayor entre X y Y
+    const maxAbs = Math.max(maxAbsX, maxAbsY);
+
+    // Redondeamos al entero superior y sumamos 0.5
+    const limite = Math.ceil(maxAbs) + 0.5;
 
     this.scatterChartOptions = {
       ...this.scatterChartOptions,
+      // plugins: {
+      //   datalabels: {
+      //     align: 'right',
+      //     anchor: 'end',
+      //     formatter: (value, ctx) => {
+      //       // value es {x, y}
+      //       return `(${value.x}, ${value.y.toFixed(2)})`;
+      //     },
+      //     color: 'black',
+      //     font: {
+      //       size: 10
+      //     }
+      //   }
+      // },      
       scales: {
         x: { 
               type: 'linear',
               position: 'bottom',
-              min: -(maxAbsX + padding),
-              max: (maxAbsX + padding),
+              min: -limite,
+              max: limite,
+              ticks: {
+                stepSize: 0.5 // 👈 incrementos de 0.5
+              },
               title: { display: true, text: 'Δa' },
               grid: {
                 color: (ctx) => ctx.tick.value === 0 ? 'black' : '#e0e0e0',
@@ -627,8 +701,11 @@ export class LabAnalisisDeltaComponent implements OnInit {
             },
         y: { 
               type: 'linear',
-              min: -(maxAbsY + padding),
-              max: (maxAbsY + padding),
+              min: -limite,
+              max: limite,
+              ticks: {
+                stepSize: 0.5 // 👈 incrementos de 0.5
+              },
               title: { display: true, text: 'Δb' },
               grid: {
                 color: (ctx) => ctx.tick.value === 0 ? 'black' : '#e0e0e0',
@@ -657,8 +734,6 @@ export class LabAnalisisDeltaComponent implements OnInit {
 
     // Concatenar los códigos en un string
     this.concatenado = this.tipoMuestraSeleccionada.join('|');
-
-    console.log('this.concatenado', this.concatenado);
   }   
 
   onCerrar(): void {
