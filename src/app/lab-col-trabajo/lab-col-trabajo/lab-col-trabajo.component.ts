@@ -123,9 +123,10 @@ export class LabColTrabajoComponent implements OnInit {
   estadoSeleccionadoChild: string = '04'
   curvas: { codigo: string, descripcion: string }[] = [];
   curvaSeleccionada: string = '';
-  curvasDescripcion: { codigo: string, descripcion: string }[] = [];
+  curvasDescripcion: { codigo: string, descripcion: string, tipo: string }[] = [];
   curvaSeleccionadaDes: string = '';
   dialogRef1!: MatDialogRef<any>;
+  curvasSeleccionadasDes: any[] = [];
 
   filtrarPorEstado() { }
 
@@ -273,12 +274,12 @@ export class LabColTrabajoComponent implements OnInit {
 
   aplicarFiltrarTodo(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    if(this.estadoSeleccionadoChild === '05'){
+    if (this.estadoSeleccionadoChild === '05') {
       this.dataSourceProduccion.filter = filterValue;
-    }else{
+    } else {
       this.dataSource.filter = filterValue;
     }
-    
+
   }
 
   filtrarTodo(): void {
@@ -388,7 +389,8 @@ export class LabColTrabajoComponent implements OnInit {
         if (response.success) {
           this.curvasDescripcion = response.elements.map((c: any) => ({
             codigo: c.codigo,
-            descripcion: c.descripcion
+            descripcion: c.descripcion,
+            tipo: c.tipo
           }));
         }
       },
@@ -415,46 +417,106 @@ export class LabColTrabajoComponent implements OnInit {
   }
 
 
+  // onEnviarAHojaFormulacion() {
+  //   this.dataTenido = {
+  //     ...this.dataTenido,
+  //     "Usr_Cod": this.Usuario
+  //   };
+  //   console.log(this.dataTenido);
+  //   if (this.dataTenido.Cur_Ten == 0 || this.dataTenido.Cur_Ten == '') { this.toastr.warning('Debe seleccionar una curva', 'Atención'); return; }
+  //   this.SpinnerService.show();
+  //   this.LabColaTrabajoService.postRegistrarDetalleColorSDC(this.dataTenido).subscribe({
+  //     next: (response: any) => {
+  //       if (response.success) {
+  //         if (response.codeResult == 200) {
+
+  //           this.toastr.success(response.message, '', {
+  //             timeOut: 2500,
+  //           });
+  //         } else if (response.codeResult == 201) {
+  //           this.toastr.info(response.message, '', {
+  //             timeOut: 2500,
+  //           });
+  //         }
+  //         this.SpinnerService.hide();
+  //         this.getObtenerDatosProduccion();
+  //         this.dialogRef1.close();
+  //       } else {
+  //         this.toastr.error(response.message, 'Cerrar', {
+  //           timeOut: 2500
+  //         });
+  //         this.SpinnerService.hide();
+  //       }
+  //     },
+  //     error: (error: any) => {
+  //       this.SpinnerService.hide();
+  //       this.toastr.error(error.message, 'Cerrar', {
+  //         timeOut: 2500
+  //       });
+  //     }
+
+  //   })
+
+  // }
+
   onEnviarAHojaFormulacion() {
+    const ProcesoSeleccionado = this.curvaSeleccionada;
+    console.log(':::::..', ProcesoSeleccionado);
     this.dataTenido = {
       ...this.dataTenido,
-      "Usr_Cod": this.Usuario
+      "Usr_Cod": this.Usuario,
+      Familia: ProcesoSeleccionado
     };
-    console.log(this.dataTenido);
-    if (this.dataTenido.Cur_Ten == 0 || this.dataTenido.Cur_Ten == '') { this.toastr.warning('Debe seleccionar una curva', 'Atención'); return; }
+    //console.log(this.dataTenido);
+      // Validar que haya al menos una curva seleccionada
+      if(this.dataTenido.Cur_Ten_Dis === '0'){
+        if (!this.curvasSeleccionadasDes || this.curvasSeleccionadasDes.length === 0) {
+          this.toastr.warning('Debe seleccionar una curva', 'Atención');
+          return;
+        }
+
+        // Si hay una sola curva, la asignamos a Cur_Ten
+        if (this.curvasSeleccionadasDes.length === 1) {
+          this.toastr.warning('Debe seleccionar 2 curvas');
+          return;
+        }
+
+        // Si hay dos curvas, disgregamos en Cur_Ten y Cur_Ten_Dis
+        if (this.curvasSeleccionadasDes.length === 2) {
+          // Ordenar ascendente por código antes de asignar
+          const ordenadas = [...this.curvasSeleccionadasDes].sort(
+            (a, b) => parseInt(a.codigo) - parseInt(b.codigo)
+          );
+
+          this.dataTenido.Cur_Ten = parseInt(ordenadas[0].codigo);
+          this.dataTenido.Cur_Ten_Dis = parseInt(ordenadas[1].codigo);
+        }
+      }
+
+    console.log('DataTenido listo para enviar:', this.dataTenido);
+
     this.SpinnerService.show();
     this.LabColaTrabajoService.postRegistrarDetalleColorSDC(this.dataTenido).subscribe({
       next: (response: any) => {
         if (response.success) {
           if (response.codeResult == 200) {
-
-            this.toastr.success(response.message, '', {
-              timeOut: 2500,
-            });
+            this.onGetListaSDC();
+            this.toastr.success(response.message, '', { timeOut: 2500 });
           } else if (response.codeResult == 201) {
-            this.toastr.info(response.message, '', {
-              timeOut: 2500,
-            });
+            this.toastr.info(response.message, '', { timeOut: 2500 });
           }
           this.SpinnerService.hide();
-          this.getObtenerDatosProduccion();
           this.dialogRef1.close();
         } else {
-          this.toastr.error(response.message, 'Cerrar', {
-            timeOut: 2500
-          });
+          this.toastr.error(response.message, 'Cerrar', { timeOut: 2500 });
           this.SpinnerService.hide();
         }
       },
-      error: (error: any) => {
+      error: (error) => {
         this.SpinnerService.hide();
-        this.toastr.error(error.message, 'Cerrar', {
-          timeOut: 2500
-        });
+        this.toastr.error(error.message, 'Cerrar', { timeOut: 2500 });
       }
-
-    })
-
+    });
   }
 
   CargarModalTenido(data_cola_trab_produccion: any): void {
@@ -485,7 +547,7 @@ export class LabColTrabajoComponent implements OnInit {
 
     const data = {
       'Corr_Carta': Cod_OrdTra,
-      'Sec': 1 
+      'Sec': 1
     }
 
     this.patchReformularPartida(data);
@@ -551,6 +613,49 @@ export class LabColTrabajoComponent implements OnInit {
         })
       }
     })
+  }
+
+  onSeleccionarCurvas(event: any): void {
+    const seleccionadas = event.value as any[];
+    if (!seleccionadas) return;
+
+    console.log('Curvas seleccionadas:', seleccionadas);
+
+    // Validar máximo 2
+    if (seleccionadas.length > 2) {
+      this.toastr.warning('Solo puedes seleccionar máximo 2 curvas');
+      seleccionadas.splice(2);
+    }
+
+    // Validar que sean de tipo distinto SOLO si ya hay 2
+    if (seleccionadas.length === 2) {
+      const tipos = seleccionadas.map(c => c.tipo);
+      const tieneR = tipos.includes('R');
+      const tieneD = tipos.includes('D');
+
+      if (!(tieneR && tieneD)) {
+        this.toastr.warning('Debes seleccionar una curva tipo R y otra tipo D');
+        this.curvasSeleccionadasDes = [];
+        return;
+      }
+    }
+
+    // Ordenar siempre por código ascendente
+    seleccionadas.sort((a, b) => parseInt(a.codigo) - parseInt(b.codigo));
+
+    this.curvasSeleccionadasDes = seleccionadas;
+    this.curvaSeleccionadaDes = '';
+
+    // Solo actualizamos dataTenido si ya hay 2 válidas
+    if (this.curvasSeleccionadasDes.length === 2) {
+      this.dataTenido = {
+        ...this.dataTenido,
+        Cur_Ten: parseInt(this.curvasSeleccionadasDes[0].codigo),
+        Cur_Ten_Dis: parseInt(this.curvasSeleccionadasDes[1].codigo),
+        Usr_Cod: this.Usuario
+      };
+      console.log('DataTenido actualizado:', this.dataTenido);
+    }
   }
 
   /*******************************************PRODUCCION*************************************************/

@@ -310,7 +310,6 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
     console.log('LA INFORMACION AQUI ES -------------- ', this.dataTenido);
   }
 
-  // ahora es un arreglo
   curvasSeleccionadasDes: any[] = [];
 
   onSeleccionarCurvas(event: any): void {

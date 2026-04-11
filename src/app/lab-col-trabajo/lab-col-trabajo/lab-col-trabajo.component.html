@@ -231,6 +231,15 @@
 <ng-template #modalEnviar>
   <h2 mat-dialog-title>Seleccione Curva Teñido</h2>
   <mat-dialog-content class="modal-content">
+
+    <!-- <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Proceso</mat-label>
+      <mat-select [(ngModel)]="curvaSeleccionada" (selectionChange)="onSeleccionarCurva($event.value)">
+        <mat-option *ngFor="let curva of curvas" [value]="curva.codigo">
+          {{ curva.descripcion }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field> -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Proceso</mat-label>
       <mat-select [(ngModel)]="curvaSeleccionada" (selectionChange)="onSeleccionarCurva($event.value)">
@@ -239,7 +248,24 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
+
+
+    <!-- <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Curva Teñido</mat-label>
+      <mat-select [(ngModel)]="curvaSeleccionadaDes" (selectionChange)="onSeleccionarCurvaDescripcion($event.value)">
+        <mat-option *ngFor="let curva of curvasDescripcion" [value]="curva.codigo">
+          {{ curva.descripcion }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field> -->
+
+    <mat-form-field appearance="outline" class="full-width"*ngIf="curvaSeleccionada !=='141.00000' && 
+                                                                    curvaSeleccionada !=='143.00000' && 
+                                                                    curvaSeleccionada !=='145.00000' &&
+                                                                    curvaSeleccionada !=='146.00000' &&
+                                                                    curvaSeleccionada !=='147.00000' &&
+                                                                    curvaSeleccionada !=='148.00000' &&
+                                                                    curvaSeleccionada !=='149.00000'">
       <mat-label>Curva Teñido</mat-label>
       <mat-select [(ngModel)]="curvaSeleccionadaDes" (selectionChange)="onSeleccionarCurvaDescripcion($event.value)">
         <mat-option *ngFor="let curva of curvasDescripcion" [value]="curva.codigo">
@@ -248,9 +274,24 @@
       </mat-select>
     </mat-form-field>
 
+    <mat-form-field appearance="outline" class="full-width" *ngIf="curvaSeleccionada ==='141.00000' || 
+                                                                    curvaSeleccionada ==='143.00000' || 
+                                                                    curvaSeleccionada ==='145.00000' ||
+                                                                    curvaSeleccionada ==='146.00000' ||
+                                                                    curvaSeleccionada ==='147.00000' ||
+                                                                    curvaSeleccionada ==='148.00000' ||
+                                                                    curvaSeleccionada ==='149.00000'">
+      <mat-label>Curva Teñido</mat-label>
+      <mat-select [(ngModel)]="curvasSeleccionadasDes" multiple (selectionChange)="onSeleccionarCurvas($event)">
+        <mat-option *ngFor="let curva of curvasDescripcion" [value]="curva">
+          {{ curva.descripcion }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
   </mat-dialog-content>
   <mat-dialog-actions align="end">
-    <button mat-raised-button color="primary" (click)="EncolarHojaFormulacionProduccion()">
+    <button mat-raised-button color="primary" (click)="onEnviarAHojaFormulacion()">
       Grabar
     </button>
     <button mat-button (click)="dialogRef1.close()">Cancelar</button>
