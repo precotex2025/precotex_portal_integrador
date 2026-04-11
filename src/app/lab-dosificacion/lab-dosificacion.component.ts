@@ -340,13 +340,13 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
               'dosificacion3',
               'soda',
               'ph_Fin',
+              'descargar',
               'reenvio',
               'corr_Carta',
               'descripcion_Color',
               'jab_Des',
               'sec',
-              'correlativo',
-              'descargar'
+              'correlativo'
             ].slice();
           }
 

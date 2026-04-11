@@ -37,7 +37,8 @@ interface receta {
   corr_Carta: any,
   sec: number,
   descripcion_Color: string,
-  familia: string
+  familia: string,
+  tip_Ten: string
 }
 
 interface grillaDesplegable {
@@ -115,10 +116,10 @@ export class LabHojaFormulacionComponent implements OnInit {
       setTimeout(() => {
         this.getListarTiposTenido(this.Familia);
       }, 300);
-      console.log('::::::::::::::::..',this.TipoReceta)
-      setTimeout(() => {
-        this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
-      }, 800);
+      // console.log('::::::::::::::::..',encontrada.tip_Ten);
+      // setTimeout(() => {
+      //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+      // }, 2000);
       //}
     }
   }
@@ -137,10 +138,10 @@ export class LabHojaFormulacionComponent implements OnInit {
     setTimeout(() => {
       this.getListarTiposTenido(this.Familia);
     }, 300);
-    console.log('::::::::::::::::..',this.TipoReceta)
-    setTimeout(() => {
-      this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
-    }, 300);
+    // console.log('::::::::::::::::..',this.TipoReceta)
+    // setTimeout(() => {
+    //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+    // }, 300);
     //} else {
     //this.mostrarPartidas = false;
     //this.recetaSeleccionada = this.recetas[0];
@@ -174,10 +175,10 @@ export class LabHojaFormulacionComponent implements OnInit {
     setTimeout(() => {
       this.getListarTiposTenido(this.Familia);
     }, 300);
-    console.log('::::::::::::::::..',this.TipoReceta)
-    setTimeout(() => {
-      this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
-    }, 300);
+    // console.log('::::::::::::::::..',this.TipoReceta)
+    // setTimeout(() => {
+    //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+    // }, 300);
     localStorage.setItem('recetaSeleccionada', receta.corr_Carta.toString());
   }
 
@@ -832,7 +833,8 @@ export class LabHojaFormulacionComponent implements OnInit {
         Correlativo: numeroColumna,
         CorrelativoAnterior: correlativoAnterior,
         //PartidasAgrupadasE: 'L8439/L5893/L6969'
-        PartidasAgrupadasE: this.PartidasAgrupadas
+        PartidasAgrupadasE: this.PartidasAgrupadas,
+        TipoReceta: this.TipoReceta
       }
     });
   }
@@ -946,6 +948,7 @@ export class LabHojaFormulacionComponent implements OnInit {
             }));
             this.TipoReceta = this.TipoTenido[0]?.codigo;
             console.log(':>>>>>>>>>>>>>>>>>>:', this.TipoReceta);
+            this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
           }
         }
       },

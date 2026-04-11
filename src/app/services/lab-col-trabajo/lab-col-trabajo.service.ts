@@ -170,12 +170,13 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarFamiliasProceso', { headers })
   }
 
-  getCargarColoranteParaCopiar(Corr_Carta: any, Sec: number, Correlativo: number){
+  getCargarColoranteParaCopiar(Corr_Carta: any, Sec: number, Correlativo: number, Tip_Ten: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
     params = params.append('Correlativo', Correlativo);
+    params = params.append('Tip_Ten', Tip_Ten);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarColoranteParaCopiar', { headers, params })
   }
   
@@ -253,11 +254,12 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColatrabajo/getListarJabonadoExcluido', { headers, params })
   }
   //FALTA OBTENER TIP_TEN
-  getObtenerTrio(Corr_Carta: any, Sec: number) {
+  getObtenerTrio(Corr_Carta: any, Sec: number, Tip_Ten: string) {
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
+    params = params.append('Tip_Ten', Tip_Ten);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerTrio', { headers, params })
   }
 

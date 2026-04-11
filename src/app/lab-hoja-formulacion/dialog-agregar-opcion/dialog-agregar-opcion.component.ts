@@ -177,7 +177,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       this.colorantesFiltrados = filtrados;
     });
     this.GetFamiliasProceso();
-    this.getObtenerTrio(this.data.Num_SDC, this.data.Num_Sec);
+    this.getObtenerTrio(this.data.Num_SDC, this.data.Num_Sec, this.data.TipoReceta);
     this.GetColorantes();
     this.GetCurvasJabonado();
     this.GetFijados();
@@ -186,7 +186,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     if (this.data.Title === 'Copiar') {
       //console.log('Cargando datos para modificar...');
       this.correlativoAnterior = this.data.CorrelativoAnterior!;
-      this.cargarDatosParaModificar(this.data.Num_SDC, this.data.Num_Sec, this.data.CorrelativoAnterior || 0);
+      console.log('TIPO RECETA EN COPIAR',this.data.TipoReceta);
+      this.cargarDatosParaModificar(this.data.Num_SDC, this.data.Num_Sec, this.data.CorrelativoAnterior || 0, this.data.TipoReceta);
       setTimeout(() => this.cargando = false, 0);
       //this.actualizarTotalFinal();
     } else if (this.data.Title === 'Insertar') {
@@ -868,10 +869,10 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
   datosParaModificar: any = [];
 
-  cargarDatosParaModificar(Corr_Carta: any, Sec: number, Correlativo: number): void {
+  cargarDatosParaModificar(Corr_Carta: any, Sec: number, Correlativo: number, Tip_Ten: string): void {
     this.datosParaModificar = [];
 
-    this.LabColTraService.getCargarColoranteParaCopiar(Corr_Carta, Sec, Correlativo).subscribe({
+    this.LabColTraService.getCargarColoranteParaCopiar(Corr_Carta, Sec, Correlativo, Tip_Ten).subscribe({
       next: (response: any) => {
         const datos = response.elements?.[0];
         console.log('los datos extraidos son: ', datos);
@@ -972,8 +973,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getObtenerTrio(Corr_Carta: any, Sec: number) {
-    this.LabColTraService.getObtenerTrio(Corr_Carta, Sec).subscribe({
+  getObtenerTrio(Corr_Carta: any, Sec: number, Tip_Ten: string) {
+    this.LabColTraService.getObtenerTrio(Corr_Carta, Sec, Tip_Ten).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.datos.relacionBano = response.elements[0].rel_Ban;

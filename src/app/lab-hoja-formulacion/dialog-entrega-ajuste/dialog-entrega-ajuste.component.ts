@@ -9,6 +9,7 @@ interface data {
   sec: number;
   correlativos: any[];
   PartidasAgrupadasE: string;
+  TipoReceta: string;
 }
 
 @Component({
