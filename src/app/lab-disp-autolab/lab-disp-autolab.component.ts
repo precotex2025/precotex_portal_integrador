@@ -470,7 +470,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     let corre = row.correlativo;
     let corr_carta = row.corr_Carta;
     let sec1 = row.sec;
-
+    let tipoTenido = row.tip_Ten
     let dialogref = this.dialog.open(DialogDetalleColorComponent, {
       width: '700px',
       //height: '700px',
@@ -482,6 +482,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
         corr_Carta: corr_carta,
         sec: sec1,
         correlativo: corre,
+        tipoTenido: tipoTenido
       }
     });
   }

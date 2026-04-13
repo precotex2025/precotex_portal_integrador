@@ -232,17 +232,30 @@
   justify-content: center;
 }
 
-.fila-verde {
-  background-color: #d4edda;
+// .fila-verde {
+//   background-color: #d4edda !important;
+// }
+
+// .fila-amarilla {
+//   background-color: #fff3cd !important;
+// }
+
+// .fila-roja {
+//   background-color: #f8d7da !important;
+// }
+
+::ng-deep .tabla-laboratorio .fila-rojo {
+  background-color: #f8d7da !important;
 }
 
-.fila-amarilla {
-  background-color: #fff3cd;
+::ng-deep .tabla-laboratorio .fila-verde {
+  background-color: #d4edda !important;
 }
 
-.fila-roja {
-  background-color: #f8d7da;
+::ng-deep .tabla-laboratorio .fila-amarillo {
+  background-color: #fff3cd !important;
 }
+
 
 
 .centradoCabecera {

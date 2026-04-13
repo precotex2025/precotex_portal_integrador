@@ -200,12 +200,12 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarIngresoManual', { headers, params })
   }
 
-  getCargarDatosReporte(Corr_Carta: any, Sec: number, Correlativo: number){
+  getCargarDatosReporte(Corr_Carta: any, Sec: number, Tip_Ten: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
-    params = params.append('Correlativo', Correlativo);
+    params = params.append('Tip_Ten', Tip_Ten);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarDatosReporte', { headers, params })
   }
 

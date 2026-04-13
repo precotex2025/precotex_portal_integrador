@@ -92,6 +92,7 @@ export class LabColTrabajoComponent implements OnInit {
     //'fec_asig',
     //'dias_lab',
     'fec_comp',
+    'creacion',
     'dias_comp',
     'estado',
     'entregado'
@@ -212,7 +213,7 @@ export class LabColTrabajoComponent implements OnInit {
           if (response.success) {
             if (response.totalElements > 0) {
               this.dataListadoProduccion = response.elements;
-              //console.log('dataListadoProduccion: -------------------------', this.dataListadoProduccion);
+              console.log('dataListadoProduccion: -------------------------', this.dataListadoProduccion);
               this.dataSourceProduccion.data = this.dataListadoProduccion;
               this.dataSourceProduccion.sort = this.sortProduccion;
               this.SpinnerService.hide();
@@ -237,21 +238,130 @@ export class LabColTrabajoComponent implements OnInit {
     }
   }
 
-  getColorClase(row: any): string {
-    const dias = row.dias_Falt_Compromiso;
-    if (this.estadoSeleccionado === '01') {
-      if (dias <= 0) {
-        return 'fila-roja';      // YA SE PASARON
-      } else if (dias <= 3) {
-        return 'fila-amarilla';   // TIEMPO AJUSTADO
-      } else {
-        return 'fila-verde';       // TIEMPO DE SOBRA
-      }
-    } else {
-      return '';
-    }
+  // getColorClase(row: any): string {
+  //   const dias = row.dias_Falt_Compromiso;
+  //   if (this.estadoSeleccionado === '01') {
+  //     if (dias <= 0) {
+  //       return 'fila-roja';      // YA SE PASARON
+  //     } else if (dias <= 3) {
+  //       return 'fila-amarilla';   // TIEMPO AJUSTADO
+  //     } else {
+  //       return 'fila-verde';       // TIEMPO DE SOBRA
+  //     }
+  //   } else {
+  //     return '';
+  //   }
 
+  // }
+
+//   getColorClase(row: any): string {
+//   const hoy = new Date();
+//   const fechaCompromiso = new Date(row.fec_compromiso);
+
+//   // Diferencia en días entre hoy y la fecha de compromiso
+//   const diasDiff = Math.floor((fechaCompromiso.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+
+//   // Condiciones
+//   if (diasDiff > 3) {
+//     return 'fila-verde'; // faltan más de 3 días
+//   } else if (diasDiff < -3) {
+//     return 'fila-rojo'; // ya pasaron más de 3 días
+//   } else {
+//     return 'fila-amarillo'; // intervalo intermedio
+//   }
+// }
+
+// getColorClase(row: any): string {
+//   const hoy = new Date();
+
+//   // Fechas que vienen como DateTime del backend
+//   const fechaCompromiso = new Date(row.fec_compromiso);
+//   const fechaCreacion = new Date(row.fec_creacion);
+
+//   // Diferencia en días con fecha de compromiso
+//   const diasCompromiso = Math.floor((fechaCompromiso.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+
+//   // Diferencia en días desde la fecha de creación
+//   const diasCreacion = Math.floor((hoy.getTime() - fechaCreacion.getTime()) / (1000 * 60 * 60 * 24));
+
+//   // --- PRIORIDAD: Fecha de compromiso ---
+//   if (diasCompromiso > 3) {
+//     return 'fila-verde';   // faltan más de 3 días
+//   } else if (diasCompromiso < -3) {
+//     return 'fila-rojo';    // ya pasaron más de 3 días
+//   } else if (diasCompromiso >= -3 && diasCompromiso <= 3) {
+//     return 'fila-amarillo'; // intervalo intermedio
+//   }
+
+//   // --- Si no aplica compromiso, usamos fecha de creación ---
+//   if (diasCreacion <= 4) {
+//     return 'fila-verde';   // han pasado 4 o menos días desde creación
+//   } else if (diasCreacion >= 7) {
+//     return 'fila-rojo';    // ya pasaron 7 días o más desde creación
+//   } else {
+//     return 'fila-amarillo'; // intermedio entre 5 y 6 días
+//   }
+// }
+
+getColorClase(row: any): string {
+  const hoy = new Date();
+  const fechaCompromiso = new Date(row.fec_compromiso);
+  const fechaCreacion = new Date(row.fec_creacion);
+
+  const diasCompromiso = Math.floor((fechaCompromiso.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+  const diasCreacion = Math.floor((hoy.getTime() - fechaCreacion.getTime()) / (1000 * 60 * 60 * 24));
+
+  let clase = '';
+
+  if (diasCompromiso > 3) {
+    clase = 'fila-verde';
+  } else if (diasCompromiso < -3) {
+    clase = 'fila-rojo';
+  } else if (diasCompromiso >= -3 && diasCompromiso <= 3) {
+    clase = 'fila-amarillo';
+  } else if (diasCreacion <= 4) {
+    clase = 'fila-verde';
+  } else if (diasCreacion >= 7) {
+    clase = 'fila-rojo';
+  } else {
+    clase = 'fila-amarillo';
   }
+
+  //console.log('Row:', row, 'Clase:', clase, 'DiffComp:', diasCompromiso, 'DiffCre:', diasCreacion);
+  return clase;
+}
+
+getColorClaseProduccion(row: any): string {
+  const hoy = new Date();
+
+  const fechaAsignacion = new Date(row.Fecha_AsignaAnalista);
+  const fechaPCP = new Date(row.fec_Teorico_Inicio_Tenido);
+
+  // Diferencia en días con PCP
+  const diasPCP = Math.floor((fechaPCP.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+
+  // Diferencia en días desde asignación
+  const diasAsignacion = Math.floor((hoy.getTime() - fechaAsignacion.getTime()) / (1000 * 60 * 60 * 24));
+
+  // --- PRIORIDAD: Fecha PCP ---
+  if (diasPCP <= 3) {
+    return 'fila-rojo'; // faltan 3 días o menos
+  } else if (diasPCP > 3) {
+    return 'fila-verde'; // faltan más de 3 días
+  }
+
+  // --- Si no aplica PCP, usamos fecha de asignación ---
+  if (diasAsignacion <= 5) {
+    return 'fila-verde';   // asignado hace ≤ 5 días
+  } else if (diasAsignacion >= 6) {
+    return 'fila-rojo';    // asignado hace ≥ 6 días
+  } else {
+    return 'fila-amarillo'; // intervalo intermedio
+  }
+}
+
+
+
 
   onCreate(objeto: any) {
 

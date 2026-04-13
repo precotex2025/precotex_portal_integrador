@@ -102,14 +102,15 @@
         <ng-container matColumnDef="ingreso_Manual">
           <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Ingreso Manual</th>
           <td mat-cell *matCellDef="let row" class="item_Manual">
-            <div *ngIf="row.ingreso_Manual?.length > 0 && row.descripcion_Color !== 'BLANCO'; else sinIngreso">
+            <div *ngIf="row.ingreso_Manual?.length > 0 && row.descripcion_Color !== 'BLANCO' && row.tip_Ten !== 'D'; else sinIngreso">
               <div *ngFor="let item of row.ingreso_Manual">
                 {{ item }}
               </div>
             </div>
             <ng-template #sinIngreso>
               <span *ngIf="row.procedencia === 'Mosquito'" class="dispensado-automatico">:.Mosquito.:</span>
-              <span *ngIf="row.procedencia !== 'Mosquito' && row.descripcion_Color !== 'BLANCO'" class="dispensado-automatico">Ingreso Automático</span>
+              <span *ngIf="row.procedencia !== 'Mosquito' && row.descripcion_Color !== 'BLANCO' && row.tip_Ten !== 'D'" class="dispensado-automatico">Ingreso Automático</span>
+              <span *ngIf="row.tip_Ten === 'D'" class="dispensado-manual">Dispensado Manual</span>
               <span *ngIf="row.descripcion_Color === 'BLANCO'" class="dispensado-manual">Dispensado Manual</span>
             </ng-template>
           </td>

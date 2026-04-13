@@ -165,6 +165,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>', this.data.TipoReceta);
 
+    this.TipoTenidoSeleccionado = this.data.TipoReceta;
+
     const empiezaConLetra = /^[A-Za-z]/.test(this.data.Num_SDC);
     this.esPartida = empiezaConLetra;
     
@@ -182,6 +184,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     this.GetCurvasJabonado();
     this.GetFijados();
     this.getObtenerFamiliaDesdeCabecera(this.data.Num_SDC, this.data.Num_Sec);
+    this.getObtenerCurvaReactivoDisperso(this.data.Num_SDC, this.data.Num_Sec, this.data.TipoReceta);
     this.quitarFocus();
     if (this.data.Title === 'Copiar') {
       //console.log('Cargando datos para modificar...');
