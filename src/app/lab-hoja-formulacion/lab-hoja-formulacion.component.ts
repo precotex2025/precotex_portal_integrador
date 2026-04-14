@@ -956,18 +956,19 @@ export class LabHojaFormulacionComponent implements OnInit {
     });
   }
 
-  aceptar(): void { 
+  onAbrirReporte(): void { 
     if (this.Corr_Carta_Remover && this.Sec_Remover && this.TipoReceta) { 
       this.dialog.closeAll(); 
       this.router.navigate(['Reporte'], {
         queryParams: {
           sdcE: this.Corr_Carta_Remover,
           secuenciaE: this.Sec_Remover,
-          tip_Ten: this.TipoReceta
+          tipoRecetaE: this.TipoReceta
         }
       }); 
     } else { 
-      alert('Por favor ingresa SDC y Secuencia'); 
+      // alert('Por favor ingresa SDC y Secuencia'); 
     } 
   }
+
 }

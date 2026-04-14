@@ -16,7 +16,7 @@
 
     <!-- Cabecera en tres columnas -->
     <div [hidden]="this.mostrarCabecera">
-      <div class="cabecera" *ngIf="">
+      <div class="cabecera" *ngIf="this.data.tipoRecetaR === 'R'">
         <div class="col">
           <p><strong>Analista:</strong> {{ grupos[0].reporte.analista }}</p>
           <p><strong>SDC:</strong> {{ grupos[0].reporte.corr_Carta }}</p>
@@ -36,6 +36,36 @@
           <p><strong>Cantidad jabonados:</strong> {{ grupos[0].reporte.can_Jab }}</p>
           <p><strong>Fijado:</strong> {{ grupos[0].reporte.fijado }}</p>
           <p><strong>Acabado:</strong> {{ grupos[0].reporte.acabado }}</p>
+        </div>
+      </div>
+      <div class="cabecera" *ngIf="this.data.tipoRecetaR === 'D'">
+        <div class="col">
+          <p><strong>Analista:</strong> {{ grupos[0].reporte.analista }}</p>
+          <p><strong>SDC:</strong> {{ grupos[0].reporte.corr_Carta }}</p>
+          <p><strong>Cliente:</strong> {{ grupos[0].reporte.nom_Cliente }}</p>
+          <p><strong>Artículo:</strong> {{ grupos[0].reporte.articulo }}</p>
+          <p><strong>Color:</strong> {{ grupos[0].reporte.descripcion_Color }}</p>
+        </div>
+        <div class="col">
+          <p><strong>Proceso:</strong> {{ grupos[0].reporte.pro_Des }}</p>
+          <p><strong>Curva teñido:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
+          <p><strong>Curva jabonado:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
+          <p><strong>Cantidad jabonados:</strong> {{ grupos[0].reporte.can_Jab }}</p>
+          <p><strong>Fijado:</strong> {{ grupos[0].reporte.rel_Ban }}</p>
+        </div>
+      </div>
+      <div class="cabecera" *ngIf="this.data.tipoRecetaR === 'O'">
+        <div class="col">
+          <p><strong>Analista:</strong> {{ grupos[0].reporte.analista }}</p>
+          <p><strong>SDC:</strong> {{ grupos[0].reporte.corr_Carta }}</p>
+          <p><strong>Cliente:</strong> {{ grupos[0].reporte.nom_Cliente }}</p>
+          <p><strong>Artículo:</strong> {{ grupos[0].reporte.articulo }}</p>
+          <p><strong>Color:</strong> {{ grupos[0].reporte.descripcion_Color }}</p>
+        </div>
+        <div class="col">
+          <p><strong>Proceso:</strong> {{ grupos[0].reporte.pro_Des }}</p>
+          <p><strong>Curva teñido:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
+          <p><strong>Fijado:</strong> {{ grupos[0].reporte.rel_Ban }}</p>
         </div>
       </div>
     </div>

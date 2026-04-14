@@ -49,6 +49,8 @@ interface ReporteBackend {
   kgs_Prod: string;
   r_B_Prod: string;
   maquina: string;
+  rel_Ban: string;
+  pro_Des: string;
   colorantes_Reporte: Insumo[];
   ruta_Reporte: Ruta[];
   solidez_Reporte: Solidez[];
@@ -57,6 +59,7 @@ interface ReporteBackend {
 interface data {
   sdcR: any,
   secuenciaR: number,
+  tipoRecetaR: string
 }
 
 @Component({
@@ -93,6 +96,7 @@ export class LabReportComponent implements OnInit {
       this.data = {
         sdcR: params['sdcE'] !== undefined ? String(params['sdcE']) : '',
         secuenciaR: params['secuenciaE'] !== undefined ? Number(params['secuenciaE']) : 0,
+        tipoRecetaR: params['tipoRecetaE'] !== undefined ? String(params['tipoRecetaE']): ''
       };
     });
     const empiezaConLetra = /^[A-Za-z]/.test(this.data.sdcR);
