@@ -16,7 +16,7 @@
 
     <!-- Cabecera en tres columnas -->
     <div [hidden]="this.mostrarCabecera">
-      <div class="cabecera">
+      <div class="cabecera" *ngIf="">
         <div class="col">
           <p><strong>Analista:</strong> {{ grupos[0].reporte.analista }}</p>
           <p><strong>SDC:</strong> {{ grupos[0].reporte.corr_Carta }}</p>

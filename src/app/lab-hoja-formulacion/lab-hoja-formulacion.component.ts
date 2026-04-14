@@ -955,4 +955,19 @@ export class LabHojaFormulacionComponent implements OnInit {
       error: (error: any) => { }
     });
   }
+
+  aceptar(): void { 
+    if (this.Corr_Carta_Remover && this.Sec_Remover && this.TipoReceta) { 
+      this.dialog.closeAll(); 
+      this.router.navigate(['Reporte'], {
+        queryParams: {
+          sdcE: this.Corr_Carta_Remover,
+          secuenciaE: this.Sec_Remover,
+          tip_Ten: this.TipoReceta
+        }
+      }); 
+    } else { 
+      alert('Por favor ingresa SDC y Secuencia'); 
+    } 
+  }
 }

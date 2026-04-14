@@ -599,6 +599,8 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
               this.toastr.warning(response.message, '', {
                 timeOut: 2500
               });
+            }else{
+              this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
             }
           }
         },

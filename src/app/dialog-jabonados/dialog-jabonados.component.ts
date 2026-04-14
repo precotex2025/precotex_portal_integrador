@@ -218,6 +218,7 @@ export class DialogJabonadosComponent {
     let sec = row.sec;
     let correlativo = row.correlativo;
     let tip_Ten = row.tip_Ten;
+    
     if (this.filtroSeleccionado === 'completosDescarga'){
       this.toastr.warning('No se puede modificar una corrida completa');
       return;

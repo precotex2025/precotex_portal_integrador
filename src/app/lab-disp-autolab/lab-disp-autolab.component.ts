@@ -165,7 +165,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
 
   async enviarADispensar(): Promise<void> {
     const seleccionados = this.dataSource.data.filter((row: any) => row.seleccionado);
-
+    console.log(seleccionados);
     const confirmacion = await Swal.fire({
       title: '¿Enviar a Dispensar?',
       icon: 'question',
@@ -181,6 +181,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     this.SpinnerService.show();
 
     try {
+      //console.log('ENTRAMOS');
       for (let i = 0; i < seleccionados.length; i++) {
         const item = seleccionados[i];
         const dataEnviar = {
@@ -190,6 +191,8 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
           posicion: 0,
           tip_Ten: item.tip_Ten
         };
+
+        // console.log('::::::::::::::::::::::::::::.', dataEnviar);
         try {
           const respuesta = await this.LabColTrabajoService.patchEnviarADispensado(dataEnviar).toPromise();
         } catch (error) {

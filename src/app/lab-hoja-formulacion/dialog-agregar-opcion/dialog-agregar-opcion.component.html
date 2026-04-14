@@ -146,7 +146,7 @@
     </section>
 
   <div class="seccion-doble">
-    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'R' && this.parametros.tiposFormulacion !== '1.00000' && this.parametros.tiposFormulacion !== '2.00000'">
+    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'R'">
       <h3>Carbonato / Soda</h3>
     <div class="quimico-row" *ngFor="let producto of productos">
       <span class="col-nombre">{{ producto.nombre }}</span>
@@ -169,7 +169,7 @@
     </div>
     </section>
 
-    <section class="quimicos-section" *ngIf="(this.parametros.tiposFormulacion === '1.00000' || this.parametros.tiposFormulacion === '2.00000') && (TipoTenidoSeleccionado === 'R' || TipoTenidoSeleccionado === 'D')">
+    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'O'">
       <h3>Agua Oxigenada / Soda / Rucolase</h3>
     <div class="quimico-row">
       <span class="col-nombre">Agua Oxigenada</span>
@@ -210,7 +210,7 @@
     </div>
     </section>
 
-    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'D' && this.parametros.tiposFormulacion !== '1.00000' && this.parametros.tiposFormulacion !== '2.00000'">
+    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'D'">
       <h3>Antireductor</h3>
       <div class="quimico-row">
         <mat-form-field appearance="outline" class="col-gr">
@@ -228,7 +228,7 @@
       </div>
     </section>
 
-    <section class="datos-section" *ngIf="(TipoTenidoSeleccionado === 'R' || TipoTenidoSeleccionado === 'D')">
+    <section class="datos-section" *ngIf="(TipoTenidoSeleccionado === 'R' || TipoTenidoSeleccionado === 'D' || TipoTenidoSeleccionado === 'O')">
       <h3>Baño - Peso - Volumen</h3>
       <mat-form-field appearance="fill">
         <mat-label>Relación baño</mat-label>

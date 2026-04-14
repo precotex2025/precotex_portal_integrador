@@ -506,7 +506,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         familiaPrincipal = this.Familia;
         canJaboPrincipal = '0';
       }else{
-        familiaPrincipal = '132.00000'
+        familiaPrincipal = this.Familia;
         canJaboPrincipal = this.cantidadLavados.toString();
       }
       
@@ -949,7 +949,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
         this.antiReductorCantidad = antiReductorCantidad;
         this.antiReductorPorcentaje = antiReductorPorcentaje;
-        this.rucolaseCantidadSeleccionada = rucolaseCantidadSeleccionada.toString();
+        this.rucolaseCantidadSeleccionada = rucolaseCantidadSeleccionada;
         this.cantidadLavados = cantidadLavados;
         console.log('::::::::::::::::::::::::::::::::::::::.', this.datos);
         
