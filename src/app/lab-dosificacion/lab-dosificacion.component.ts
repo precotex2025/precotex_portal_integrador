@@ -111,6 +111,11 @@ export class LabDosificacionComponent implements OnInit {
     let correlativo = row.correlativo;
     let tip_Ten = row.tip_Ten;
 
+    if (tip_Ten === 'O') {
+      this.toastr.warning('No se puede ingresar ph de un BLANCO');
+      return;
+    }
+
     let dialogref = this.dialog.open(DialogAgregarPhComponent, {
       width: '500px',
       height: '300px',
@@ -136,6 +141,12 @@ export class LabDosificacionComponent implements OnInit {
     let sec = row.sec;
     let correlativo = row.correlativo;
     let tip_Ten = row.tip_Ten;
+
+    if (tip_Ten === 'O') {
+      this.toastr.warning('No se puede ingresar ph de un BLANCO');
+      return;
+    }
+
     let dialogref = this.dialog.open(DialogAgregarPhComponent, {
       width: '500px',
       height: '300px',

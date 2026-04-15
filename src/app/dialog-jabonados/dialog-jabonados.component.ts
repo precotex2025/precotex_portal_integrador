@@ -116,6 +116,7 @@ export class DialogJabonadosComponent {
             'sec',
             'correlativo',
             'descripcion_Color',
+            'neutralizado',
             'ph_Neu',
             'jab_Des',
             'can_Jabo'
@@ -170,6 +171,7 @@ export class DialogJabonadosComponent {
             'descarga',
             'tipo_fijado',
             'ph_Des'
+            
           ];
 
           this.SpinnerService.hide();
@@ -186,6 +188,12 @@ export class DialogJabonadosComponent {
     let sec = row.sec;
     let correlativo = row.correlativo;
     let tip_Ten = row.tip_Ten;
+
+    if (tip_Ten === 'O') {
+      this.toastr.warning('No se puede ingresar ph de un BLANCO');
+      return;
+    }
+
     if (this.filtroSeleccionado === 'completosDescarga'){
       this.toastr.warning('No se puede modificar una corrida completa');
       return;
@@ -218,7 +226,12 @@ export class DialogJabonadosComponent {
     let sec = row.sec;
     let correlativo = row.correlativo;
     let tip_Ten = row.tip_Ten;
-    
+  
+    if (tip_Ten === 'O') {
+      this.toastr.warning('No se puede ingresar ph de un BLANCO');
+      return;
+    }
+
     if (this.filtroSeleccionado === 'completosDescarga'){
       this.toastr.warning('No se puede modificar una corrida completa');
       return;
@@ -325,7 +338,8 @@ export class DialogJabonadosComponent {
       corr_Carta: row.corr_Carta,
       sec: row.sec,
       correlativo: row.correlativo,
-      tip_Fij: row.fijadoSeleccionado
+      tip_Fij: row.fijadoSeleccionado,
+      tip_Ten: row.tip_Ten
     }
 
     this.LabColTrabajoService.patchActualizarFijadoTipo(data).subscribe({
@@ -335,7 +349,7 @@ export class DialogJabonadosComponent {
           timeOut: 2500
         });
 
-        this.onListarJabonadoExcluido(this.Usuario);
+        this.onListarJabonadoExcluidoDescarga(this.Usuario);
       },  
       error: (error: any) => {}
     });
@@ -717,6 +731,12 @@ export class DialogJabonadosComponent {
       return;
     }
 
+    const tipTenSet = new Set(seleccionadas.map((row: any) => row.tip_Ten));
+    if (tipTenSet.size > 1) {
+      this.toastr.error('Combinación Inválida', '', { timeOut: 3000 });
+      return;
+    }
+
 
     const confirmacion = await Swal.fire({
       title: '¿Cargar a Ahiba?',
@@ -815,7 +835,7 @@ export class DialogJabonadosComponent {
             'ph_Neu',
             ...this.getPhColumns(),
             'descarga',
-            'tipo_fijado',
+            //'tipo_fijado',
             'ph_Des'
           ];
 

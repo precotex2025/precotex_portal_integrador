@@ -128,7 +128,11 @@ export class LabColTrabajoComponent implements OnInit {
   curvaSeleccionadaDes: string = '';
   dialogRef1!: MatDialogRef<any>;
   curvasSeleccionadasDes: any[] = [];
-
+  private readonly prioridadColor: Record<string, number> = {
+    'fila-rojo': 1,
+    'fila-amarillo': 2,
+    'fila-verde': 3
+  };
   filtrarPorEstado() { }
 
   BuscadorRadio(): void {
@@ -170,7 +174,18 @@ export class LabColTrabajoComponent implements OnInit {
             if (response.totalElements > 0) {
               this.dataListadoSDC = response.elements;
               //console.log('dataListadoSDC: ', this.dataListadoSDC);
-              this.dataSource.data = this.dataListadoSDC;
+              //this.dataSource.data = this.dataListadoSDC;
+              this.dataSource.data = this.dataListadoSDC.sort((a, b) => {
+                const colorA = this.prioridadColor[this.getColorClase(a)] ?? 99;
+                const colorB = this.prioridadColor[this.getColorClase(b)] ?? 99;
+                if (colorA !== colorB) {
+                  return colorA - colorB;
+                }
+                  const fechaA = new Date(a.fec_compromiso).getTime();
+                  const fechaB = new Date(b.fec_compromiso).getTime();
+                  return fechaA - fechaB;
+              });
+
               this.dataSource.sort = this.sortLabDips;
               this.SpinnerService.hide();
             } else {
@@ -213,8 +228,19 @@ export class LabColTrabajoComponent implements OnInit {
           if (response.success) {
             if (response.totalElements > 0) {
               this.dataListadoProduccion = response.elements;
-              console.log('dataListadoProduccion: -------------------------', this.dataListadoProduccion);
-              this.dataSourceProduccion.data = this.dataListadoProduccion;
+              //console.log('dataListadoProduccion: -------------------------', this.dataListadoProduccion);
+              //this.dataSourceProduccion.data = this.dataListadoProduccion;
+              this.dataSourceProduccion.data = this.dataListadoProduccion.sort((a, b) => {
+                const colorA = this.prioridadColor[this.getColorClaseProduccion(a)] ?? 99;
+                const colorB = this.prioridadColor[this.getColorClaseProduccion(b)] ?? 99;
+                if (colorA !== colorB) {
+                  return colorA - colorB;
+                }
+                  const fechaA = new Date(a.fec_Teorico_Inicio_Tenido).getTime();
+                  const fechaB = new Date(b.fec_Teorico_Inicio_Tenido).getTime();
+                  return fechaA - fechaB;
+              });
+
               this.dataSourceProduccion.sort = this.sortProduccion;
               this.SpinnerService.hide();
             } else {
@@ -769,5 +795,46 @@ getColorClaseProduccion(row: any): string {
   }
 
   /*******************************************PRODUCCION*************************************************/
+
+  ActualizarEstadoEnvio(corr_carta: any, sec: number, flg_est_lab: string) {
+
+    const sCorr_Carta = corr_carta;
+    const sSec = sec;
+    const sFlg_Est_Lab = flg_est_lab;
+    let data: any = {
+      "Corr_Carta": sCorr_Carta,
+      "Sec": sSec,
+      "Flg_Est_Lab": sFlg_Est_Lab
+    };
+
+    console.log(':::::::::::::::::::::::::.', data);
+    this.SpinnerService.show();
+    this.LabColaTrabajoService.patchActualizarEstadoDeColor(data).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          if (response.codeResult == 200) {
+            this.toastr.success(response.message, 'Cerrar', {
+              timeOut: 2500
+            });
+          }
+          this.SpinnerService.hide();
+        } else {
+          this.toastr.error(response.message, 'Cerrar', {
+            timeOut: 2500
+          });
+          this.SpinnerService.hide();
+        }
+      },
+      error: (error) => {
+        this.SpinnerService.hide();
+        this.toastr.error(error.message, 'Cerrar', {
+          timeOut: 2500
+        });
+      }
+    })
+
+  }
+
+  
 
 }

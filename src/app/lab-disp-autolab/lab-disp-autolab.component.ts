@@ -408,6 +408,11 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
       return;
     }
     
+    const tipTenSet = new Set(seleccionadas.map((row: any) => row.tip_Ten));
+    if (tipTenSet.size > 1) {
+      this.toastr.error('Combinación Inválida', '', { timeOut: 3000 });
+      return;
+    }
 
     const confirmacion = await Swal.fire({
       title: '¿Cargar a Ahiba?',
@@ -517,6 +522,11 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     let sec = row.sec;
     let correlativo = row.correlativo;
     let tip_Ten = row.tip_Ten;
+
+    if(tip_Ten === 'O'){
+      this.toastr.warning('No se puede ingresar ph de un BLANCO');
+      return;
+    }
 
     let dialogref = this.dialog.open(DialogAgregarPhComponent, {
       width: '500px',

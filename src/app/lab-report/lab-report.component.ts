@@ -51,6 +51,7 @@ interface ReporteBackend {
   maquina: string;
   rel_Ban: string;
   pro_Des: string;
+  tipoReceta: string;
   colorantes_Reporte: Insumo[];
   ruta_Reporte: Ruta[];
   solidez_Reporte: Solidez[];

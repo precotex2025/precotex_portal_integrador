@@ -319,6 +319,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     if (contieneAMAVBTES) {
       this.condicion = 1;
     }
+
+    this.actualizarTotalFinal();
   }
 
   limitarDecimales(colorante: any): void {

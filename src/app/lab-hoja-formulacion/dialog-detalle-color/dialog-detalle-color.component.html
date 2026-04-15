@@ -5,15 +5,15 @@
     <div class="receta-cell">SDC</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.corr_Carta }}</div>
     <div class="receta-cell">Tipo teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.tip_Tenido }}</div>
     <div class="receta-cell">Curva teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.cur_Tenido }}</div>
-    <div class="receta-cell">Previo</div>
-      <div class="receta-cell" class="receta-cell valor">
+    <div class="receta-cell" [hidden]="this.data.tipoTenido === 'O'">Previo</div>
+      <div class="receta-cell" class="receta-cell valor"[hidden]="this.data.tipoTenido === 'O'"                                                                                                                                                                                                                                                                                   >
         <!-- {{ recetaDetalle.previo }} -->
           <mat-select [(value)]="previoSeleccionado" (selectionChange)="patchActualizarPrevio()">
             <mat-option *ngFor="let p of previo" [value]="p.codigo">
               {{ p.nombre }}
             </mat-option>
           </mat-select>
-      </div>
+      </div>                                                                
 
     <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod > 0">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod > 0">{{ recetaDetalle.r_B | number:'1.2-2' }}</div>
     <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">{{ recetaDetalle.r_B_Prod | number:'1.2-2' }}</div>

@@ -198,6 +198,10 @@
             <a mat-button *ngIf="data_cola_trab_produccion.flg_Est_Lab == '05'" class="link">Enviado</a>
             <a mat-button *ngIf="data_cola_trab_produccion.flg_Est_Lab == '06'" class="link">Enviado</a>
             <a mat-button *ngIf="data_cola_trab_produccion.flg_Est_Lab == '07'" class="link">Enviado</a>
+            <a mat-button *ngIf="data_cola_trab_produccion.flg_Est_Lab == '09' " class="link"
+              (click)="ActualizarEstadoEnvio(data_cola_trab_produccion.cod_OrdTra, 1, '04')">
+              Ver
+            </a>
           </td>
         </ng-container>
 
