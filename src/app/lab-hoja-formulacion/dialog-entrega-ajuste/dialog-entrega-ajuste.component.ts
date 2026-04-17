@@ -43,7 +43,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
       this.displayedColumns.push('inicial');
       this.displayedColumns.push('ajuste');
       this.displayedColumns.push('final');
-      this.getCargarColoranteParaDetalle(this.data.corr_Carta, this.data.sec, corr, 'O');
+      this.getCargarColoranteParaDetalle(this.data.corr_Carta, this.data.sec, corr, this.data.TipoReceta);
     }
   }
 
@@ -216,7 +216,8 @@ export class DialogEntregaAjusteComponent implements OnInit {
           por_Ini: valor_Ini,
           por_Aju: valor_Aju,
           por_Fin: valor_Fin,
-          correlativo_Nuevo: correlativoNuevo
+          correlativo_Nuevo: correlativoNuevo,
+          Tip_Ten: this.data.TipoReceta
         };
         //console.log('Guardando colorante:', registro);
         await this.postColorante(registro);
@@ -243,7 +244,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
     try {
       if (!this.data.PartidasAgrupadasE) {
 
-        await this.guardarPorPartida(this.data.corr_Carta, this.data.sec, 'O');
+        await this.guardarPorPartida(this.data.corr_Carta, this.data.sec, this.data.TipoReceta);
         await this.entregarPartida(this.data.corr_Carta);
       } else {
 
@@ -253,7 +254,7 @@ export class DialogEntregaAjusteComponent implements OnInit {
 
         for (const partida of partidas) {
           //console.log('Registrando partida secuencial:', partida);
-          await this.guardarPorPartida(partida, this.data.sec, 'O');
+          await this.guardarPorPartida(partida, this.data.sec, this.data.TipoReceta);
           await this.entregarPartida(partida);
         }
       }

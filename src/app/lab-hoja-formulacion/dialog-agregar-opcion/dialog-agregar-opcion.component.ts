@@ -86,7 +86,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   //antiReductores: Array<Antireductores> = [];
   antiReductorCantidad: number = 1.0;
   antiReductorPorcentaje: number = 0;
-  baseAntireductor: number = 0;
+  baseAntireductor: number = 1;
   cantidadLavados: number = 0;
   aguaOxigenadaCantidad: number = 2.0;
   aguaOxigenadaPorcentaje: number = 0;

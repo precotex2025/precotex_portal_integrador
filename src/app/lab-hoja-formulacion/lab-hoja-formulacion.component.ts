@@ -1340,7 +1340,8 @@ onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) 
       corr_Carta: this.Corr_Carta_Remover,
       sec: this.Sec_Remover,
       correlativos: seleccionados,
-      PartidasAgrupadasE: this.PartidasAgrupadas
+      PartidasAgrupadasE: this.PartidasAgrupadas,
+      TipoReceta: this.TipoReceta
     };
 
     let dialogref = this.dialog.open(DialogEntregaAjusteComponent, {
