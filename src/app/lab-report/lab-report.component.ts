@@ -103,7 +103,7 @@ export class LabReportComponent implements OnInit {
     const empiezaConLetra = /^[A-Za-z]/.test(this.data.sdcR);
     this.mostrarCabecera = empiezaConLetra;
     console.log('la cabecera está en::::::::::::::::::::.', this.mostrarCabecera);
-    this.cargarDatosReporte(this.data.sdcR, this.data.secuenciaR, 'O');
+    this.cargarDatosReporte(this.data.sdcR, this.data.secuenciaR, this.data.tipoRecetaR);
   }
 
 

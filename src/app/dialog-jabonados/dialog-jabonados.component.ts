@@ -41,7 +41,7 @@ export class DialogJabonadosComponent {
   ) { }
 
   filtroSeleccionado: string = 'pendientes';
-  ahibaSeleccionado: number = 1;
+  ahibaSeleccionado: number = 0;
   cantidadRequerida: number = 0;
   seleccionadosActuales: number = 0;
   ahiSeleccionadoNombre: string = '';

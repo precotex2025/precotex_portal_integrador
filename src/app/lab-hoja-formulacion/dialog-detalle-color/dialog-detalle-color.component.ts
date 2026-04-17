@@ -48,11 +48,14 @@ export class DialogDetalleColorComponent implements OnInit, AfterViewInit {
       next: (response: any) => {
         if (response.success && response.totalElements > 0) {
           this.recetaDetalle = response.elements[0];
-          //console.log('Receta cargada:', this.recetaDetalle);
+          console.log('Receta cargada:', this.recetaDetalle);
           if(this.recetaDetalle?.previo) {
             this.recetaDetalle.previo = parseInt(this.recetaDetalle.previo);
             this.previoSeleccionado = this.recetaDetalle.previo;
           }
+        }else{
+          this.toastr.warning('No existe información de la receta');
+          return;
         }
         this.SpinnerService.hide();
       },

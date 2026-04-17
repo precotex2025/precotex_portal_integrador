@@ -219,6 +219,11 @@
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="fechaasignaanalista">
+          <th mat-header-cell *matHeaderCellDef class="centradoCabecera col-achi3">fecha asigna</th>
+          <td mat-cell *matCellDef="let data_cola_trab_produccion" class="col-tela col-achi3">{{ data_cola_trab_produccion.fecha_AsignaAnalista }}</td>
+        </ng-container>
+
         <!-- Header y filas -->
         <tr mat-header-row *matHeaderRowDef="columnsToDisplayProduccion" ></tr>
         <tr mat-row *matRowDef="let row; columns: columnsToDisplayProduccion;" [ngClass]="getColorClaseProduccion(row)"></tr>
