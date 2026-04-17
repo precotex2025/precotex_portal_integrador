@@ -349,7 +349,7 @@ export class DialogJabonadosComponent {
           timeOut: 2500
         });
 
-        this.onListarJabonadoExcluidoDescarga(this.Usuario);
+        this.onListarJabonadoExcluido(this.Usuario);
       },  
       error: (error: any) => {}
     });

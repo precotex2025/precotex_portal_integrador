@@ -17,7 +17,8 @@ interface informacionSDC{
   pantone: string;
   com_Comer: string;
   ruta: string[];       
-  solidez: string[];    
+  solidez: string[];
+  familia: string;
 }
 
 interface informacionSDCProduccion{
@@ -35,7 +36,8 @@ interface informacionSDCProduccion{
   ref_Com: string;
   lote: string;
   obs: string;
-  ruta: string[];        
+  ruta: string[];      
+  familia: string;  
 }
 
 @Component({
