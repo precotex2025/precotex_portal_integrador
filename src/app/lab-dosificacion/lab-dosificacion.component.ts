@@ -292,7 +292,14 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
           const tieneTubos = this.dataListadoDosificaciones.some(
             item => item.nro_Tubo_Jab !== null && item.nro_Tubo_Jab !== 0
           );
+          
 
+          let SinDosificaciones = '';
+          if (this.dataListadoDosificaciones.length > 0) {
+            SinDosificaciones = this.dataListadoDosificaciones[0].tip_Ten ?? '';
+          }
+          
+          console.log(SinDosificaciones);
           if (tieneTubos) {
             // this.columnsToDisplay = [
             //   'nro_Tubo',
@@ -343,8 +350,21 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
             } else {
               this.tituloCurva = curvas[0] || '';
             }
-
-            this.columnsToDisplay = [
+            
+            if(SinDosificaciones === 'O'){
+              this.columnsToDisplay = [
+              'nro_Tubo',
+              'ph_Fin',
+              'descargar',
+              'reenvio',
+              'corr_Carta',
+              'descripcion_Color',
+              'jab_Des',
+              'sec',
+              'correlativo'
+            ].slice();
+            }else{
+              this.columnsToDisplay = [
               'nro_Tubo',
               'dosificacion1',
               'dosificacion2',
@@ -359,6 +379,8 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
               'sec',
               'correlativo'
             ].slice();
+            }
+            
           }
 
           this.dataSource.data = this.dataListadoDosificaciones;

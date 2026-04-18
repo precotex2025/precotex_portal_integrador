@@ -10,6 +10,10 @@ interface data {
   Num_Sec: number,
 }
 
+interface Luz {
+  descripcion: string;
+}
+
 interface informacionSDC{
   corr_Carta: string;
   descripcion: string;
@@ -18,6 +22,7 @@ interface informacionSDC{
   com_Comer: string;
   ruta: string[];       
   solidez: string[];
+  luz: Luz[];
   familia: string;
 }
 

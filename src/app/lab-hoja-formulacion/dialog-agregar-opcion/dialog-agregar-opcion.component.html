@@ -201,7 +201,7 @@
       <span class="col-nombre">Rucolase CAT-PE</span>
       <mat-form-field appearance="fill">
         <mat-label>Cantidad</mat-label>
-        <mat-select [(ngModel)]="rucolaseCantidadSeleccionada">
+        <mat-select [(ngModel)]="rucolaseCantidadSeleccionada" [disabled]="true">
           <mat-option *ngFor="let r of rucolaseCantidad" [value]="r.codigo">
             {{ r.nombre }}
           </mat-option>
