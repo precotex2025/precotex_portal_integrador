@@ -2,6 +2,9 @@
   <div *ngIf="data.Title === 'Copiar'">
       <h2>Copia de Corrida # {{ this.correlativoAnterior}}</h2>
   </div>
+  <div *ngIf="data.Title === 'Entregar'">
+      <h2>Entrega de Corrida # {{ this.correlativoAnterior}}</h2>
+  </div>
   <div class="selector-botones-wrapper">
     <!-- SELECTOR FAMILIA -->
     <div class="tipo-formulacion-wrapper">
@@ -84,7 +87,7 @@
                 (ngModelChange)="limitarDecimales(colorante); actualizarFinal(colorante)"
                 step="0.01"
                 (keypress)="validarNumero($event)" 
-                [disabled]="data.Title === 'Copiar'"/>
+                [disabled]="data.Title === 'Copiar' || data.Title === 'Entregar'"/>
               </div>
               <div class="colorante-cell ajuste">
               <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.50); actualizarFinal(colorante)">−</button>

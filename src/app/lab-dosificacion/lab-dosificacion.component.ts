@@ -351,7 +351,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
               this.tituloCurva = curvas[0] || '';
             }
             
-            if(SinDosificaciones === 'O'){
+            if(SinDosificaciones === 'O' || SinDosificaciones === 'D'){
               this.columnsToDisplay = [
               'nro_Tubo',
               'ph_Fin',

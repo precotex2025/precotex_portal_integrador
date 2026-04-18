@@ -261,7 +261,7 @@ export class LabHojaFormulacionComponent implements OnInit {
 
           }
         } else {
-          this.entregarSeleccionados();
+          this.EntregarFormulacion();
         }
 
       }
@@ -426,28 +426,16 @@ export class LabHojaFormulacionComponent implements OnInit {
       "Flg_Est_Lab": sFlg_Est_Lab,
       "Tip_Ten": sTip_Ten
     };
-
+    //console.log(':::::::::::::::::::::::.', data);
     this.SpinnerService.show();
     this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(data).subscribe({
       next: (response: any) => {
         if (response.success) {
           if (response.codeResult == 200) {
             this.onLlenarDesplegable(this.Usuario!);
-            this.toastr.success(response.message, '', {
-              timeOut: 2500,
-            });
-          } else if (response.codeResult == 201) {
-            this.toastr.info(response.message, '', {
-              timeOut: 2500,
-            });
           }
           this.SpinnerService.hide();
-        } else {
-          this.toastr.error(response.message, 'Cerrar', {
-            timeOut: 2500
-          });
-          this.SpinnerService.hide();
-        }
+        } 
       },
       error: (error) => {
         this.SpinnerService.hide();
@@ -584,7 +572,7 @@ export class LabHojaFormulacionComponent implements OnInit {
   //       //   f.colorantes.sort((a: any, b: any) => a.id_secuencia - b.id_secuencia);
   //       // });
 
-        
+
   //       correlativosMap.forEach(f => {
   //         const maxId = Math.max(...f.colorantes.map((c: any) => c.id_secuencia));
   //         if (maxId > maxSecuenciaGlobal) {
@@ -640,435 +628,79 @@ export class LabHojaFormulacionComponent implements OnInit {
 
   //   });
   // }
+  onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) {
+    this.puedeEntregar = false;
+    this.formulaciones = [];
 
-//   onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) {
-//   this.puedeEntregar = false;
-//   this.formulaciones = [];
+    this.LabColTrabajoService.getCargarGridHojaFormulacion(Corr_Carta, Sec, TipoReceta).subscribe({
+      next: (response: any) => {
+        const correlativosMap = new Map<number, any>();
 
-//   this.LabColTrabajoService.getCargarGridHojaFormulacion(Corr_Carta, Sec, TipoReceta).subscribe({
-//     next: (response: any) => {
-//       const correlativosMap = new Map<number, any>();
-//       console.log('::::::::::::::::::::::::::::::::::::::.', response.elements);
-//       response.elements.forEach((element: any) => {
-//         const estado = element.flg_Est_Lab;
-//         const estadoAutoLab = element.flg_Est_Autolab;
-//         const antipilling = element.antipilling;
+        response.elements.forEach((element: any) => {
+          const estado = element.flg_Est_Lab;
+          const estadoAutoLab = element.flg_Est_Autolab;
+          const antipilling = element.antipilling;
 
-//         element.colorantes.forEach((c: any) => {
-//           const correlativo = c.correlativo;
+          element.colorantes.forEach((c: any) => {
+            const correlativo = c.correlativo;
 
-//           if (!correlativosMap.has(correlativo)) {
-//             correlativosMap.set(correlativo, {
-//               numeroColumna: correlativo,
-//               seleccionado: estado === '02' ? true : false,
-//               colorantes: [],
-//               procedencia: element.procedencia,
-//               sod_Gr: element.sod_Gr,
-//               car_Gr: element.car_Gr,
-//               volumen: element.volumen,
-//               fijado: element.fijado,
-//               cur_Jabo: element.cur_Jabo,
-//               can_Jabo: element.can_Jabo,
-//               acidulado: element.acidulado,
-//               pes_Mue: element.pes_Mue,
-//               agu_Oxi: element.agu_Oxi ?? 0,
-//               flg_Est_Lab: estado ?? null,
-//               flg_Est_Autolab: estadoAutoLab ?? null,
-//               antipilling: antipilling ?? ''
-//             });
-//           }
+            if (!correlativosMap.has(correlativo)) {
+              correlativosMap.set(correlativo, {
+                numeroColumna: correlativo,
+                seleccionado: estado === '02',
+                colorantes: [],
+                procedencia: element.procedencia,
+                sod_Gr: element.sod_Gr,
+                car_Gr: element.car_Gr,
+                volumen: element.volumen,
+                fijado: element.fijado,
+                cur_Jabo: element.cur_Jabo,
+                can_Jabo: element.can_Jabo,
+                acidulado: element.acidulado,
+                pes_Mue: element.pes_Mue,
+                agu_Oxi: element.agu_Oxi ?? 0,
+                flg_Est_Lab: estado ?? null,
+                flg_Est_Autolab: estadoAutoLab ?? null,
+                antipilling: antipilling ?? ''
+              });
+            }
 
-//           correlativosMap.get(correlativo).colorantes.push({
-//             col_Cod: c.col_Cod,
-//             col_Des: c.col_Des,
-//             por_Ini: c.por_Ini,
-//             por_Fin: c.por_Fin,
-//             por_Aju: c.por_Aju,
-//             id_secuencia: c.id_secuencia
-//           });
-//         });
-//       });
-
-//       // 🔥 Eliminar duplicados visuales (DISTINCT en TS)
-//       correlativosMap.forEach(f => {
-//         f.colorantes = f.colorantes.filter((c: any, index: any, arr: any) =>
-//           index === arr.findIndex((x: any) =>
-//             x.col_Cod === c.col_Cod && x.id_secuencia === c.id_secuencia
-//           )
-//         );
-//       });
-
-//       // Normalización de secuencias
-//       let maxSecuenciaGlobal = 0;
-//       correlativosMap.forEach(f => {
-//         const maxId = Math.max(...f.colorantes.map((c: any) => c.id_secuencia));
-//         if (maxId > maxSecuenciaGlobal) {
-//           maxSecuenciaGlobal = maxId;
-//         }
-//       });
-
-//       correlativosMap.forEach(f => {
-//         const normalizados: any[] = [];
-//         for (let i = 1; i <= maxSecuenciaGlobal; i++) {
-//           const existente = f.colorantes.find((c: any) => c.id_secuencia === i);
-//           if (existente) {
-//             normalizados.push(existente);
-//           } else {
-//             normalizados.push({
-//               col_Cod: null,
-//               col_Des: null,
-//               por_Ini: null,
-//               por_Fin: null,
-//               por_Aju: null,
-//               id_secuencia: i
-//             });
-//           }
-//         }
-//         f.colorantes = normalizados;
-//       });
-
-//       this.formulaciones = Array.from(correlativosMap.values())
-//         .sort((a, b) => Number(b.numeroColumna) - Number(a.numeroColumna));
-
-//       this.generarFilasDesdeColorantes();
-//     },
-//     error: () => {
-//       this.toastr.error('Error al cargar formulaciones', '', { timeOut: 2500 });
-//     }
-//   });
-// }
-
-// onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) {
-//   this.puedeEntregar = false;
-//   this.formulaciones = [];
-
-//   this.LabColTrabajoService.getCargarGridHojaFormulacion(Corr_Carta, Sec, TipoReceta).subscribe({
-//     next: (response: any) => {
-//       const correlativosMap = new Map<number, any>();
-//       console.log('::::::::::::::::::::::::::::::::::::::.', response.elements);
-
-//       response.elements.forEach((element: any) => {
-//         const estado = element.flg_Est_Lab;
-//         const estadoAutoLab = element.flg_Est_Autolab;
-//         const antipilling = element.antipilling;
-
-//         element.colorantes.forEach((c: any) => {
-//           const correlativo = c.correlativo;
-
-//           if (!correlativosMap.has(correlativo)) {
-//             correlativosMap.set(correlativo, {
-//               numeroColumna: correlativo,
-//               seleccionado: estado === '02',
-//               colorantes: [],
-//               procedencia: element.procedencia,
-//               sod_Gr: element.sod_Gr,
-//               car_Gr: element.car_Gr,
-//               volumen: element.volumen,
-//               fijado: element.fijado,
-//               cur_Jabo: element.cur_Jabo,
-//               can_Jabo: element.can_Jabo,
-//               acidulado: element.acidulado,
-//               pes_Mue: element.pes_Mue,
-//               agu_Oxi: element.agu_Oxi ?? 0,
-//               flg_Est_Lab: estado ?? null,
-//               flg_Est_Autolab: estadoAutoLab ?? null,
-//               antipilling: antipilling ?? ''
-//             });
-//           }
-
-//           correlativosMap.get(correlativo).colorantes.push({
-//             col_Cod: c.col_Cod,
-//             col_Des: c.col_Des,
-//             por_Ini: c.por_Ini,
-//             por_Fin: c.por_Fin,
-//             por_Aju: c.por_Aju,
-//             id_secuencia: c.id_secuencia
-//           });
-//         });
-//       });
-
-//       // 🔥 DISTINCT para evitar duplicados visuales
-//       correlativosMap.forEach(f => {
-//         f.colorantes = f.colorantes.filter((c: any, index: any, arr: any) =>
-//           index === arr.findIndex((x: any) =>
-//             x.col_Cod === c.col_Cod && x.id_secuencia === c.id_secuencia
-//           )
-//         );
-//       });
-
-//       // Normalización de secuencias respetando orden
-//       correlativosMap.forEach(f => {
-//         const normalizados: any[] = [];
-
-//         // Ordenar existentes por id_secuencia
-//         const existentesOrdenados = f.colorantes
-//           .filter((c: any) => c.id_secuencia != null)
-//           .sort((a: any, b: any) => a.id_secuencia - b.id_secuencia);
-
-//         const maxIdLocal = Math.max(...existentesOrdenados.map((c: any) => c.id_secuencia ?? 0));
-
-//         // Rellenar huecos hasta el máximo local
-//         for (let i = 1; i <= maxIdLocal; i++) {
-//           const existente = existentesOrdenados.find((c: any) => c.id_secuencia === i);
-//           if (existente) {
-//             normalizados.push(existente);
-//           } else {
-//             normalizados.push({
-//               col_Cod: null,
-//               col_Des: null,
-//               por_Ini: null,
-//               por_Fin: null,
-//               por_Aju: null,
-//               id_secuencia: i
-//             });
-//           }
-//         }
-
-//         // 🔥 Nuevos colorantes (sin secuencia) → al final
-//         f.colorantes
-//           .filter((c: any) => c.id_secuencia == null)
-//           .forEach((nuevo: any, idx: number) => {
-//             nuevo.id_secuencia = maxIdLocal + idx + 1;
-//             normalizados.push(nuevo);
-//           });
-
-//         f.colorantes = normalizados;
-//       });
-
-//       this.formulaciones = Array.from(correlativosMap.values())
-//         .sort((a, b) => Number(b.numeroColumna) - Number(a.numeroColumna));
-
-//       this.generarFilasDesdeColorantes();
-//     },
-//     error: () => {
-//       this.toastr.error('Error al cargar formulaciones', '', { timeOut: 2500 });
-//     }
-//   });
-// }
-
-// onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) {
-//   this.puedeEntregar = false;
-//   this.formulaciones = [];
-
-//   this.LabColTrabajoService.getCargarGridHojaFormulacion(Corr_Carta, Sec, TipoReceta).subscribe({
-//     next: (response: any) => {
-//       const correlativosMap = new Map<number, any>();
-//       console.log('::::::::::::::::::::::::::::::::::::::.', response.elements);
-
-//       response.elements.forEach((element: any) => {
-//         const estado = element.flg_Est_Lab;
-//         const estadoAutoLab = element.flg_Est_Autolab;
-//         const antipilling = element.antipilling;
-
-//         element.colorantes.forEach((c: any) => {
-//           const correlativo = c.correlativo;
-
-//           if (!correlativosMap.has(correlativo)) {
-//             correlativosMap.set(correlativo, {
-//               numeroColumna: correlativo,
-//               seleccionado: estado === '02',
-//               colorantes: [],
-//               procedencia: element.procedencia,
-//               sod_Gr: element.sod_Gr,
-//               car_Gr: element.car_Gr,
-//               volumen: element.volumen,
-//               fijado: element.fijado,
-//               cur_Jabo: element.cur_Jabo,
-//               can_Jabo: element.can_Jabo,
-//               acidulado: element.acidulado,
-//               pes_Mue: element.pes_Mue,
-//               agu_Oxi: element.agu_Oxi ?? 0,
-//               flg_Est_Lab: estado ?? null,
-//               flg_Est_Autolab: estadoAutoLab ?? null,
-//               antipilling: antipilling ?? ''
-//             });
-//           }
-
-//           correlativosMap.get(correlativo).colorantes.push({
-//             col_Cod: c.col_Cod,
-//             col_Des: c.col_Des,
-//             por_Ini: c.por_Ini,
-//             por_Fin: c.por_Fin,
-//             por_Aju: c.por_Aju,
-//             id_secuencia: c.id_secuencia
-//           });
-//         });
-//       });
-
-//       // 🔥 DISTINCT para evitar duplicados visuales
-//       correlativosMap.forEach(f => {
-//         f.colorantes = f.colorantes.filter((c: any, index: any, arr: any) =>
-//           index === arr.findIndex((x: any) =>
-//             x.col_Cod === c.col_Cod && x.id_secuencia === c.id_secuencia
-//           )
-//         );
-//       });
-
-//       // Normalización y orden por id_secuencia ASC
-//       correlativosMap.forEach(f => {
-//         // Ordenar existentes por id_secuencia ascendente
-//         const existentesOrdenados = f.colorantes
-//           .filter((c: any) => c.id_secuencia != null)
-//           .sort((a: any, b: any) => a.id_secuencia - b.id_secuencia);
-
-//         const maxIdLocal = Math.max(...existentesOrdenados.map((c: any) => c.id_secuencia ?? 0), 0);
-//         const normalizados: any[] = [];
-
-//         // Rellenar huecos con espacios en blanco
-//         for (let i = 1; i <= maxIdLocal; i++) {
-//           const existente = existentesOrdenados.find((c: any) => c.id_secuencia === i);
-//           if (existente) {
-//             normalizados.push(existente);
-//           } else {
-//             normalizados.push({
-//               col_Cod: null,
-//               col_Des: null,
-//               por_Ini: null,
-//               por_Fin: null,
-//               por_Aju: null,
-//               id_secuencia: i
-//             });
-//           }
-//         }
-
-//         // 🔥 Nuevos colorantes (sin secuencia) → al final
-//         f.colorantes
-//           .filter((c: any) => c.id_secuencia == null)
-//           .forEach((nuevo: any, idx: number) => {
-//             nuevo.id_secuencia = maxIdLocal + idx + 1;
-//             normalizados.push(nuevo);
-//           });
-
-//         // Asignar lista final ordenada por id_secuencia ASC
-//         f.colorantes = normalizados.sort((a: any, b: any) => a.id_secuencia - b.id_secuencia);
-//       });
-
-//       this.formulaciones = Array.from(correlativosMap.values())
-//         .sort((a, b) => Number(b.numeroColumna) - Number(a.numeroColumna));
-
-//       this.generarFilasDesdeColorantes();
-//     },
-//     error: () => {
-//       this.toastr.error('Error al cargar formulaciones', '', { timeOut: 2500 });
-//     }
-//   });
-// }
-
-onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) {
-  this.puedeEntregar = false;
-  this.formulaciones = [];
-
-  this.LabColTrabajoService.getCargarGridHojaFormulacion(Corr_Carta, Sec, TipoReceta).subscribe({
-    next: (response: any) => {
-      const correlativosMap = new Map<number, any>();
-      console.log('::::::::::::::::::::::::::::::::::::::.', response.elements);
-
-      response.elements.forEach((element: any) => {
-        const estado = element.flg_Est_Lab;
-        const estadoAutoLab = element.flg_Est_Autolab;
-        const antipilling = element.antipilling;
-
-        element.colorantes.forEach((c: any) => {
-          const correlativo = c.correlativo;
-
-          if (!correlativosMap.has(correlativo)) {
-            correlativosMap.set(correlativo, {
-              numeroColumna: correlativo,
-              seleccionado: estado === '02',
-              colorantes: [],
-              procedencia: element.procedencia,
-              sod_Gr: element.sod_Gr,
-              car_Gr: element.car_Gr,
-              volumen: element.volumen,
-              fijado: element.fijado,
-              cur_Jabo: element.cur_Jabo,
-              can_Jabo: element.can_Jabo,
-              acidulado: element.acidulado,
-              pes_Mue: element.pes_Mue,
-              agu_Oxi: element.agu_Oxi ?? 0,
-              flg_Est_Lab: estado ?? null,
-              flg_Est_Autolab: estadoAutoLab ?? null,
-              antipilling: antipilling ?? ''
+            correlativosMap.get(correlativo).colorantes.push({
+              col_Cod: c.col_Cod,
+              col_Des: c.col_Des,
+              por_Ini: c.por_Ini,
+              por_Fin: c.por_Fin,
+              por_Aju: c.por_Aju,
+              id_secuencia: c.id_secuencia
             });
-          }
-
-          correlativosMap.get(correlativo).colorantes.push({
-            col_Cod: c.col_Cod,
-            col_Des: c.col_Des,
-            por_Ini: c.por_Ini,
-            por_Fin: c.por_Fin,
-            por_Aju: c.por_Aju,
-            id_secuencia: c.id_secuencia
           });
         });
-      });
 
-      // 🔥 DISTINCT para evitar duplicados visuales
-      correlativosMap.forEach(f => {
-        f.colorantes = f.colorantes.filter((c: any, index: any, arr: any) =>
-          index === arr.findIndex((x: any) =>
-            x.col_Cod === c.col_Cod && x.id_secuencia === c.id_secuencia
-          )
-        );
-      });
+        correlativosMap.forEach(f => {
+          f.colorantes = f.colorantes.filter((c: any, index: number, arr: any[]) =>
+            index === arr.findIndex(x => x.col_Cod === c.col_Cod)
+          );
 
-      // 🔥 Corrida base = correlativo más bajo (ej. 1)
-      const corridaBase = correlativosMap.get(1);
-      const maxBaseSecuencia = Math.max(...(corridaBase?.colorantes.map((c: any) => c.id_secuencia ?? 0) ?? [0]));
+          // Orden descendente por id_secuencia
+          f.colorantes.sort((a: any, b: any) => b.id_secuencia - a.id_secuencia);
+        });
 
-      // Normalización y orden por id_secuencia ASC respetando corrida base
-      correlativosMap.forEach(f => {
-        const normalizados: any[] = [];
+        // Asignar formulaciones ordenadas por correlativo descendente
+        this.formulaciones = Array.from(correlativosMap.values())
+          .sort((a, b) => Number(b.numeroColumna) - Number(a.numeroColumna));
 
-        // Ordenar existentes
-        const existentesOrdenados = f.colorantes
-          .filter((c: any) => c.id_secuencia != null)
-          .sort((a: any, b: any) => a.id_secuencia - b.id_secuencia);
-
-        // Rellenar hasta el máximo de la corrida base
-        for (let i = 1; i <= maxBaseSecuencia; i++) {
-          const existente = existentesOrdenados.find((c: any) => c.id_secuencia === i);
-          normalizados.push(existente ?? {
-            col_Cod: null,
-            col_Des: null,
-            por_Ini: null,
-            por_Fin: null,
-            por_Aju: null,
-            id_secuencia: i
-          });
-        }
-
-        // 🔥 Colorantes con secuencia > maxBaseSecuencia → al final
-        existentesOrdenados
-          .filter((c: any) => c.id_secuencia > maxBaseSecuencia)
-          .forEach((c: any) => normalizados.push(c));
-
-        // Nuevos sin secuencia → también al final
-        f.colorantes
-          .filter((c: any) => c.id_secuencia == null)
-          .forEach((nuevo: any, idx: number) => {
-            nuevo.id_secuencia = maxBaseSecuencia + idx + 1;
-            normalizados.push(nuevo);
-          });
-
-        f.colorantes = normalizados;
-      });
-
-      this.formulaciones = Array.from(correlativosMap.values())
-        .sort((a, b) => Number(b.numeroColumna) - Number(a.numeroColumna));
-
-      this.generarFilasDesdeColorantes();
-    },
-    error: () => {
-      this.toastr.error('Error al cargar formulaciones', '', { timeOut: 2500 });
-    }
-  });
-}
+        this.generarFilasDesdeColorantes();
+      },
+      error: () => {
+        this.toastr.error('Error al cargar formulaciones', '', { timeOut: 2500 });
+      }
+    });
+  }
 
 
 
   // generarFilasDesdeColorantes(): void {
-  //   const coloranteMap = new Map<string, string>();
+  //   const coloranteMap = new Map<number, { codigo: string, nombre: string }>();
   //   const auxiliaresMap = new Map<string, string>();
 
   //   this.formulaciones.forEach(f => {
@@ -1078,93 +710,260 @@ onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) 
   //         if (nombre.includes('SAL') || nombre.includes('SULFATO')) {
   //           auxiliaresMap.set(c.col_Cod, c.col_Des);
   //         } else {
-  //           coloranteMap.set(c.col_Cod, c.col_Des);
+  //           coloranteMap.set(c.id_secuencia, { codigo: c.col_Cod, nombre: c.col_Des });
+  //         }
+  //       }
+  //     }); 
+  //   });
+
+  //   // this.formulaciones.forEach(f => {
+  //   //   f.colorantes.forEach((c: any) => {
+  //   //     if (c.col_Cod && c.col_Des) {
+  //   //       const nombre = c.col_Des.toUpperCase();
+  //   //       if (nombre.includes('SAL') || nombre.includes('SULFATO')) {
+  //   //         auxiliaresMap.set(c.col_Cod, c.col_Des);
+  //   //       } else {
+  //   //         if (!coloranteMap.has(c.col_Cod)) {
+  //   //           coloranteMap.set(c.col_Cod, { codigo: c.col_Cod, nombre: c.col_Des });
+  //   //         }
+  //   //       }
+  //   //     }
+  //   //   });
+  //   // });
+
+  //   const filasColorantes = Array.from(coloranteMap.entries())
+  //     .sort((a, b) => a[0] - b[0])
+  //     .map(([_, data]) => ({
+  //       etiqueta: data.nombre,
+  //       key: data.codigo,
+  //       tipo: 'numero'
+  //     }));
+
+
+  //   if (this.TipoReceta === 'R') {
+  //     this.filas = [
+  //       { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
+  //       { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
+
+  //       ...filasColorantes,
+
+  //       { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+
+  //       ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
+  //         etiqueta: nombre,
+  //         key: codigo,
+  //         tipo: 'numero'
+  //       })),
+
+  //       { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
+  //       { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
+  //       { etiqueta: 'TIPO DESCARGA', key: 'fijado', tipo: 'texto' },
+  //       { etiqueta: 'CANTIDAD JABONADO', key: 'can_Jabo', tipo: 'numero' },
+  //       { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
+  //       { etiqueta: 'ANTIPILLING', key: 'antipilling', tipo: 'texto' }
+  //     ];
+  //   }
+  //   else if (this.TipoReceta === 'D') {
+  //     this.filas = [
+  //       { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
+  //       { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
+
+  //       ...filasColorantes,
+
+  //       { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+
+  //       ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
+  //         etiqueta: nombre,
+  //         key: codigo,
+  //         tipo: 'numero'
+  //       })),
+
+  //       { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
+  //       { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
+  //       { etiqueta: 'CANTIDAD LAVADOS', key: 'can_Jabo', tipo: 'numero' },
+  //       { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
+  //     ];
+  //   }
+  //   else {
+  //     this.filas = [
+  //       { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
+  //       { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
+
+  //       ...filasColorantes,
+
+  //       { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+
+  //       ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
+  //         etiqueta: nombre,
+  //         key: codigo,
+  //         tipo: 'numero'
+  //       })),
+
+  //       { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
+  //       { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
+  //       { etiqueta: 'AGUA OXIGENADA', key: 'agu_Oxi', tipo: 'numero' },
+  //       { etiqueta: 'SODA CAUSTICA', key: 'sod_Gr', tipo: 'numero' },
+  //       // { etiqueta: 'CANTIDAD JABONADO', key: 'can_Jabo', tipo: 'numero' },
+  //       { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
+  //     ];
+  //   }
+  // }
+
+  //   generarFilasDesdeColorantes() {
+  //   const filasColorantes: any[] = [];
+  //   const auxiliaresMap = new Map<string, string>();
+
+  //   // Recorremos todas las formulaciones (corridas)
+  //   this.formulaciones.forEach(f => {
+  //     f.colorantes.forEach((c: any) => {
+  //       if (c.col_Cod) {
+  //         const yaExiste = filasColorantes.some(fc => fc.key === c.col_Cod);
+  //         if (!yaExiste) {
+  //           filasColorantes.push({
+  //             etiqueta: c.col_Des?.trim() || c.col_Cod,
+  //             key: c.col_Cod,
+  //             tipo: 'numero'
+  //           });
   //         }
   //       }
   //     });
+
+  //     // Si tu backend trae auxiliares, los agregamos al map
+  //     if (f.auxiliares) {
+  //       f.auxiliares.forEach((aux: any) => {
+  //         if (!auxiliaresMap.has(aux.col_Cod)) {
+  //           auxiliaresMap.set(aux.col_Cod, aux.col_Des);
+  //         }
+  //       });
+  //     }
   //   });
 
-  //   this.filas = [
-  //     { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
-  //     { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
+  //   filasColorantes.sort((a, b) => {
+  //     const secA = this.formulaciones
+  //       .flatMap(f => f.colorantes)
+  //       .find(c => c.col_Cod === a.key)?.id_secuencia ?? 0;
 
-  //     //PRIMERO LOS COLORANTES    
-  //     ...Array.from(coloranteMap.entries()).map(([codigo, nombre]) => ({
-  //       etiqueta: nombre,
-  //       key: codigo,
-  //       tipo: 'numero'
-  //     })),
+  //     const secB = this.formulaciones
+  //       .flatMap(f => f.colorantes)
+  //       .find(c => c.col_Cod === b.key)?.id_secuencia ?? 0;
 
-  //     //SUMA DEL VALOR DE LOS COLORANTES
-  //     { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+  //     return secA - secB;
+  //   });
 
+  //   if (this.TipoReceta === 'R') {
+  //     this.filas = [
+  //       { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
+  //       { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
 
-  //     //LUEGO LOS AUXILIARES SAL Y SULFATO
-  //     ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
-  //       etiqueta: nombre,
-  //       key: codigo,
-  //       tipo: 'numero'
-  //     })),
+  //       ...filasColorantes,
 
-  //     //DESPUES COMPLETAMOS LA INFO
-  //     { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
-  //     { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
-  //     { etiqueta: 'TIPO DESCARGA', key: 'fijado', tipo: 'texto' },
-  //     { etiqueta: 'CANTIDAD JABONADO', key: 'can_Jabo', tipo: 'numero' },
-  //     { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
-  //     { etiqueta: 'ANTIPILLING', key: 'antipilling', tipo: 'texto' }
-  //   ];
+  //       { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+
+  //       ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
+  //         etiqueta: nombre,
+  //         key: codigo,
+  //         tipo: 'numero'
+  //       })),
+
+  //       { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
+  //       { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
+  //       { etiqueta: 'TIPO DESCARGA', key: 'fijado', tipo: 'texto' },
+  //       { etiqueta: 'CANTIDAD JABONADO', key: 'can_Jabo', tipo: 'numero' },
+  //       { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
+  //       { etiqueta: 'ANTIPILLING', key: 'antipilling', tipo: 'texto' }
+  //     ];
+  //   } else if (this.TipoReceta === 'D') {
+  //     this.filas = [
+  //       { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
+  //       { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
+
+  //       ...filasColorantes,
+
+  //       { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+
+  //       ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
+  //         etiqueta: nombre,
+  //         key: codigo,
+  //         tipo: 'numero'
+  //       })),
+
+  //       { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
+  //       { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
+  //       { etiqueta: 'CANTIDAD LAVADOS', key: 'can_Jabo', tipo: 'numero' },
+  //       { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' }
+  //     ];
+  //   } else {
+  //     this.filas = [
+  //       { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
+  //       { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
+
+  //       ...filasColorantes,
+
+  //       { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+
+  //       ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
+  //         etiqueta: nombre,
+  //         key: codigo,
+  //         tipo: 'numero'
+  //       })),
+
+  //       { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
+  //       { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
+  //       { etiqueta: 'AGUA OXIGENADA', key: 'agu_Oxi', tipo: 'numero' },
+  //       { etiqueta: 'SODA CAUSTICA', key: 'sod_Gr', tipo: 'numero' },
+  //       { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' }
+  //     ];
+  //   }
   // }
 
-  generarFilasDesdeColorantes(): void {
-    const coloranteMap = new Map<number, { codigo: string, nombre: string }>();
+  generarFilasDesdeColorantes() {
+    const filasColorantes: any[] = [];
     const auxiliaresMap = new Map<string, string>();
 
     this.formulaciones.forEach(f => {
       f.colorantes.forEach((c: any) => {
-        if (c.col_Cod && c.col_Des) {
-          const nombre = c.col_Des.toUpperCase();
-          if (nombre.includes('SAL') || nombre.includes('SULFATO')) {
-            auxiliaresMap.set(c.col_Cod, c.col_Des);
-          } else {
-            coloranteMap.set(c.id_secuencia, { codigo: c.col_Cod, nombre: c.col_Des });
+        if (c.col_Cod) {
+          const yaExiste = filasColorantes.some(fc => fc.key === c.col_Cod);
+          if (!yaExiste) {
+            filasColorantes.push({
+              etiqueta: c.col_Des?.trim() || c.col_Cod,
+              key: c.col_Cod,
+              tipo: 'numero'
+            });
           }
         }
-      }); 
+      });
+
+      if (f.auxiliares) {
+        f.auxiliares.forEach((aux: any) => {
+          if (!auxiliaresMap.has(aux.col_Cod)) {
+            auxiliaresMap.set(aux.col_Cod, aux.col_Des);
+          }
+        });
+      }
     });
 
-    // this.formulaciones.forEach(f => {
-    //   f.colorantes.forEach((c: any) => {
-    //     if (c.col_Cod && c.col_Des) {
-    //       const nombre = c.col_Des.toUpperCase();
-    //       if (nombre.includes('SAL') || nombre.includes('SULFATO')) {
-    //         auxiliaresMap.set(c.col_Cod, c.col_Des);
-    //       } else {
-    //         if (!coloranteMap.has(c.col_Cod)) {
-    //           coloranteMap.set(c.col_Cod, { codigo: c.col_Cod, nombre: c.col_Des });
-    //         }
-    //       }
-    //     }
-    //   });
-    // });
-    
-    const filasColorantes = Array.from(coloranteMap.entries())
-      .sort((a, b) => a[0] - b[0])
-      .map(([_, data]) => ({
-        etiqueta: data.nombre,
-        key: data.codigo,
-        tipo: 'numero'
-      }));
+    filasColorantes.sort((a, b) => {
+      const secA = this.formulaciones.flatMap(f => f.colorantes)
+        .find(c => c.col_Cod === a.key)?.id_secuencia ?? 0;
+      const secB = this.formulaciones.flatMap(f => f.colorantes)
+        .find(c => c.col_Cod === b.key)?.id_secuencia ?? 0;
+      return secA - secB;
+    });
 
+    const especiales = filasColorantes.filter(fc => fc.key === 'SAL' || fc.key === 'SULFATO');
+    const otrosColorantes = filasColorantes.filter(fc => fc.key !== 'SAL' && fc.key !== 'SULFATO');
 
     if (this.TipoReceta === 'R') {
       this.filas = [
         { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
         { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
 
-        ...filasColorantes,
+        ...otrosColorantes,
 
         { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+
+        ...especiales,
 
         ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
           etiqueta: nombre,
@@ -1179,15 +978,16 @@ onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) 
         { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
         { etiqueta: 'ANTIPILLING', key: 'antipilling', tipo: 'texto' }
       ];
-    }
-    else if (this.TipoReceta === 'D') {
+    } else if (this.TipoReceta === 'D') {
       this.filas = [
         { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
         { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
 
-        ...filasColorantes,
+        ...otrosColorantes,
 
         { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+
+        ...especiales,
 
         ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
           etiqueta: nombre,
@@ -1198,17 +998,18 @@ onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) 
         { etiqueta: 'VOLUMEN', key: 'volumen', tipo: 'numero' },
         { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
         { etiqueta: 'CANTIDAD LAVADOS', key: 'can_Jabo', tipo: 'numero' },
-        { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
+        { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' }
       ];
-    }
-    else {
+    } else {
       this.filas = [
         { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },
         { etiqueta: 'PROCEDENCIA', key: 'procedencia', tipo: 'texto' },
 
-        ...filasColorantes,
+        ...otrosColorantes,
 
         { etiqueta: 'SUMA TOTAL', key: 'sumaTotalColorantes', tipo: 'total' },
+
+        ...especiales,
 
         ...Array.from(auxiliaresMap.entries()).map(([codigo, nombre]) => ({
           etiqueta: nombre,
@@ -1220,12 +1021,10 @@ onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) 
         { etiqueta: 'PH INICIAL', key: 'cur_Jabo', tipo: 'numero' },
         { etiqueta: 'AGUA OXIGENADA', key: 'agu_Oxi', tipo: 'numero' },
         { etiqueta: 'SODA CAUSTICA', key: 'sod_Gr', tipo: 'numero' },
-        // { etiqueta: 'CANTIDAD JABONADO', key: 'can_Jabo', tipo: 'numero' },
-        { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' },
+        { etiqueta: 'PESO MUESTRA', key: 'pes_Mue', tipo: 'numero' }
       ];
     }
   }
-
 
 
   getSumaTotalColorantes(f: any): number {
@@ -1353,6 +1152,26 @@ onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) 
     );
   }
 
+  EntregarFormulacion(){
+    //const original = this.formulaciones.find(f => f.numeroColumna === correlativoAnterior);
+    const seleccionados = [...this.indicesSeleccionados].sort((a, b) => b - a)
+    const maxNumero = Math.max(...this.formulaciones.map(f => f.numeroColumna ?? 0));
+    const numeroColumna = maxNumero + 1;
+    this.router.navigate(['AgregarOpcion'], {
+      queryParams: {
+        accionR: 'Entregar',
+        Num_SDC: this.Corr_Carta_Remover,
+        Num_Sec: this.Sec_Remover,
+        Correlativo: numeroColumna,
+        CorrelativoAnterior: seleccionados,
+        //PartidasAgrupadasE: 'L8439/L5893/L6969'
+        PartidasAgrupadasE: this.PartidasAgrupadas,
+        TipoReceta: this.TipoReceta
+      }
+    });
+  }
+
+
   getObtenerPartidasAgrupadas(Usr_Cod: string, Corr_Carta: any): void {
     this.LabColTrabajoService.getObtenerPartidasAgrupadas(Usr_Cod, Corr_Carta).subscribe({
       next: (response: any) => {
@@ -1399,19 +1218,19 @@ onCargarGrillaHojaFormulacion(Corr_Carta: any, Sec: number, TipoReceta: string) 
     });
   }
 
-  onAbrirReporte(): void { 
-    if (this.Corr_Carta_Remover && this.Sec_Remover && this.TipoReceta) { 
-      this.dialog.closeAll(); 
+  onAbrirReporte(): void {
+    if (this.Corr_Carta_Remover && this.Sec_Remover && this.TipoReceta) {
+      this.dialog.closeAll();
       this.router.navigate(['Reporte'], {
         queryParams: {
           sdcE: this.Corr_Carta_Remover,
           secuenciaE: this.Sec_Remover,
           tipoRecetaE: this.TipoReceta
         }
-      }); 
-    } else { 
+      });
+    } else {
       // alert('Por favor ingresa SDC y Secuencia'); 
-    } 
+    }
   }
 
 }

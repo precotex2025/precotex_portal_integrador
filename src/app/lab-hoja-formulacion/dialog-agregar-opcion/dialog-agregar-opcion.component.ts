@@ -186,10 +186,10 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     this.getObtenerFamiliaDesdeCabecera(this.data.Num_SDC, this.data.Num_Sec);
     this.getObtenerCurvaReactivoDisperso(this.data.Num_SDC, this.data.Num_Sec, this.data.TipoReceta);
     this.quitarFocus();
-    if (this.data.Title === 'Copiar') {
+    if (this.data.Title === 'Copiar' || this.data.Title === 'Entregar') {
       //console.log('Cargando datos para modificar...');
       this.correlativoAnterior = this.data.CorrelativoAnterior!;
-      console.log('TIPO RECETA EN COPIAR',this.data.TipoReceta);
+      //console.log('TIPO RECETA EN COPIAR',this.data.TipoReceta);
       this.cargarDatosParaModificar(this.data.Num_SDC, this.data.Num_Sec, this.data.CorrelativoAnterior || 0, this.data.TipoReceta);
       setTimeout(() => this.cargando = false, 0);
       //this.actualizarTotalFinal();
@@ -561,7 +561,9 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       Cambio: this.estadoCambio,
       ProcedenciaHardCodeada: this.data.Title === 'Copiar'
         ? "Copia de Corrida #" + this.data.CorrelativoAnterior?.toString()
-        : "",
+        : this.data.Title === 'Entregar'
+          ? "Mosquito" + this.data.CorrelativoAnterior?.toString()
+          : "",
       Cur_Ten: this.curvaTenido || 0,
       Tip_Ten: tipo_tenido
     };
@@ -943,6 +945,9 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         const antiReductorPorcentaje = datos.ant_Red_Aju ?? 0;
         const rucolaseCantidadSeleccionada = datos.ruc_Gr ?? 0;
         const cantidadLavados = jabonadoLavado;
+        const aguaOxigenadaCantidad = datos.agu_Oxi ?? 0;
+        const sodaCausticaCantidad = datos.sod_Gr ?? 0;
+        
         this.datos = {
           relacionBano: relacion,
           pesoMuestra: peso,
@@ -953,8 +958,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         this.antiReductorPorcentaje = antiReductorPorcentaje;
         this.rucolaseCantidadSeleccionada = rucolaseCantidadSeleccionada;
         this.cantidadLavados = cantidadLavados;
-        console.log('::::::::::::::::::::::::::::::::::::::.', this.datos);
-        
+        this.aguaOxigenadaCantidad = aguaOxigenadaCantidad;
+        this.sodaCausticaCantidad = sodaCausticaCantidad;
         this.getListarTiposTenido(datos.familia.toString());
         this.getListarCurvas(datos.familia.toString());
         this.actualizarTotalFinalDesdeCopiar(datos.familia.toString());
