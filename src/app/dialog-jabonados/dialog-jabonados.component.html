@@ -199,22 +199,22 @@
 
       <ng-container matColumnDef="dosificacion1">
         <th mat-header-cell *matHeaderCellDef class="centradoCabecera">1ra Dosif.</th>
-        <td mat-cell *matCellDef="let r" class="centrado">{{ r.dosificacion1 | number:'1.2-2' }}</td>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.dosificacion1 === 0 ? '' : r.dosificacion1 | number:'1.2-2' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="dosificacion2">
         <th mat-header-cell *matHeaderCellDef class="centradoCabecera">2da Dosif.</th>
-        <td mat-cell *matCellDef="let r" class="centrado">{{ r.dosificacion2 | number:'1.2-2' }}</td>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.dosificacion2 === 0 ? '' : r.dosificacion2 | number:'1.2-2' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="dosificacion3">
         <th mat-header-cell *matHeaderCellDef class="centradoCabecera">3ra Dosif.</th>
-        <td mat-cell *matCellDef="let r" class="centrado">{{ r.dosificacion3 | number:'1.2-2' }}</td>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.dosificacion3 === 0 ? '' : r.dosificacion3 | number:'1.2-2' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="sod_gr">
         <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Soda</th>
-        <td mat-cell *matCellDef="let r" class="centrado">{{ r.sod_Gr | number:'1.2-2' }}</td>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.sod_Gr === 0 ? '' : r.sod_Gr | number:'1.2-2' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="tip_Ten">
