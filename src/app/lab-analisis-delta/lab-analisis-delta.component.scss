@@ -239,3 +239,32 @@ background-color: #4180ab; /* verde claro */
   flex: 3;
   height: 450px;
 }
+
+.grid-col-h {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  width: 100%;
+}
+
+.grupo-superior {
+  flex: 0 0 30%; /* ocupa el 30% */
+  display: flex;
+  flex-direction: column;
+}
+
+.radio-vertical {
+  display: flex;
+  flex-direction: column; /* radio buttons en vertical */
+  gap: 0.2rem;
+}
+
+.grupo-inferior {
+  flex: 1; /* ocupa el 70% restante */
+  display: flex;
+  flex-direction: column;
+}
+
+.input-flex {
+  width: 100%;
+}

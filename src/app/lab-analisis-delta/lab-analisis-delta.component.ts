@@ -56,8 +56,12 @@ export class LabAnalisisDeltaComponent implements OnInit {
   // Variable para guardar los seleccionados
   tipoMuestraSeleccionada: string[] = [];
   concatenado: string = '';
-
   bMuestraGrafico1: boolean = false;
+  opcionSeleccionada: string = '01';//Opcion por defecto Partida //01=Partida, 02=Color 
+
+  bMuestraInputPartida: boolean = true;
+  bMuestraInputColor: boolean = false;
+
 
   //Variables para los graficos
   scatterChartType: 'scatter' = 'scatter';
@@ -121,14 +125,20 @@ export class LabAnalisisDeltaComponent implements OnInit {
 
   ngOnInit(): void {
     this.Usuario = this.authService.getUsuario()!;
+
+    //Partida
     this.formulario.get('ctrol_CodOrdTra')?.valueChanges.subscribe((valor: any) => {
       if (valor && valor.length === 5) {
-        this.MostrarDatosPartida();
+        this.MostrarDatosPartida('01');
       }
     }); 
 
-    
-
+    //Color
+    this.formulario.get('ctrol_CodColor')?.valueChanges.subscribe((valor: any) => {
+      if (valor && valor.length === 6) {
+        this.MostrarDatosPartida('02');
+      }
+    });     
   }
 
   displayedColumns: string[] = [
@@ -150,115 +160,201 @@ export class LabAnalisisDeltaComponent implements OnInit {
   dataSource_UP: MatTableDataSource<any> = new MatTableDataSource();
 
   formulario = this.formBuilder.group({
-    ctrol_CodOrdTra:[''],
-    ctrol_tipoMuestra:[''],
-    ctrol_color:[''],
-    ctrol_articulo:[''],
-    ctrol_estandar:[''],
-    ctrol_CanStandar:['']
+    ctrol_tipoSeleccion :['01'],
+    ctrol_CodOrdTra     :[''],
+    ctrol_CodColor      :[''],
+    ctrol_tipoMuestra   :[''],
+    ctrol_color         :[''],
+    ctrol_articulo      :[''],
+    ctrol_estandar      :[''],
+    ctrol_CanStandar    :['']
   });      
 
-  MostrarDatosPartida() {
-    //event.preventDefault(); // evita que el Enter dispare el submit
+  MostrarDatosPartida(sTipo: string) {
+    //event.preventDefault();
+
+    //Bloque 01 --> Variables
     const sCodOrdTra = this.formulario.get('ctrol_CodOrdTra')?.value! || '';
+    const sCodColor = this.formulario.get('ctrol_CodColor')?.value! || '';
 
     // if (!sCodOrdTra || sCodOrdTra.length !== 5) {
     //   this.formulario.get('ctrol_CodOrdTra')?.setValue('');
     //   return;
     // }
 
-    if (!sCodOrdTra || sCodOrdTra.trim() === ''){
-      this.matSnackBar.open("¡Ingrese codigo de partida...!", 'Cerrar', {
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        duration: 1500,
-      });
-    return;
-    }       
+    //Bloque 02 --> Validaciones
+    if (sTipo === "01"){
+      if (!sCodOrdTra || sCodOrdTra.trim() === ''){
+        this.matSnackBar.open("¡Ingrese codigo de partida...!", 'Cerrar', {
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          duration: 1500,
+        });
+      return;
+      }    
+    }else{
+      if (!sCodColor || sCodColor.trim() === ''){
+        this.matSnackBar.open("¡Ingrese codigo de color...!", 'Cerrar', {
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          duration: 1500,
+        });
+      return;
+      }        
+    }
 
-    //se ejecuta cuando tiene solo 5 digitos
-    if (sCodOrdTra && sCodOrdTra.length === 5) {
+    
+    //Bloque 03 --> Reset controles
+    this.tipoMuestraSeleccionada = [];
+    this.concatenado = '';
 
-      // Limpia el array y el string concatenado
-      this.tipoMuestraSeleccionada = [];
-      this.concatenado = '';
+    // Limpia también el FormControl asociado
+    this.formulario.get('ctrol_tipoMuestra')?.reset();      
+    this.formulario.get('ctrol_color')?.reset(); 
+    this.formulario.get('ctrol_articulo')?.reset(); 
+    this.formulario.get('ctrol_estandar')?.reset();     
+   
+    //Bloque 04 --> Obtener Informacion segun Tipo (Partida ó Color)
+    //Bloque 04.01 --> Partida
+    if (sTipo === "01"){
 
-      // Limpia también el FormControl asociado
-      this.formulario.get('ctrol_tipoMuestra')?.reset();      
-      this.formulario.get('ctrol_color')?.reset(); 
-      this.formulario.get('ctrol_articulo')?.reset(); 
-      this.formulario.get('ctrol_estandar')?.reset(); 
+      //se ejecuta cuando tiene solo 5 digitos
+      if (sCodOrdTra && sCodOrdTra.length === 5) {
 
-      this.SpinnerService.show();
-      this.dataInfoPartida = [];
-      this.LabColaTrabajoService.getAnalisisDelta01_ObtieneDatosxPartida(sCodOrdTra, '', '', '', 0,this.Usuario!).subscribe({
-        next: (response: any) => {
-          if (response.success) {
-              console.log('Datos de partida', response);
-            if (response.totalElements > 0) {
-              this.dataInfoPartida = response.elements;
+        this.SpinnerService.show();
+        this.dataInfoPartida = [];
+        this.LabColaTrabajoService.getAnalisisDelta01_ObtieneDatosxPartida(sCodOrdTra, '', '', '', 0,this.Usuario!).subscribe({
+          next: (response: any) => {
+            if (response.success) {
+                console.log('Datos de partida', response);
+              if (response.totalElements > 0) {
+                this.dataInfoPartida = response.elements;
 
-              //const xCodOrdtra = this.dataInfoPartida[0].cod_OrdTra || '';
-              const xCodTela = this.dataInfoPartida[0].cod_Tela || '';
-              const xCodColor = this.dataInfoPartida[0].cod_Color || '';
+                //const xCodOrdtra = this.dataInfoPartida[0].cod_OrdTra || '';
+                const xCodTela  = this.dataInfoPartida[0].cod_Tela || '';
+                const xCodColor = this.dataInfoPartida[0].cod_Color || '';
 
-              this.cant_estandar = Number(this.dataInfoPartida[0].can_Standar);
-              if (this.cant_estandar === 1) {
-                this.colorClase = 'fondo-verde';
-              } else if (this.cant_estandar !== 0) {
-                this.colorClase = 'fondo-rojo';
+                this.cant_estandar = Number(this.dataInfoPartida[0].can_Standar);
+                if (this.cant_estandar === 1) {
+                  this.colorClase = 'fondo-verde';
+                } else if (this.cant_estandar !== 0) {
+                  this.colorClase = 'fondo-rojo';
+                } else {
+                  this.colorClase = ''; // color normal
+                }            
+                this.formulario.get('ctrol_CanStandar')?.setValue(this.dataInfoPartida[0].can_Standar);  
+                this.onLoadCombosGrls('2', sCodOrdTra, xCodTela, xCodColor);
+                this.onLoadCombosGrls('4', sCodOrdTra, xCodTela, xCodColor);
+                this.onLoadCombosGrls('5', sCodOrdTra, xCodTela, xCodColor);
+                this.onLoadCombosGrls('3', sCodOrdTra, xCodTela, xCodColor);
+          
+                //this.SpinnerService.hide();
               } else {
-                this.colorClase = ''; // color normal
-              }            
-              this.formulario.get('ctrol_CanStandar')?.setValue(this.dataInfoPartida[0].can_Standar);  
-              this.onLoadCombosGrls('2', sCodOrdTra, xCodTela, xCodColor);
-              this.onLoadCombosGrls('4', sCodOrdTra, xCodTela, xCodColor);
-              this.onLoadCombosGrls('5', sCodOrdTra, xCodTela, xCodColor);
-              this.onLoadCombosGrls('3', sCodOrdTra, xCodTela, xCodColor);
-        
-              //this.SpinnerService.hide();
+
+                  this.toastr.info(response.message, '', {
+                    timeOut: 2500,
+                  }); 
+
+                this.cant_estandar = 0;
+                this.dataInfoPartida = [];
+                this.SpinnerService.hide();
+              }
             } else {
-
-                this.toastr.info(response.message, '', {
-                  timeOut: 2500,
-                }); 
-
+          
               this.cant_estandar = 0;
               this.dataInfoPartida = [];
               this.SpinnerService.hide();
+
+              this.toastr.info(response.message, '', {
+                timeOut: 2500,
+              });          
             }
-          } else {
-        
-            this.cant_estandar = 0;
-            this.dataInfoPartida = [];
+          },
+          error: (error: any) => {
             this.SpinnerService.hide();
-
-            this.toastr.info(response.message, '', {
-              timeOut: 2500,
-            });          
+            console.log(error.error.message, 'Cerrar', {
+              timeout: 2500
+            })
           }
-        },
-        error: (error: any) => {
-          
-          this.SpinnerService.hide();
-          console.log(error.error.message, 'Cerrar', {
-            timeout: 2500
-          })
-        }
-      }); 
-    } else {
-        this.lstTipoMuestra = [];
-        this.lstColor       = [];
-        this.lstArticulo    = [];
-        this.lstEstandar    = [];
+        }); 
+      } else {
+          this.lstTipoMuestra = [];
+          this.lstColor       = [];
+          this.lstArticulo    = [];
+          this.lstEstandar    = [];
 
-        this.dataSource.data = [];
-        this.dataSource_UP.data = [];
+          this.dataSource.data = [];
+          this.dataSource_UP.data = [];
 
-        this.bMuestraGrafico1 = false;
-        this.formulario.get('ctrol_CanStandar')?.setValue('');
+          this.bMuestraGrafico1 = false;
+          this.formulario.get('ctrol_CanStandar')?.setValue('');
+      }
+    };
+    
+    //Bloque 04.02 --> Color
+    if (sTipo === "02"){    
+  
+      //se ejecuta cuando tiene solo 6 digitos
+      if (sCodColor && sCodColor.length === 6) {
+
+        this.SpinnerService.show();
+        this.dataInfoPartida = [];    
+
+        this.onLoadCombosGrls_Color("A","","",sCodColor);
+        this.onLoadCombosGrls_Color("B","","",sCodColor);
+
+      } else {
+          this.lstTipoMuestra = [];
+          this.lstColor       = [];
+          this.lstArticulo    = [];
+          this.lstEstandar    = [];
+
+          this.dataSource.data = [];
+          this.dataSource_UP.data = [];
+
+          this.bMuestraGrafico1 = false;
+          this.formulario.get('ctrol_CanStandar')?.setValue('');
+      }      
+
     }
   }
+
+  onLoadCombosGrls_Color(sTipo: string, sCodOrdTra: string, sCodTela: string, sCodCombo: string){
+
+    if (sTipo == 'A'){
+      this.lstColor  = [];
+    }else if(sTipo == 'B'){
+      this.lstArticulo = [];
+    }else if(sTipo == 'C'){
+      this.lstTipoMuestra = [];
+    }else if(sTipo == 'E'){
+      this.lstEstandar = [];
+    }
+
+    this.SpinnerService.show();
+    this.LabColaTrabajoService.getAnalisisDelta02_CombosGrles(sTipo, sCodOrdTra, sCodTela, sCodCombo, '', 0,this.Usuario!).subscribe({
+      next: (response: any) => {
+        if (response.totalElements > 0) {
+          if (sTipo == 'A'){
+            this.lstColor  = response.elements;
+          }else if(sTipo == 'B'){
+            this.lstArticulo = response.elements;
+          }else if(sTipo == 'C'){
+            this.lstTipoMuestra = response.elements;
+          }else if(sTipo == 'E'){
+            this.lstEstandar = response.elements;
+          }      
+          this.SpinnerService.hide();     
+        }
+      },
+      error: (error: any) => {
+        this.SpinnerService.hide();
+        console.log(error.error.message, 'Cerrar', {
+          timeout: 2500
+        })
+      }      
+    });
+  }  
 
   onLoadCombosGrls(sTipo: string, sCodOrdTra: string, sCodTela: string, sCodCombo: string){
 
@@ -319,14 +415,27 @@ export class LabAnalisisDeltaComponent implements OnInit {
 
   onBuscar(){
 
-    if (this.lstTipoMuestra.length === 0){
-      this.matSnackBar.open("¡Busque datos de Partida!", 'Cerrar', {
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        duration: 1500,
-      });
-      return; 
+    if (this.opcionSeleccionada == '01'){
+      if (this.lstTipoMuestra.length === 0){
+        this.matSnackBar.open("¡Busque datos de Partida!", 'Cerrar', {
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          duration: 1500,
+        });
+        return; 
+      }
+    }else{
+      if (this.lstTipoMuestra.length === 0){
+        this.matSnackBar.open("¡Busque datos de Color!", 'Cerrar', {
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          duration: 1500,
+        });
+        return; 
+      }      
     }
+
+
 
     const sCodOrdTra = this.formulario.get('ctrol_CodOrdTra')?.value!;
     const sCodTela = this.formulario.get('ctrol_articulo')?.value!;
@@ -370,14 +479,14 @@ export class LabAnalisisDeltaComponent implements OnInit {
     return;      
     }       
 
-    if (!sCodOrdTra || sCodOrdTra.trim() === ''){
-      this.matSnackBar.open("¡Realice busqueda de partida...!", 'Cerrar', {
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        duration: 1500,
-      });
-    return;
-    }   
+    // if (!sCodOrdTra || sCodOrdTra.trim() === ''){
+    //   this.matSnackBar.open("¡Realice busqueda de partida...!", 'Cerrar', {
+    //     horizontalPosition: 'center',
+    //     verticalPosition: 'top',
+    //     duration: 1500,
+    //   });
+    // return;
+    // }   
 
     //Obtiene datos de envio de muestra
     this.onLoadEnvioMuestras(sCodOrdTra, sCodTela, sCodColor, sIdEstandar);
@@ -483,7 +592,83 @@ export class LabAnalisisDeltaComponent implements OnInit {
 
 
             // filas dinámicas para Bloque 2
-            //const filasBloque2: any[] = [];
+            
+            //Ordamos
+            const bloque2Ordenado = [...bloques[2]].sort((a: any, b: any) => {
+
+              if (a.num_Orden !== b.num_Orden) {
+                return (a.num_Orden || 0) - (b.num_Orden || 0);
+              }
+
+              return (a.nom_Colorante_1 || '').localeCompare(b.nom_Colorante_1 || '');
+            });
+
+            // 1️⃣ Obtener partidas (columnas)
+            const partidas = bloques[1].map((x: any) => x.partida);
+
+            // 2️⃣ Estructura de filas
+            const filasColorantes: any = {};    
+            
+            // 3️⃣ Recorrer bloque 2
+            bloque2Ordenado.forEach((d: any) => {
+
+              if (!d.nom_Colorante_1) return;
+
+              const nombre = d.nom_Colorante_1;
+              const partida = d.partida;
+
+              // buscar columna correcta
+              const colIndex = partidas.indexOf(partida);
+              if (colIndex === -1) return;
+
+              const colName = `columna${colIndex + 1}`;
+
+              // crear fila si no existe
+              if (!filasColorantes[nombre]) {
+                filasColorantes[nombre] = { Campo: nombre };
+              }
+
+              // asignar valor
+              filasColorantes[nombre][colName] =
+                d.can_Colorante_1 == 0 ? '' : d.can_Colorante_1;
+
+            });       
+            
+            const filasBloque2 = Object.values(filasColorantes);
+
+            /*
+            const seen = new Set();
+            const filasBloquex : any[] = [];
+
+            bloque2Ordenado.forEach((d: any) => {
+              if (!d.nom_Colorante_1) return;
+
+              // clave única
+              const key = `${d.nom_Colorante_1}`;  
+              console.log('key', key)
+              
+              // validar si ya existe
+              if (seen.has(key)) return;        
+              
+              seen.add(key);
+
+              filasBloquex.push({
+                Campo: d.nom_Colorante_1
+              });              
+
+            });
+            */
+
+            
+            // const filasBloque2 = bloques[2]
+            //   .filter((d: any) => d.nom_Colorante_1) // quitar NULL
+            //   .map((d: any) => ({
+            //     Campo: d.nom_Colorante_1
+            //   }));
+
+            //
+            
+            
 
             //Filas dinamicas - Bloque 3
             const filaCIE_DL: any = { Campo: 'CIE DL' }
@@ -530,6 +715,8 @@ export class LabAnalisisDeltaComponent implements OnInit {
               filaMaquina, 
               filaLoteHilado, 
               filaFechaFinTeñido,
+              { Campo: 'Trigomia de Colorante', isTitulo: true },
+              ...filasBloque2,
               { Campo: 'Medidas Data Color', isTitulo: true },
               filaCIE_DL,
               filaCIE_DA,
@@ -734,10 +921,35 @@ export class LabAnalisisDeltaComponent implements OnInit {
 
     // Concatenar los códigos en un string
     this.concatenado = this.tipoMuestraSeleccionada.join('|');
-  }   
+  }  
+  
+  onSeleccionChangeArticulo() {
+    const sCodTela = this.formulario.get('ctrol_articulo')?.value!;
+    const sCodColor = this.formulario.get('ctrol_color')?.value!;    
+    //Aplica solo cuando es Tipo Color
+    if(this.opcionSeleccionada == '02'){
+        this.onLoadCombosGrls_Color("C","",sCodTela,sCodColor);
+        this.onLoadCombosGrls_Color("E","",sCodTela,sCodColor);
+    }
+  }
 
   onCerrar(): void {
     this.router.navigate(['/ColaTrabajo']);
+  }
+
+  capturarValor(event: any) {
+    //Captura el valor en Variable Gral
+    this.opcionSeleccionada = String(event.value); 
+
+    if(String(event.value) == '01'){
+      this.formulario.get('ctrol_CodOrdTra')?.setValue(''); 
+      this.bMuestraInputPartida = true;
+      this.bMuestraInputColor = false;
+    }else{
+      this.formulario.get('ctrol_CodColor')?.setValue(''); 
+      this.bMuestraInputPartida = false;
+      this.bMuestraInputColor = true;      
+    }
   }
 
 

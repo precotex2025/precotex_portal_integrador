@@ -5,51 +5,78 @@
         <div class="grid-container">
             <!-- Fila 1 -->
             <div class="grid-row">
-            <!-- Columna 1: input text -->
-            <div class="grid-col">
-                <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Partida</mat-label>
-                <input matInput formControlName="ctrol_CodOrdTra" placeholder="Ingrese texto" maxlength="5" (keyup)="MostrarDatosPartida()"/>
-                </mat-form-field>
-            </div>
+                <!-- Columna 1: input text -->
+                <div class="grid-col-h" >
 
-            <!-- (keyup)="MostrarDatosPartida()"  -->
-            
-            <!-- Columna 2: mat-select multiselect -->
-            <div class="grid-col">
-                <mat-form-field appearance="outline" class="full-width">
-                <mat-label> <Table>Tipo muestra :</Table></mat-label>
-                <mat-select multiple (selectionChange)="onSeleccionChange()" formControlName="ctrol_tipoMuestra">
-                    <mat-option *ngFor="let tipoMuestra of lstTipoMuestra" [value]="tipoMuestra.codigo">
-                    {{ tipoMuestra.descripcion }}
-                    </mat-option>
-                </mat-select>
-                </mat-form-field>
-            </div>
+                    <div class="grupo-superior" >
+                        <mat-radio-group formControlName="ctrol_tipoSeleccion" (change)="capturarValor($event)" class="radio-vertical">
+                            <mat-radio-button value="01">Partida</mat-radio-button>
+                            <mat-radio-button value="02">Color</mat-radio-button>
+                        </mat-radio-group>
+                    </div>   
 
-            <!-- Columna 3: mat-select normal -->
-            <div class="grid-col">
-                <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Código de color :</mat-label>
-                <mat-select formControlName="ctrol_color">
-                    <mat-option *ngFor="let color of lstColor" [value]="color.codigo">
-                    {{ color.descripcion }}
-                    </mat-option>
-                </mat-select>
-                </mat-form-field>
-            </div>
+                    <div class="grupo-inferior">
+                        <mat-form-field appearance="outline" class="full-width" *ngIf="bMuestraInputPartida">
+                            <mat-label>Partida</mat-label>
+                            <input matInput formControlName="ctrol_CodOrdTra" placeholder="Partida" maxlength="5" (keyup)="MostrarDatosPartida('01')"/>
+                        </mat-form-field>
 
-            <!-- Columna 4: mat-select normal -->
-            <div class="grid-col">
-                <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Artículo :</mat-label>
-                <mat-select formControlName="ctrol_articulo">
-                    <mat-option *ngFor="let articulo of lstArticulo" [value]="articulo.codigo">
-                    {{ articulo.descripcion }}
-                    </mat-option>
-                </mat-select>
-                </mat-form-field>
-            </div>
+                        <mat-form-field appearance="outline" class="full-width" *ngIf="bMuestraInputColor">
+                            <mat-label>Color</mat-label>
+                            <input matInput formControlName="ctrol_CodColor" placeholder="Color" maxlength="6" (keyup)="MostrarDatosPartida('02')"/>
+                        </mat-form-field>                    
+                    </div>    
+
+
+
+                    <!-- <mat-label> Partida / Color </mat-label>
+                    <div style="display: flex; gap: 8px;">
+                        <input matInput formControlName="ctrol_CodOrdTra" placeholder="Partida" maxlength="5" (keyup)="MostrarDatosPartida()"/>
+                        <input matInput formControlName="ctrol_CodColor" placeholder="Color" />
+                    </div> -->
+
+                            
+                </div>
+
+                <!-- (keyup)="MostrarDatosPartida()"  -->
+        
+
+                <!-- Columna 3: mat-select normal -->
+                <div class="grid-col">
+                    <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Código de color :</mat-label>
+                    <mat-select formControlName="ctrol_color">
+                        <mat-option *ngFor="let color of lstColor" [value]="color.codigo">
+                        {{ color.descripcion }}
+                        </mat-option>
+                    </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <!-- Columna 4: mat-select normal -->
+                <div class="grid-col">
+                    <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Artículo :</mat-label>
+                    <mat-select (selectionChange)="onSeleccionChangeArticulo()" formControlName="ctrol_articulo">
+                        <mat-option *ngFor="let articulo of lstArticulo" [value]="articulo.codigo">
+                        {{ articulo.descripcion }}
+                        </mat-option>
+                    </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <!-- Columna 2: mat-select multiselect -->
+                <div class="grid-col">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label> <Table>Tipo muestra :</Table></mat-label>
+                        <mat-select multiple (selectionChange)="onSeleccionChange()" formControlName="ctrol_tipoMuestra">
+                            <mat-option *ngFor="let tipoMuestra of lstTipoMuestra" [value]="tipoMuestra.codigo">
+                            {{ tipoMuestra.descripcion }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
             </div>
 
             <!-- Fila 2 (puedes agregar más controles aquí) -->
@@ -74,13 +101,13 @@
                 </div>       
                 
                 <div class="grid-col">
-                    <button mat-raised-button color="primary" class="btn-action" (click)="onBuscar()">
+                    <button mat-raised-button type="button" color="primary" class="btn-action" (click)="onBuscar()">
                         <!-- <mat-icon>Search</mat-icon> -->
                         Buscar
                     </button>                  
                 </div>
                 <div class="grid-col">
-                    <button mat-raised-button color="warn" class="btn-action" (click)="onCerrar()">
+                    <button mat-raised-button type="button" color="warn" class="btn-action" (click)="onCerrar()">
                         <!-- <mat-icon>Search</mat-icon> -->
                         Cerrar
                     </button>    
