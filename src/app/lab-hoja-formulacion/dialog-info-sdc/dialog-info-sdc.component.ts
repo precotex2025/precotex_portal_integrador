@@ -8,6 +8,7 @@ interface data {
   Title: string,
   Num_SDC: any,
   Num_Sec: number,
+  TipoReceta: string
 }
 
 interface Luz {
@@ -24,6 +25,7 @@ interface informacionSDC{
   solidez: string[];
   luz: Luz[];
   familia: string;
+  cur_Ten: string;
 }
 
 interface informacionSDCProduccion{
@@ -74,9 +76,10 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
   onLoadData(){
     let Corr_Carta = this.data.Num_SDC;
     let Sec = this.data.Num_Sec;
+    let TipoReceta = this.data.TipoReceta
     this.SpinnerService.show();
     this.dataInforme = [];
-    this.LabColTrabService.getCargarInformeSDC(Corr_Carta, Sec).subscribe({
+    this.LabColTrabService.getCargarInformeSDC(Corr_Carta, Sec, TipoReceta).subscribe({
       next:(response: any) => {
         if(response.success){
           

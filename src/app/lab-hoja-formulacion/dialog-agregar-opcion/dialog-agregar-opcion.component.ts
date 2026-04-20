@@ -320,7 +320,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       this.condicion = 1;
     }
 
-    this.actualizarTotalFinal();
+    //this.actualizarTotalFinal();
   }
 
   limitarDecimales(colorante: any): void {
@@ -333,10 +333,13 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     if (this.cambiosHabilitados === false) {
       this.cambiosHabilitados = true;
       this.estadoCambio = 1;
+      this.GetCurvasJabonado();
+      this.GetFijados();
     } else {
       this.cambiosHabilitados = false;
       this.estadoCambio = 0;
     }
+
     console.log('Cambios habilitados');
   }
 
@@ -520,7 +523,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     const familia = familiaPrincipal;
     const canJabonados = canJaboPrincipal;
     const tipo_tenido = this.TipoTenidoSeleccionado || '';
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',tipo_tenido);
+    //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',tipo_tenido);
     let sodaGr: string = ''
 
     if(familia !== '1.00000' && familia !== '2.00000'){
@@ -883,6 +886,9 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       next: (response: any) => {
         const datos = response.elements?.[0];
         console.log('los datos extraidos son: ', datos);
+
+        
+
         if (!datos) {
           this.toastr.warning('No se encontraron datos para modificar');
           return;
@@ -960,8 +966,10 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         this.cantidadLavados = cantidadLavados;
         this.aguaOxigenadaCantidad = aguaOxigenadaCantidad;
         this.sodaCausticaCantidad = sodaCausticaCantidad;
-        this.getListarTiposTenido(datos.familia.toString());
-        this.getListarCurvas(datos.familia.toString());
+
+        // this.getListarTiposTenido(datos.familia.toString());
+        // this.getListarCurvas(datos.familia.toString());
+
         this.actualizarTotalFinalDesdeCopiar(datos.familia.toString());
 
       },

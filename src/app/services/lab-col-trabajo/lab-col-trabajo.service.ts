@@ -72,11 +72,12 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarComboBoxItem', { headers })
   }
 
-  getCargarInformeSDC(Corr_Carta: any, Sec: number){
+  getCargarInformeSDC(Corr_Carta: any, Sec: number, TipoReceta: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
+    params = params.append('Tip_Ten', TipoReceta)
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarInformeSDC', { headers, params })
   }
 

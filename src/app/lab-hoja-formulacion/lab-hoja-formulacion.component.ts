@@ -159,7 +159,9 @@ export class LabHojaFormulacionComponent implements OnInit {
     this.Sec_Remover = receta.sec;
     const empiezaConLetra = /^[A-Za-z]/.test(this.Corr_Carta_Remover);
     this.mostrarPartidas = empiezaConLetra;
-
+    if(!this.mostrarPartidas){
+      this.PartidasAgrupadas = '';
+    }
     const recetaSel = this.recetas.find(
       r =>
         r.corr_Carta.toString() === this.recetaSeleccionada?.corr_Carta.toString() &&
@@ -489,6 +491,7 @@ export class LabHojaFormulacionComponent implements OnInit {
   }
 
   onInformeSDC() {
+    console.log(this.TipoReceta);
     let dialogref = this.dialog.open(DialogInfoSdcComponent, {
       width: '800px',
       height: '500px',
@@ -498,7 +501,8 @@ export class LabHojaFormulacionComponent implements OnInit {
       data: {
         Title: "Informacion",
         Num_SDC: this.Corr_Carta_Remover,
-        Num_Sec: this.Sec_Remover
+        Num_Sec: this.Sec_Remover,
+        TipoReceta: this.TipoReceta
       }
     });
   }

@@ -104,10 +104,12 @@ export class LabColTrabajoComponent implements OnInit {
     'num_sdc',
     'des_tela',
     'fec_comp',
+    //'fechaasignaanalista',
     //'dias_comp',
     'cod_Color',
     'des_Color',
     'partidas',
+    'flg_estandar',
     'estado',
     'reformular'
   ]
@@ -379,33 +381,33 @@ getColorClase(row: any): string {
 //   //01/04/2026 
 //   //04/05/2026
 //   //Si no aplica PCP, usamos fecha de asignación
-//   if (diasAsignacion <= 5) {
-//     if(diasPCP < 3){
-//       return 'fila-rojo';
-//     }else if (diasPCP >= 3){
-//       return 'fila-verde'; // faltan más de 3 días  
-//     }
-//     else{
-//       return 'fila-verde';   // asignado hace ≤ 5 días  
-//     }
-//   } else if (diasAsignacion > 5) {
-//     if(diasPCP > 3){
-//       return 'fila-verde'; // faltan más de 3 días
-//     }else{
-//       return 'fila-rojo';    // asignado hace ≥ 6 días
-//     }
-//   } else {
-//     return 'fila-amarillo'; // intervalo intermedio
-//   }
-
-
-//   // if(diasAsignacion <= 5){
-//   //   return 'fila-verde';
-//   // }else if (diasAsignacion > 5){
-//   //   return 'fila-rojo';
-//   // }else{
-//   //   return 'fila-amarillo';
+//   // if (diasAsignacion <= 5) {
+//   //   if(diasPCP < 3){
+//   //     return 'fila-rojo';
+//   //   }else if (diasPCP >= 3){
+//   //     return 'fila-verde'; // faltan más de 3 días  
+//   //   }
+//   //   else{
+//   //     return 'fila-verde';   // asignado hace ≤ 5 días  
+//   //   }
+//   // } else if (diasAsignacion > 5) {
+//   //   if(diasPCP > 3){
+//   //     return 'fila-verde'; // faltan más de 3 días
+//   //   }else{
+//   //     return 'fila-rojo';    // asignado hace ≥ 6 días
+//   //   }
+//   // } else {
+//   //   return 'fila-amarillo'; // intervalo intermedio
 //   // }
+
+
+//   if(diasAsignacion <= 5){
+//     return 'fila-verde';
+//   }else if (diasAsignacion > 5){
+//     return 'fila-rojo';
+//   }else{
+//     return 'fila-amarillo';
+//   }
 
 //   // if(diasPCP < 3){    
 //   //   return 'fila-verde';
@@ -415,18 +417,12 @@ getColorClase(row: any): string {
 //   //   return 'fila-amarillo';
 //   // }
 
-
-
-
-//   /*
 //   // PRIORIDAD: Fecha PCP 
 //   if (diasPCP <= 3) {
-//     return 'fila-rojo'; // faltan 3 días o menos
+//     return 'fila-plomo'; // faltan 3 días o menos
 //   } else if (diasPCP > 3) {
-//     return 'fila-verde'; // faltan más de 3 días
-//   }
-//   */
-  
+//     return 'fila-plomo'; // faltan más de 3 días
+//   }  
 // }
 
 // getColorClaseProduccion(row: any): string {
@@ -494,12 +490,11 @@ getColorClaseProduccion(row: any): string {
   // Rojo: faltan < 3 días | Amarillo: exactamente 3 días | Verde: > 3 días
   let colorPCP = '';
   if (pcpValido) {
-    if (diasPCP < 3)       colorPCP = 'fila-rojo';
+    if (diasPCP < 3)       colorPCP = 'fila-plomo';
     else if (diasPCP === 3) colorPCP = 'fila-amarillo';
     else                   colorPCP = 'fila-verde';
   }
 
-  // --- Semáforo Laboratorio (días desde asignación) ---
   // Rojo: > 5 días | Amarillo: exactamente 5 días | Verde: < 5 días
   let colorLab = '';
   if (asignacionValida) {
@@ -508,7 +503,6 @@ getColorClaseProduccion(row: any): string {
     else                          colorLab = 'fila-verde';
   }
 
-  // --- Prioridad: Rojo > Amarillo > Verde ---
   const colores = [colorPCP, colorLab].filter(c => c !== '');
 
   if (colores.includes('fila-rojo'))    return 'fila-rojo';
@@ -516,7 +510,7 @@ getColorClaseProduccion(row: any): string {
   if (colores.includes('fila-verde'))   return 'fila-verde';
 
   // Fechas inválidas
-  return 'fila-amarillo';
+  return 'fila-plomo';
 }
 
 
