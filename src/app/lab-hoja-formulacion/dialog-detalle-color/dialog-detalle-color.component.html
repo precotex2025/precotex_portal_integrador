@@ -4,6 +4,7 @@
   <div class="receta-grid">
     <div class="receta-cell">SDC</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.corr_Carta }}</div>
     <div class="receta-cell">Tipo teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.tip_Tenido }}</div>
+    <div class="receta-cell">Proceso</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.familia }}</div>
     <div class="receta-cell">Curva teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.cur_Tenido }}</div>
     <div class="receta-cell" [hidden]="this.data.tipoTenido === 'O'">Previo</div>
       <div class="receta-cell" class="receta-cell valor"[hidden]="this.data.tipoTenido === 'O'"                                                                                                                                                                                                                                                                                   >

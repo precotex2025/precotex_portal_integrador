@@ -95,7 +95,7 @@
 
       <!-- Descripcion Jabonado -->
       <ng-container matColumnDef="jab_Des">
-        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Curva</th>
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Curva Jab</th>
         <td mat-cell *matCellDef="let r" class="centrado">{{ r.jab_Des ?? '' }}</td>
       </ng-container>
 
@@ -225,6 +225,11 @@
       <ng-container matColumnDef="neutralizado">
         <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Neutralizado</th>
         <td mat-cell *matCellDef="let r" class="centrado">{{ r.neutralizado }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="curva_tenido">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Curva Ten</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.cur_Des }}</td>
       </ng-container>
 
       <!-- Renderizado -->

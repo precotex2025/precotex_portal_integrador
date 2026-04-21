@@ -766,6 +766,12 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
       //     return;
       //   }
       // }
+      const tipos = [...new Set(seleccionadas.map((row: any) => row.tip_Ten))];
+      if (tipos.length > 1) {
+        this.toastr.warning(`Existen múltiples tipos de tenido seleccionados`, 'Advertencia', { timeOut: 3000 });
+        this.ahibaSeleccionado = 0;
+        return;
+      }
     }
 
     this.seleccionadosActuales = 0;

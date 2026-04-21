@@ -527,6 +527,7 @@ export class DialogJabonadosComponent {
 
   seleccionadasModal: any[] = [];
   abrirModalPosiciones(cantidad: number, ahiNombre: string) {
+    const seleccionadas = this.dataSource.data.filter((row: any) => row.seleccionado);
     const cantidadSeleccionada = this.dataSource.data
       .filter((row: any) => row.seleccionado).length;
 
@@ -556,7 +557,17 @@ export class DialogJabonadosComponent {
       return;
     }
 
-    const seleccionadas = this.dataSource.data.filter((row: any) => row.seleccionado);
+    
+
+    const tipos = [...new Set(seleccionadas.map((row: any) => row.tip_Ten))];
+    if (tipos.length > 1) {
+      this.toastr.warning(
+        `Existen múltiples tipos de tenido seleccionados`,
+        'Advertencia', { timeOut: 3000 }
+      );
+      this.ahibaSeleccionado = 0;
+      return;
+    }
 
     console.log(':::::::::::::::::::', seleccionadas);
     this.seleccionadasModal = seleccionadas.map((item: any) => ({
@@ -827,6 +838,7 @@ export class DialogJabonadosComponent {
             'correlativo',
             'descripcion_Color',
             'jab_Des',
+            'curva_tenido',
             'dosificacion1',
             'dosificacion2',
             'dosificacion3',

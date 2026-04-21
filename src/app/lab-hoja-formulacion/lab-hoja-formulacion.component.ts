@@ -696,7 +696,7 @@ export class LabHojaFormulacionComponent implements OnInit {
         this.generarFilasDesdeColorantes();
       },
       error: () => {
-        this.toastr.error('Error al cargar formulaciones', '', { timeOut: 2500 });
+        //this.toastr.error('Error al cargar formulaciones', '', { timeOut: 2500 });
       }
     });
   }
