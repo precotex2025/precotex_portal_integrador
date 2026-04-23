@@ -26,6 +26,7 @@ interface informacionSDC{
   luz: Luz[];
   familia: string;
   cur_Ten: string;
+  pre_Id: number;
 }
 
 interface informacionSDCProduccion{
@@ -45,6 +46,7 @@ interface informacionSDCProduccion{
   obs: string;
   ruta: string[];      
   familia: string;  
+  pre_Id: number;
 }
 
 @Component({
@@ -54,6 +56,9 @@ interface informacionSDCProduccion{
 })
 export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
 
+
+  previo: { codigo: number, nombre: string }[] = [];
+  previoSeleccionado: number = 0;
   constructor(
     private LabColTrabService: LabColTrabajoService, 
     private SpinnerService: NgxSpinnerService,
@@ -61,7 +66,8 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
     @Optional() @Inject(MAT_DIALOG_DATA) public data: data,
   ){}
   ngOnInit(): void {
-    this.onLoadData();
+    this.getListarPrevios();
+    this.onLoadData();    
   }
 
   ngAfterViewInit(): void {
@@ -84,9 +90,10 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
         if(response.success){
           
           let empiezaConNumero = !isNaN(Number(Corr_Carta.charAt(0))) && Corr_Carta.charAt(0) !== "0";
-
+          
           if (empiezaConNumero) {
             this.dataInforme = response.elements;
+            this.previoSeleccionado = this.dataInforme[0].pre_Id;
           } else {
             this.dataInformeProduccion = response.elements;
           }
@@ -103,7 +110,39 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
   }
 
 
+  getListarPrevios(): void {
+    this.LabColTrabService.getListarPrevios().subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          console.log('>>>>>>>>>>>>>>>>>>>>', response.elements);
+          this.previo = response.elements.map((p: any) => ({
+            codigo: p.pre_Id,
+            nombre: p.pre_Des
+          }));
+        }
+      }
+    });
+  }
 
+  patchActualizarPrevio(): void {
+
+    const data = {
+      corr_Carta: this.data.Num_SDC,
+      sec: this.data.Num_Sec,
+      previo: this.previoSeleccionado
+    }
+
+    console.log('>>>>>>>>>>>>>>', data);
+
+    this.LabColTrabService.patchActualizarPrevio(data).subscribe({
+      next: (response: any) => {
+        // this.toastr.success(response.message, 'Exito', {
+        //   timeOut: 2500
+        // });
+      },
+      error: (error: any) => { }
+    });
+  }
 
 
 

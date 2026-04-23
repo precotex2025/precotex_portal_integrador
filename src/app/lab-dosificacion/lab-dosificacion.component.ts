@@ -312,16 +312,30 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
             // ].slice();
             this.TipoEnvio = 'J';
             setTimeout(() => {
-              this.columnsToDisplay = [
-                'seleccion',
-                'nro_Tubo',
-                'jab_Des',
-                ...this.getPhColumns(),
-                'corr_Carta',
-                'sec',
-                'correlativo',
-                'descripcion_Color'
-              ];
+              if(SinDosificaciones === 'O' || SinDosificaciones === 'D'){
+                this.columnsToDisplay = [
+                  'seleccion',
+                  'nro_Tubo',
+                  'jab_Des',
+                  //...this.getPhColumns(),
+                  'corr_Carta',
+                  'sec',
+                  'correlativo',
+                  'descripcion_Color'
+                ];
+              }else{
+                this.columnsToDisplay = [
+                  'seleccion',
+                  'nro_Tubo',
+                  'jab_Des',
+                  ...this.getPhColumns(),
+                  'corr_Carta',
+                  'sec',
+                  'correlativo',
+                  'descripcion_Color'
+                ];
+              }
+              
               this.dataSource.data = this.dataListadoDosificaciones;
             }, 0);
             this.tituloCurva = 'Jabonados';
@@ -640,5 +654,70 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
         error:(error: any) => {}
       });
     }
+
+  // actualizarEstadoDosificacion(row: any, numero: number, checked: boolean): void {
+  //   const nuevoEstado = checked ? 'S' : 'N';
+
+  //   if (numero === 1) row.dosificacion1Estado = nuevoEstado;
+  //   if (numero === 2) row.dosificacion2Estado = nuevoEstado;
+  //   if (numero === 3) row.dosificacion3Estado = nuevoEstado;
+
+  //   const data = {
+  //     corr_Carta: row.corr_Carta,
+  //     sec: row.sec,
+  //     correlativo: row.correlativo,
+  //     tip_Ten: row.tip_Ten,
+  //     numeroDosificacion: numero,
+  //     estado: nuevoEstado
+  //   };
+
+  //   console.log(':::::::::::::::::::::::::::::::::::::::.', data);
+
+  //   // this.LabColTrabajoService.patchActualizarEstadoDosificacion(data).subscribe({
+  //   //   next: (response: any) => {
+  //   //     if (response.success) {
+  //   //       this.toastr.success(`Dosificación ${numero} actualizada`, '', { timeOut: 2500 });
+  //   //     } else {
+  //   //       this.toastr.warning(response.message, '', { timeOut: 2500 });
+  //   //     }
+  //   //   },
+  //   //   error: () => {
+  //   //     this.toastr.error('Error al actualizar dosificación', '', { timeOut: 2500 });
+  //   //   }
+  //   // });
+  // }
+
+  actualizarEstadoDosificacion(row: any, numero: number, checked: boolean): void {
+    const nuevoEstado = checked ? 'S' : 'N';
+
+    switch (numero) {
+      case 1: row.dosificacion1Estado = nuevoEstado; break;
+      case 2: row.dosificacion2Estado = nuevoEstado; break;
+      case 3: row.dosificacion3Estado = nuevoEstado; break;
+    }
+
+    const data = {
+      corr_Carta: row.corr_Carta,
+      sec: row.sec,
+      correlativo: row.correlativo,
+      tip_Ten: row.tip_Ten,
+      nro_Dsf: numero,
+      est_Dsf: nuevoEstado
+    };
+
+    console.log(':::::::::::::::::::::::::::::::::::::::.', data);
+    this.LabColTrabajoService.patchActualizarEstadoDosificacion(data).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+        }
+      },
+      error: () => {
+        this.toastr.error('Error al actualizar dosificación', '', { timeOut: 2500 });
+      }
+    });
+  }
+
+
 
 }

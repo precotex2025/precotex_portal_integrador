@@ -358,6 +358,14 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerCurvaReactivoDisperso', { headers, params })
   }
 
+  getListarCurvasV2(Pro_Cod: string, Corr_Carta: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Pro_Cod', Pro_Cod);
+    params = params.append('Corr_Carta', Corr_Carta);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarCurvasV2', { headers, params })
+  }
+
   postRegistrarDetalleColorSDC(data: any){
     const headers = this.Header;
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarDetalleColorSDC', data, { headers })
@@ -547,6 +555,11 @@ export class LabColTrabajoService {
   patchActualizarPrevio(data: any){
     const headers = this.Header;
     return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarPrevio', data, { headers })
+  }
+
+  patchActualizarEstadoDosificacion(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarEstadoDosificacion', data, { headers })
   }
 
   deleteEliminarOpcionColorante(Corr_Carta: any, Sec: number, Correlativo: number, Tip_Ten: string) {

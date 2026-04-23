@@ -6,18 +6,17 @@
     <div class="receta-cell">Tipo teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.tip_Tenido }}</div>
     <div class="receta-cell">Proceso</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.familia }}</div>
     <div class="receta-cell">Curva teñido</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.cur_Tenido }}</div>
-    <div class="receta-cell" [hidden]="this.data.tipoTenido === 'O'">Previo</div>
-      <div class="receta-cell" class="receta-cell valor"[hidden]="this.data.tipoTenido === 'O'"                                                                                                                                                                                                                                                                                   >
-        <!-- {{ recetaDetalle.previo }} -->
-          <mat-select [(value)]="previoSeleccionado" (selectionChange)="patchActualizarPrevio()">
-            <mat-option *ngFor="let p of previo" [value]="p.codigo">
-              {{ p.nombre }}
-            </mat-option>
-          </mat-select>
-      </div>                                                                
+    <!-- <div class="receta-cell" [hidden]="this.data.tipoTenido === 'O'">Previo</div>
+      <div class="receta-cell" class="receta-cell valor" [hidden]="this.data.tipoTenido === 'O'">
+        <mat-select [(value)]="previoSeleccionado" (selectionChange)="patchActualizarPrevio()">
+          <mat-option *ngFor="let p of previo" [value]="p.codigo">
+            {{ p.nombre }}
+          </mat-option>
+        </mat-select>
+      </div> -->
 
-    <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod > 0">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod > 0">{{ recetaDetalle.r_B | number:'1.2-2' }}</div>
-    <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">{{ recetaDetalle.r_B_Prod | number:'1.2-2' }}</div>
+    <div class="receta-cell">R/B</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.r_B | number:'1.2-2' }}</div>
+    <!-- <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">R/B</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">{{ recetaDetalle.r_B_Prod | number:'1.2-2' }}</div> -->
 
     <div class="receta-cell">Peso de muestra (gr)</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.pes_Mue | number:'1.2-2' }}</div>
 
@@ -25,14 +24,14 @@
 
     <div class="receta-cell" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">Kg Tela</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.kgs_Prod === 0 || recetaDetalle.kgs_Prod === null">{{ recetaDetalle.kgs_Prod | number:'1.2-2' }}</div>
 
-    <div class="receta-cell">Can jabonados</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.can_Jabo }}</div>
-    <div class="receta-cell">Curva jabonado</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.cur_Jabo }}</div>
+    <div class="receta-cell" [hidden]="this.data.tipoTenido === 'O'">Can jabonados</div><div class="receta-cell" class="receta-cell valor" [hidden]="this.data.tipoTenido === 'O'">{{ recetaDetalle.can_Jabo }}</div>
+    <div class="receta-cell" [hidden]="this.data.tipoTenido === 'O'">Curva jabonado</div><div class="receta-cell" class="receta-cell valor" [hidden]="this.data.tipoTenido === 'O'">{{ recetaDetalle.cur_Jabo }}</div>
     <div class="receta-cell">pH inicio</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.ph_Ini | number:'1.2-2' }}</div>
-    <div class="receta-cell">pH final</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.ph_Fin | number:'1.2-2' }}</div>
-    <div class="receta-cell">pH jabonado</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.ph_Jab | number:'1.2-2' }}</div>
+    <div class="receta-cell" [hidden]="this.data.tipoTenido === 'O'">pH final</div><div class="receta-cell" class="receta-cell valor" [hidden]="this.data.tipoTenido === 'O'">{{ recetaDetalle.ph_Fin | number:'1.2-2' }}</div>
+    <div class="receta-cell" [hidden]="this.data.tipoTenido === 'O'">pH jabonado</div><div class="receta-cell" class="receta-cell valor" [hidden]="this.data.tipoTenido === 'O'">{{ recetaDetalle.ph_Jab | number:'1.2-2' }}</div>
     <div class="receta-cell" [hidden]="recetaDetalle.can_Jabo < 2">pH jabonado 2</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.can_Jabo < 2">{{ recetaDetalle.ph_Jab2 | number:'1.2-2' }}</div>
     <div class="receta-cell" [hidden]="recetaDetalle.can_Jabo < 3">pH jabonado 3</div><div class="receta-cell" class="receta-cell valor" [hidden]="recetaDetalle.can_Jabo < 3">{{ recetaDetalle.ph_Jab3 | number:'1.2-2' }}</div>
-    <div class="receta-cell">pH descarga</div><div class="receta-cell" class="receta-cell valor">{{ recetaDetalle.ph_Des | number:'1.2-2' }}</div>
+    <div class="receta-cell" [hidden]="this.data.tipoTenido === 'O'">pH descarga</div><div class="receta-cell" class="receta-cell valor" [hidden]="this.data.tipoTenido === 'O'">{{ recetaDetalle.ph_Des | number:'1.2-2' }}</div>
   </div>
 
   <!-- Auxiliares -->
@@ -40,7 +39,9 @@
     <h3>Auxiliares</h3>
     <div class="receta-table1">
       <div class="header">Nombre</div>
-      <div class="header">gr/l</div>
+      <div class="header" *ngIf="this.data.tipoTenido !== 'D'">gr/l</div>
+      <div class="header" *ngIf="this.data.tipoTenido === 'D' && (recetaDetalle.r_B < 10 && recetaDetalle.r_B_Prod < 10)">%</div>
+      <div class="header" *ngIf="this.data.tipoTenido === 'D' && (recetaDetalle.r_B > 10 && recetaDetalle.r_B_Prod > 10)">%</div>
       <div class="header">ml</div>
       <!-- <div class="header">gr</div> -->
       <ng-container *ngFor="let aux of recetaDetalle.auxiliares">

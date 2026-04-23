@@ -54,7 +54,9 @@ interface grillaDesplegable {
 
 interface data {
   corr_CartaR: any,
-  secR: number
+  secR: number,
+  tip_TenR: string
+  //familiaR: string
 }
 
 @Component({
@@ -64,8 +66,9 @@ interface data {
 })
 export class LabHojaFormulacionComponent implements OnInit {
   Usuario: string | null = null;
-  Corr_Carta_Remover: any = ""
-  Sec_Remover: number = 0
+  Corr_Carta_Remover: any = "";
+  Sec_Remover: number = 0;
+  Tipo_Receta_Remover: string = '';
   TituloEstado: string = ''
   mostrarPartidas: boolean = false;
   PartidasAgrupadas: string = '';
@@ -101,27 +104,50 @@ export class LabHojaFormulacionComponent implements OnInit {
       this.data = {
         corr_CartaR: params['corr_CartaE'] !== undefined ? String(params['corr_CartaE']) : '',
         secR: params['secE'] !== undefined ? Number(params['secE']) : 0,
+        tip_TenR: params['tip_TenE'] !== undefined ? String(params['tip_TenE']): '',
+        //familiaR: params ['familiaE'] !== undefined ? String(params['familiaE']): ''
       };
     });
+
     if (this.data.corr_CartaR !== '' && this.data.secR !== 0) {
       const encontrada = this.recetas.find(r => r.corr_Carta === this.data.corr_CartaR && r.sec === this.data.secR)!;
       const empiezaConLetra = /^[A-Za-z]/.test(encontrada.corr_Carta);
       //if (encontrada) {
-      // this.recetaSeleccionada = encontrada;
-      // this.Corr_Carta_Remover = encontrada.corr_Carta;
-      // this.Sec_Remover = encontrada.sec;
+      /* CON ESTO REGRESAMOS A LA RECETA Y SECUENCIA SELECCIONADA */
+      this.recetaSeleccionada = encontrada;
+      this.Corr_Carta_Remover = encontrada.corr_Carta;
+      this.Sec_Remover = encontrada.sec;
+      // this.Tipo_Receta_Remover = this.data.tip_TenR;
+      //this.Familia = this.data.familiaR;
+      
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<', this.TipoReceta);
+      /************************************************************/
+      
+      // if(this.Tipo_Receta_Remover !== ''){
+      //   console.log('ENTRA A LA CONDICION Y SI TIENE INFORMACION');
+      //   this.TipoReceta = this.Tipo_Receta_Remover;
+      //   console.log(this.TipoReceta);
+      //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.Tipo_Receta_Remover);
+      // }
       this.mostrarPartidas = empiezaConLetra
       this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
       this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
       setTimeout(() => {
+        
         this.getListarTiposTenido(this.Familia);
+        this.TipoReceta = this.data.tip_TenR;
+        this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+        //this.onActualizarHojaFormulacion();
       }, 300);
       // console.log('::::::::::::::::..',encontrada.tip_Ten);
       // setTimeout(() => {
       //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
       // }, 2000);
       //}
+      //this.onActualizarHojaFormulacion();
     }
+
+    // this.TipoReceta = this.data.tip_TenR;
   }
 
   recetaSeleccionadaDesplegable() {
@@ -1212,8 +1238,12 @@ export class LabHojaFormulacionComponent implements OnInit {
               codigo: t.tip_Ten_Acr,
               nombre: t.tip_Ten_Des
             }));
-            this.TipoReceta = this.TipoTenido[0]?.codigo;
-            console.log(':>>>>>>>>>>>>>>>>>>:', this.TipoReceta);
+            if (this.data.tip_TenR) {
+              this.TipoReceta = this.data.tip_TenR;
+            } else {
+              this.TipoReceta = this.TipoTenido[0]?.codigo;
+            }
+            //console.log(':>>>>>>>>>>>>>>>>>>:', this.TipoReceta);
             this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
           }
         }

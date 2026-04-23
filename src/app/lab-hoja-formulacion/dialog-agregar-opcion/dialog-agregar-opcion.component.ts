@@ -52,7 +52,7 @@ interface Datos {
   volumen: number;
 }
 
-interface Antireductores{
+interface Antireductores {
   nombre: string,
   cantidad: number,
   porcentaje: number
@@ -80,7 +80,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   colorantesSeleccionados: any[] = [];
   curvasTenido: { nombre: string, codigo: number }[] = [];
   curvaTenido: number = 0;
-  TipoTenido: {nombre: string, codigo: string}[] = [];
+  TipoTenido: { nombre: string, codigo: string }[] = [];
   TipoTenidoSeleccionado: string = '';
   //antireductores: {nombre: string, cantidad: number, porcentaje: number}[] = [];
   //antiReductores: Array<Antireductores> = [];
@@ -94,6 +94,9 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   sodaCausticaCantidad: number = 2.0;
   sodaCausticaPorcentaje: number = 0;
   baseSodaCaustica: number = 2.0;
+  esCopia: boolean = false;
+  valorBaseAguaOxigenada: number = 2.0;
+  valorBaseSodaCaustica: number = 2.0;
 
   rucolaseCantidad = [
     { codigo: 0.2, nombre: '0.2' },
@@ -107,7 +110,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     jabonadas: 0,
     curva: 0,
     fijado: 0,
-    tiposFormulacion: ''
+    tiposFormulacion: '',
+    fijadoPor: 0
   };
 
   // datos = {
@@ -147,7 +151,14 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   esPartida: boolean = true;
   ngOnInit(): void {
     this.onGetParams();
+    this.inicializarDatos();
   }
+
+  private inicializarDatos(): void {
+  this.datos.relacionBano = parseFloat(this.datos.relacionBano.toFixed(2));
+  this.datos.pesoMuestra = parseFloat(this.datos.pesoMuestra.toFixed(2));
+}
+
 
   cargando = true;
   onGetParams(): void {
@@ -169,7 +180,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
     const empiezaConLetra = /^[A-Za-z]/.test(this.data.Num_SDC);
     this.esPartida = empiezaConLetra;
-    
+
     this.correlativo = this.data.Correlativo;
     //console.log('::::::::::::::::::::::', this.data);
     this.coloranteControl.valueChanges.pipe(
@@ -192,8 +203,13 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       //console.log('TIPO RECETA EN COPIAR',this.data.TipoReceta);
       this.cargarDatosParaModificar(this.data.Num_SDC, this.data.Num_Sec, this.data.CorrelativoAnterior || 0, this.data.TipoReceta);
       setTimeout(() => this.cargando = false, 0);
+      this.esCopia = true;
       //this.actualizarTotalFinal();
     } else if (this.data.Title === 'Insertar') {
+      this.valorBaseAguaOxigenada = 2.0;
+      this.valorBaseSodaCaustica = 2.0;
+      this.aguaOxigenadaCantidad = this.valorBaseAguaOxigenada;
+      this.sodaCausticaCantidad = this.valorBaseSodaCaustica
       this.correlativo += 1;
     }
 
@@ -211,7 +227,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     );
   }
 
-  
+
 
   getDatosRelBanPesMueVol(): void {
     if (!this.esPartida) {
@@ -279,7 +295,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       .map(c => this.calcularFinal(c))
       .reduce((acc, val) => acc + val, 0);
 
-    
+
     const contieneAMAVBTES = this.colorantesSeleccionados.some(c => c.codigo === 'QC000472');
 
     if (contieneAMAVBTES) {
@@ -292,7 +308,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     // }else{
     //   familia = this.Familia
     // }
-    
+
     console.log('::::::::::::::::::::::.', this.Familia);
     console.log(this.totalFinalColorantes);
     console.log(this.condicion);
@@ -348,7 +364,14 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   }
 
   cerrar(): void {
-    this.router.navigate(['HojaFormulacion']);
+    this.router.navigate(['/HojaFormulacion']
+      , {
+        queryParams: {
+          corr_CartaE: this.data.Num_SDC,
+          secE: this.data.Num_Sec,
+          tip_TenE: this.data.TipoReceta
+        }
+      });
   }
 
   quitarColorante(colorante: any): void {
@@ -368,34 +391,82 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
   actualizarCantidadAntireductor(): void {
 
-    this.antiReductorCantidad = (this.baseAntireductor + this.antiReductorPorcentaje); /// 100;
+    this.antiReductorCantidad = (this.baseAntireductor + this.antiReductorPorcentaje);
 
   }
 
-  actualizarCantidadAguaOxigenada(): void {
+  // actualizarCantidadAguaOxigenada(): void {
+  //   // if (this.aguaOxigenadaCantidad == 2){
+  //   //   this.aguaOxigenadaCantidad = (this.baseAguaOxigenada + this.aguaOxigenadaPorcentaje);
+  //   // }else{
+  //     this.aguaOxigenadaCantidad = (this.aguaOxigenadaCantidad + this.aguaOxigenadaPorcentaje);
+  //   // }
 
-    this.aguaOxigenadaCantidad = (this.baseAguaOxigenada + this.aguaOxigenadaPorcentaje); /// 100;
+
+  //   if (this.aguaOxigenadaCantidad > 8 || this.aguaOxigenadaCantidad < 2) {
+  //     this.aguaOxigenadaCantidad = 2.0;
+  //     this.baseAguaOxigenada = 2.0;
+  //     this.aguaOxigenadaPorcentaje = 0;
+  //     this.toastr.warning('Solo se permiten valores entre 2 y 8', '', { timeOut: 2500 });
+  //     return;
+  //   }
+  // }
+
+  // actualizarCantidadAguaOxigenada(esCopia: boolean): void {
+  //   if (esCopia) {
+  //     // modo copia → acumula sobre el valor actual
+  //     this.aguaOxigenadaCantidad = this.aguaOxigenadaCantidad + this.aguaOxigenadaPorcentaje;
+  //   } else {
+  //     // modo normal → recalcula desde la base
+  //     this.aguaOxigenadaCantidad = this.baseAguaOxigenada + this.aguaOxigenadaPorcentaje;
+  //   }
+
+  //   if (this.aguaOxigenadaCantidad > 8 || this.aguaOxigenadaCantidad < 2) {
+  //     this.aguaOxigenadaCantidad = 2.0;
+  //     this.baseAguaOxigenada = 2.0;
+  //     this.aguaOxigenadaPorcentaje = 0;
+  //     this.toastr.warning('Solo se permiten valores entre 2 y 8', '', { timeOut: 2500 });
+  //     return;
+  //   }
+  // }
+  actualizarCantidadAguaOxigenada(): void {
+    this.aguaOxigenadaCantidad = this.valorBaseAguaOxigenada + this.aguaOxigenadaPorcentaje;
 
     if (this.aguaOxigenadaCantidad > 8 || this.aguaOxigenadaCantidad < 2) {
       this.aguaOxigenadaCantidad = 2.0;
-      this.baseAguaOxigenada = 2.0;
+      this.valorBaseAguaOxigenada = 2.0;
       this.aguaOxigenadaPorcentaje = 0;
       this.toastr.warning('Solo se permiten valores entre 2 y 8', '', { timeOut: 2500 });
-      return;
     }
   }
 
   actualizarCantidadSoda(): void {
 
-    this.sodaCausticaCantidad = (this.baseSodaCaustica + this.sodaCausticaPorcentaje); /// 100;
+    this.sodaCausticaCantidad = (this.valorBaseSodaCaustica + this.sodaCausticaPorcentaje); /// 100;
     if (this.sodaCausticaCantidad > 8 || this.sodaCausticaCantidad < 2) {
       this.sodaCausticaCantidad = 2.0;
-      this.baseSodaCaustica = 2.0;
+      this.valorBaseSodaCaustica = 2.0;
       this.sodaCausticaPorcentaje = 0;
       this.toastr.warning('Solo se permiten valores entre 2 y 8', '', { timeOut: 2500 });
       return;
     }
   }
+
+
+  //   actualizarCantidadAguaOxigenada(): void {
+  //   // recalcula siempre desde el valor base
+  //   this.aguaOxigenadaCantidad = this.aguaOxigenadaCantidad + this.aguaOxigenadaPorcentaje;
+
+  //   if (this.aguaOxigenadaCantidad > 8 || this.aguaOxigenadaCantidad < 2) {
+  //     //this.aguaOxigenadaCantidad = 2.0;
+  //     this.aguaOxigenadaCantidad = 2.0;
+  //     this.aguaOxigenadaPorcentaje = 0;
+  //     this.toastr.warning('Solo se permiten valores entre 2 y 8', '', { timeOut: 2500 });
+  //   }
+  // }
+
+
+
 
 
   // guardarColorantesConParametros(): void {
@@ -448,7 +519,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   //   let errores = 0;
 
   //   this.colorantesSeleccionados.forEach((c, index) => {
-      
+
   //     let datitos
   //     if (this.data.Title === 'Copiar') {
   //       datitos = {
@@ -469,11 +540,11 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   //         Por_Fin: this.calcularFinal(c).toFixed(5)
   //       };
   //     }
-      
+
   //     //console.log('::::::::::::::::::::::::::.', comunes)
   //     //console.log('::::::::::::::::::::::::::::::.', comunes2)
   //     //console.log(':::::::::::::::::::::::::::::::::::.', datitos)
-      
+
   //     this.LabColTraService.postAgregarOpcionColorante(datitos).subscribe({
   //       next: (response: any) => {
   //         if (!response.success) errores++;
@@ -506,29 +577,28 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     let familiaPrincipal: string = '';
     let canJaboPrincipal: string = '';
 
-    if(this.TipoTenidoSeleccionado === 'D'){
-      if(this.parametros.tiposFormulacion === '1.00000' || this.parametros.tiposFormulacion === '2.00000'){
+    if (this.TipoTenidoSeleccionado === 'D') {
+      if (this.parametros.tiposFormulacion === '1.00000' || this.parametros.tiposFormulacion === '2.00000') {
         familiaPrincipal = this.Familia;
         canJaboPrincipal = '0';
-      }else{
-        familiaPrincipal = this.Familia;
+      } else {
+        familiaPrincipal = this.parametros.tiposFormulacion.toString();
         canJaboPrincipal = this.cantidadLavados.toString();
       }
-      
-    }else{
+    } else {
       familiaPrincipal = this.parametros.tiposFormulacion.toString();
       canJaboPrincipal = this.parametros.jabonadas.toString();
     }
-    
+
     const familia = familiaPrincipal;
     const canJabonados = canJaboPrincipal;
     const tipo_tenido = this.TipoTenidoSeleccionado || '';
     //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',tipo_tenido);
     let sodaGr: string = ''
 
-    if(familia !== '1.00000' && familia !== '2.00000'){
+    if (familia !== '1.00000' && familia !== '2.00000') {
       sodaGr = soda?.cantidad.toString() || '0'
-    }else{
+    } else {
       sodaGr = this.sodaCausticaCantidad.toString() || '0'
     }
 
@@ -553,7 +623,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       Ant_Red_Aju: this.antiReductorPorcentaje || 0,
       Agu_Oxi: this.aguaOxigenadaCantidad || 0,
       Ruc_Gr: this.rucolaseCantidadSeleccionada || 0,
-      Tip_Ten: tipo_tenido
+      Tip_Ten: tipo_tenido,
+      Fij_Can: this.parametros.fijadoPor || 0
     };
 
     const comunes2 = {
@@ -718,7 +789,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
             this.parametros.curva = this.curvas[0]?.codigo || 0;
             this.parametros.jabonadas = this.curvas[0]?.cantidad || 0;
 
-            if(this.TipoTenidoSeleccionado === 'D'){
+            if (this.TipoTenidoSeleccionado === 'D') {
               this.cantidadLavados = this.parametros.jabonadas;
             }
 
@@ -887,7 +958,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         const datos = response.elements?.[0];
         console.log('los datos extraidos son: ', datos);
 
-        
+
 
         if (!datos) {
           this.toastr.warning('No se encontraron datos para modificar');
@@ -907,7 +978,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         ];
 
         this.TipoTenidoSeleccionado = datos.tip_Ten;
-        
+
         this.curvaTenido = datos?.cur_Ten.toString();
 
         //console.log('Productos cargados: ', this.productos);
@@ -916,7 +987,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           nombre: c.col_Des,
           inicial: c.por_Fin ? parseFloat(c.por_Fin.toFixed(5)) : 0,
           ajuste: 0,
-          final:  c.por_Fin ? parseFloat(c.por_Fin.toFixed(5)) : 0,
+          final: c.por_Fin ? parseFloat(c.por_Fin.toFixed(5)) : 0,
           id_secuencia: c.id_secuencia
         }));
 
@@ -925,14 +996,13 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
         let tipoFamilia: string = datos.familia.toString();
         let jabonadoNormal: number = 0;
-        let jabonadoLavado : number = 0;
-        if (this.TipoTenidoSeleccionado === 'D')
-        {
+        let jabonadoLavado: number = 0;
+        if (this.TipoTenidoSeleccionado === 'D') {
           jabonadoNormal = 0;
           jabonadoLavado = datos.can_Jabo ?? 0;
-        }else{
+        } else {
           jabonadoLavado = 0;
-          jabonadoNormal= datos.can_Jabo ?? 0;
+          jabonadoNormal = datos.can_Jabo ?? 0;
         }
 
         this.parametros = {
@@ -940,7 +1010,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           curva: parseInt(datos.cur_Jabo) ?? 0,
           fijado: parseInt(datos.fijado) ?? 0,
           //tiposFormulacion: datos.familia ?? ''
-          tiposFormulacion: tipoFamilia ?? ''
+          tiposFormulacion: tipoFamilia ?? '',
+          fijadoPor: datos.fij_Can ?? 0
         };
 
         console.log(this.parametros);
@@ -953,7 +1024,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         const cantidadLavados = jabonadoLavado;
         const aguaOxigenadaCantidad = datos.agu_Oxi ?? 0;
         const sodaCausticaCantidad = datos.sod_Gr ?? 0;
-        
+
         this.datos = {
           relacionBano: relacion,
           pesoMuestra: peso,
@@ -967,6 +1038,10 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         this.aguaOxigenadaCantidad = aguaOxigenadaCantidad;
         this.sodaCausticaCantidad = sodaCausticaCantidad;
 
+        this.valorBaseAguaOxigenada = aguaOxigenadaCantidad;
+        this.aguaOxigenadaCantidad = this.valorBaseAguaOxigenada;
+        this.valorBaseSodaCaustica = sodaCausticaCantidad;
+        this.sodaCausticaCantidad = this.valorBaseSodaCaustica;
         // this.getListarTiposTenido(datos.familia.toString());
         // this.getListarCurvas(datos.familia.toString());
 
@@ -980,16 +1055,60 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     });
   }
 
+  redondearHaciaArriba(valor: number): number {
+    return Math.ceil(valor * 100) / 100; // redondea hacia arriba con 2 decimales
+  }
+
+  //   formatearVolumen(valor: number): number {
+  //   // Multiplico por 10, hago floor, y divido entre 10
+  //   // Así siempre queda con un segundo decimal = 0
+  //   return Math.floor(valor * 10) / 10;
+  // }
+
   calcularRelacionBano(): void {
     const peso = this.datos.pesoMuestra;
     const volumen = this.datos.volumen;
 
     if (peso && volumen && peso > 0) {
       this.datos.relacionBano = +(volumen / peso).toFixed(2);
+      //this.datos.volumen = this.redondearHaciaArriba(volumen);
     } else {
       this.datos.relacionBano = 0;
     }
   }
+
+  // actualizarRelacionBano(): void {
+  //   if (this.datos.pesoMuestra > 0) {
+  //     this.datos.relacionBano = +(this.datos.volumen / this.datos.pesoMuestra).toFixed(2);
+  //   }
+  // }
+
+  actualizarRelacionBano(): void {
+    if (this.datos.pesoMuestra > 0) {
+      const calculo = this.datos.volumen / this.datos.pesoMuestra;
+      this.datos.relacionBano = parseFloat(calculo.toFixed(2));
+    }
+  }
+
+
+  actualizarVolumen(): void {
+    this.datos.volumen = Math.floor((this.datos.pesoMuestra * this.datos.relacionBano) * 10) / 10;
+  }
+
+  // actualizarPesoMuestra(): void {
+  //   if (this.datos.relacionBano > 0) {
+  //     this.datos.pesoMuestra = +(this.datos.volumen / this.datos.relacionBano).toFixed(2);
+  //   }
+  // }
+  
+  actualizarPesoMuestra(): void {
+  if (this.datos.relacionBano > 0) {
+    const calculo = this.datos.volumen / this.datos.relacionBano;
+    this.datos.pesoMuestra = parseFloat(calculo.toFixed(2));
+  }
+}
+
+
 
   getObtenerTrio(Corr_Carta: any, Sec: number, Tip_Ten: string) {
     this.LabColTraService.getObtenerTrio(Corr_Carta, Sec, Tip_Ten).subscribe({
@@ -1027,14 +1146,14 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   async ejecutarPorPartidasAgrupadasSecuencial(): Promise<void> {
     const algunCeroInicial = this.colorantesSeleccionados.some(c => !c.inicial || c.inicial === 0);
     const algunCeroFinal = this.colorantesSeleccionados.some(c => !c.final || c.final === 0);
-    if(this.data.Title === 'Insertar'){
+    if (this.data.Title === 'Insertar') {
       if (algunCeroInicial) {
         this.toastr.warning('El porcentaje inicial no puede ser cero', 'Alerta', {
           timeOut: 2500
         });
         return;
-      }  
-    }else{
+      }
+    } else {
       if (algunCeroFinal) {
         this.toastr.warning('El porcentaje final no puede ser cero', 'Alerta', {
           timeOut: 2500
@@ -1042,8 +1161,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         return;
       }
     }
-    
-    
+
+
     try {
       if (!this.data.PartidasAgrupadasR) {
         this.guardar();
@@ -1064,7 +1183,24 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         this.data = backup;
       }
     } finally {
-      this.router.navigate(['HojaFormulacion']);
+      console.log('::::::::::::::::::........', this.data.Num_SDC);
+      console.log('::::::::::::::::::........', this.data.Num_Sec);
+      console.log('::::::::::::::::::........', this.data.TipoReceta);
+      this.router.navigate(['/HojaFormulacion'],
+        {
+          queryParams: {
+            corr_CartaE: this.data.Num_SDC,
+            secE: this.data.Num_Sec,
+            tip_TenE: this.data.TipoReceta
+          }
+        }
+      );
+      // ), {
+      //   queryParams: {
+      //     corr_CartaE: this.data.Num_SDC,
+      //     secE: this.data.Num_Sec
+      //   }
+      // });
     }
   }
 
@@ -1100,7 +1236,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   //     )
   //   );
   // }
-  
+
   calcularFinal(colorante: any): number {
     const final = parseFloat(colorante.final);
 
@@ -1120,11 +1256,11 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   // }
 
   actualizarFinal(colorante: any) {
-  const inicial = parseFloat(colorante.inicial) || 0;
-  const ajuste = parseFloat(colorante.ajuste) || 0;
+    const inicial = parseFloat(colorante.inicial) || 0;
+    const ajuste = parseFloat(colorante.ajuste) || 0;
 
-  colorante.final = (inicial + (inicial * ajuste) / 100).toFixed(5);
-  this.actualizarTotalFinal();
+    colorante.final = (inicial + (inicial * ajuste) / 100).toFixed(5);
+    this.actualizarTotalFinal();
   }
 
   actualizarDesdeFinal(colorante: any) {
@@ -1132,12 +1268,12 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     const final = parseFloat(colorante.final) || 0;
 
     if (inicial !== 0) {
-      if(final > 0){
+      if (final > 0) {
         colorante.ajuste = (((final - inicial) * 100) / inicial).toFixed(2);
-      }else{
+      } else {
         colorante.ajuste = 0;
       }
-      
+
     } else {
       colorante.ajuste = 0;
     }
@@ -1164,7 +1300,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     let familia: string = '';
     this.LabColTraService.getObtenerFamiliaDesdeCabecera(Corr_Carta, Sec).subscribe({
       next: (response: any) => {
-        if(response.success){
+        if (response.success) {
           familia = response.elements[0].familia;
           console.log(familia);
           this.parametros.tiposFormulacion = familia;
@@ -1178,8 +1314,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   getListarCurvas(Pro_Cod: string): void {
     this.LabColTraService.getListarCurvas(Pro_Cod).subscribe({
       next: (response: any) => {
-        if(response.success){
-          if(response.totalElements > 0) {
+        if (response.success) {
+          if (response.totalElements > 0) {
             this.curvasTenido = response.elements.map((c: any) => ({
               codigo: c.codigo,
               nombre: c.descripcion
@@ -1187,7 +1323,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           }
         }
       },
-      error: (error: any) => {}
+      error: (error: any) => { }
     });
   }
 
@@ -1195,8 +1331,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     //Familia = this.FamiliaReferencia;
     this.LabColTraService.getListarTiposTenido(Familia).subscribe({
       next: (response: any) => {
-        if(response.success){
-          if(response.totalElements > 0){
+        if (response.success) {
+          if (response.totalElements > 0) {
             console.log('::::::::::::::..', response.elements);
             this.TipoTenido = response.elements.map((t: any) => ({
               codigo: t.tip_Ten_Acr,
@@ -1205,8 +1341,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           }
         }
       },
-      error: (error: any) => {}
-    }); 
+      error: (error: any) => { }
+    });
   }
 
   // BuscarReactivo(): void {
@@ -1220,34 +1356,34 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   SeleccionarTipoTenido(event: MatSelectChange): void {
     this.TipoTenidoSeleccionado = event.value;
     // let tipoTenido: string = '';
-    console.log('TIPO DE TENIDO SELECCIONADO----------', this.TipoTenidoSeleccionado);     
+    console.log('TIPO DE TENIDO SELECCIONADO----------', this.TipoTenidoSeleccionado);
     this.getObtenerUltimoCorrelativoXTipoTenido(this.data.Num_SDC, this.data.Num_Sec, this.TipoTenidoSeleccionado);
     this.getObtenerCurvaReactivoDisperso(this.data.Num_SDC, this.data.Num_Sec, this.TipoTenidoSeleccionado);
   }
-  
+
   nuevoCorrelativo: number = 0;
   getObtenerUltimoCorrelativoXTipoTenido(Corr_Carta: string, Sec: number, Tip_Ten: string): void {
     this.LabColTraService.getObtenerUltimoCorrelativoXTipoTenido(Corr_Carta, Sec, Tip_Ten).subscribe({
       next: (response: any) => {
-        if(response.success){
-          if(response.totalElements > 0){
+        if (response.success) {
+          if (response.totalElements > 0) {
             this.nuevoCorrelativo = response.elements[0].correlativo;
             console.log('EL NUEVO CORRELATIVO ES:::::::::::::::::::..', this.nuevoCorrelativo);
           }
         }
       },
-      error: (error: any) => {}
+      error: (error: any) => { }
     });
   }
 
   getObtenerCurvaReactivoDisperso(Corr_Carta: string, Sec: number, Tip_Ten: string): void {
     this.LabColTraService.getObtenerCurvaReactivoDisperso(Corr_Carta, Sec, Tip_Ten).subscribe({
       next: (response: any) => {
-        if(response.success){
+        if (response.success) {
           this.curvaTenido = response.elements[0].cur_Id
         }
       },
-      error: (error: any) => {}
+      error: (error: any) => { }
     });
   }
 

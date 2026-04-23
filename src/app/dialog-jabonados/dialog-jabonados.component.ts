@@ -837,17 +837,19 @@ export class DialogJabonadosComponent {
             'sec',
             'correlativo',
             'descripcion_Color',
-            'jab_Des',
             'curva_tenido',
             'dosificacion1',
             'dosificacion2',
             'dosificacion3',
             'sod_gr',
-            'can_Jabo',
+            'phIni',
+            'phFin',
+            'jab_Des',            
             'ph_Neu',
+            'can_Jabo',
             ...this.getPhColumns(),
             'descarga',
-            //'tipo_fijado',
+            'tipo_fijado_descarga',
             'ph_Des'
           ];
 

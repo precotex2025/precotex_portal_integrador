@@ -129,10 +129,12 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
     })
   }
   dataTenido: any = {}
+  Corr_Carta: string = '';
   CargarModalTenido(data_cola_trab: any): void {
     let Corr_Carta = this.dataListadoDetalle[0].corr_Carta;
     let Sec = data_cola_trab.sec;
     let sFormulado = data_cola_trab.formulado;
+    this.Corr_Carta = Corr_Carta;
     const sCorr_Carta = Corr_Carta;
     const sSec = Sec;
 
@@ -149,7 +151,7 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
     //   width: '500px', 
     //   }); 
 
-    setTimeout(() => { this.dialogRef1 = this.dialog.open(this.modalEnviar, { width: '500px' }); }, 300);
+    setTimeout(() => { this.dialogRef1 = this.dialog.open(this.modalEnviar, { width: '600px' }); }, 300);
 
   }
 
@@ -273,11 +275,11 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
   onSeleccionarCurva(codigoSeleccionado: string): void {
     this.curvaSeleccionada = codigoSeleccionado;
     //this.getListarCurvas('0.00000');
-    this.onCargarCurvaDes(codigoSeleccionado);
+    this.onCargarCurvaDes(codigoSeleccionado, this.Corr_Carta);
   }
 
-  onCargarCurvaDes(codigo: string): void {
-    this.LabColTrabajoService.getListarCurvas(codigo).subscribe({
+  onCargarCurvaDes(codigo: string, Corr_Carta: string): void {
+    this.LabColTrabajoService.getListarCurvasV2(codigo, Corr_Carta).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.curvasDescripcion = response.elements.map((c: any) => ({

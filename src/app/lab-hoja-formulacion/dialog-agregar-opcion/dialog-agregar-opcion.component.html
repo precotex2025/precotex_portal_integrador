@@ -126,7 +126,7 @@
     </section>
 
     <section class="parametros-section" *ngIf="TipoTenidoSeleccionado === 'R'">
-      <h3>Jabonado - Curva - Fijado</h3>
+      <h3>Jabonado - Curva - Descarga</h3>
 
       <mat-form-field appearance="fill">
         <mat-label>CAN JABONADAS</mat-label>
@@ -141,10 +141,15 @@
       </mat-form-field>
 
       <mat-form-field appearance="fill">
-        <mat-label>FIJADO</mat-label>
+        <mat-label>DESCARGA</mat-label>
         <mat-select [(ngModel)]="parametros.fijado" [disabled]="!cambiosHabilitados">
           <mat-option *ngFor="let fijado of fijados" [value]="fijado.codigo">{{ fijado.nombre }}</mat-option>
         </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>% DESCARGA</mat-label>
+        <input matInput type="number" [(ngModel)]="parametros.fijadoPor" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
     </section>
 
@@ -235,17 +240,20 @@
       <h3>Baño - Peso - Volumen</h3>
       <mat-form-field appearance="fill">
         <mat-label>Relación baño</mat-label>
-        <input matInput type="number" [ngModel]="datos.relacionBano | number:'1.2-2'" step="1" min="0" [disabled]="!cambiosHabilitados"/>
+         <!-- | number:'1.2-2' -->
+        <input matInput type="number" [(ngModel)]="datos.relacionBano" (ngModelChange)="actualizarVolumen()" step="1" min="0" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
-
+      <!-- | number: '1.2-2' -->
       <mat-form-field appearance="fill">
         <mat-label>Peso de muestra</mat-label>
-        <input matInput type="number" [ngModel]="datos.pesoMuestra | number: '1.2-2'" (ngModelChange)="calcularRelacionBano()" [disabled]="!cambiosHabilitados"/>
+        <input matInput type="number" [(ngModel)]="datos.pesoMuestra " (ngModelChange)="actualizarVolumen()" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
-
+      <!-- | number:'1.0-0' -->
       <mat-form-field appearance="fill">
         <mat-label>Volumen</mat-label>
-        <input matInput type="number" [(ngModel)]="datos.volumen" (ngModelChange)="calcularRelacionBano()" [disabled]="!cambiosHabilitados"/>
+        <input matInput type="number"
+        [(ngModel)]="datos.volumen" 
+        (ngModelChange)="actualizarRelacionBano(); actualizarPesoMuestra()" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
 
       <mat-form-field appearance="fill" *ngIf="TipoTenidoSeleccionado === 'D'">

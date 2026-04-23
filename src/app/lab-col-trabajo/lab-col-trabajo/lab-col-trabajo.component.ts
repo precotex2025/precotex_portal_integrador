@@ -104,7 +104,8 @@ export class LabColTrabajoComponent implements OnInit {
     'num_sdc',
     'des_tela',
     'fec_comp',
-    //'fechaasignaanalista',
+    'dias_diferencia',
+    'fechaasignaanalista',
     //'dias_comp',
     'cod_Color',
     'des_Color',
@@ -331,33 +332,53 @@ export class LabColTrabajoComponent implements OnInit {
 //   }
 // }
 
+// getColorClase(row: any): string {
+//   const hoy = new Date();
+//   const fechaCompromiso = new Date(row.fec_compromiso);
+//   const fechaCreacion = new Date(row.fec_creacion);
+
+//   const diasCompromiso = Math.floor((fechaCompromiso.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+//   const diasCreacion = Math.floor((hoy.getTime() - fechaCreacion.getTime()) / (1000 * 60 * 60 * 24));
+
+//   let clase = '';
+
+//   if (diasCompromiso > 3) {
+//     clase = 'fila-verde';
+//   } else if (diasCompromiso < -3) {
+//     clase = 'fila-rojo';
+//   } else if (diasCompromiso >= -3 && diasCompromiso <= 3) {
+//     clase = 'fila-amarillo';
+//   } else if (diasCreacion <= 4) {
+//     clase = 'fila-verde';
+//   } else if (diasCreacion >= 7) {
+//     clase = 'fila-rojo';
+//   } else {
+//     clase = 'fila-amarillo';
+//   }
+
+//   //console.log('Row:', row, 'Clase:', clase, 'DiffComp:', diasCompromiso, 'DiffCre:', diasCreacion);
+//   return clase;
+// }
+
 getColorClase(row: any): string {
   const hoy = new Date();
   const fechaCompromiso = new Date(row.fec_compromiso);
-  const fechaCreacion = new Date(row.fec_creacion);
 
   const diasCompromiso = Math.floor((fechaCompromiso.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
-  const diasCreacion = Math.floor((hoy.getTime() - fechaCreacion.getTime()) / (1000 * 60 * 60 * 24));
 
   let clase = '';
 
-  if (diasCompromiso > 3) {
-    clase = 'fila-verde';
-  } else if (diasCompromiso < -3) {
+  if (diasCompromiso <= 0) {
     clase = 'fila-rojo';
-  } else if (diasCompromiso >= -3 && diasCompromiso <= 3) {
+  } else if (diasCompromiso > 0 && diasCompromiso <= 3) {
     clase = 'fila-amarillo';
-  } else if (diasCreacion <= 4) {
+  } else if (diasCompromiso > 3) {
     clase = 'fila-verde';
-  } else if (diasCreacion >= 7) {
-    clase = 'fila-rojo';
-  } else {
-    clase = 'fila-amarillo';
   }
 
-  //console.log('Row:', row, 'Clase:', clase, 'DiffComp:', diasCompromiso, 'DiffCre:', diasCreacion);
   return clase;
 }
+
 
 // getColorClaseProduccion(row: any): string {
 //   const hoy = new Date();
@@ -490,7 +511,7 @@ getColorClaseProduccion(row: any): string {
   // Rojo: faltan < 3 días | Amarillo: exactamente 3 días | Verde: > 3 días
   let colorPCP = '';
   if (pcpValido) {
-    if (diasPCP < 3)       colorPCP = 'fila-plomo';
+    if (diasPCP < 3)       colorPCP = 'fila-rojo';
     else if (diasPCP === 3) colorPCP = 'fila-amarillo';
     else                   colorPCP = 'fila-verde';
   }
@@ -510,7 +531,7 @@ getColorClaseProduccion(row: any): string {
   if (colores.includes('fila-verde'))   return 'fila-verde';
 
   // Fechas inválidas
-  return 'fila-plomo';
+  return 'fila-amarillo';
 }
 
 
@@ -643,11 +664,11 @@ getColorClaseProduccion(row: any): string {
 
   onSeleccionarCurva(codigoSeleccionado: string): void {
     this.curvaSeleccionada = codigoSeleccionado;
-    this.onCargarCurvaDes(codigoSeleccionado);
+    this.onCargarCurvaDes(codigoSeleccionado, this.Cod_OrdTra);
   }
 
-  onCargarCurvaDes(codigo: string): void {
-    this.LabColaTrabajoService.getListarCurvas(codigo).subscribe({
+  onCargarCurvaDes(codigo: string, Corr_Carta: string): void {
+    this.LabColaTrabajoService.getListarCurvasV2(codigo, Corr_Carta).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.curvasDescripcion = response.elements.map((c: any) => ({
@@ -774,6 +795,7 @@ getColorClaseProduccion(row: any): string {
           this.toastr.error(response.message, 'Cerrar', { timeOut: 2500 });
           this.SpinnerService.hide();
         }
+        this.getObtenerDatosProduccion();
       },
       error: (error) => {
         this.SpinnerService.hide();
@@ -781,10 +803,11 @@ getColorClaseProduccion(row: any): string {
       }
     });
   }
-
+  Cod_OrdTra: string = '';
   CargarModalTenido(data_cola_trab_produccion: any): void {
     //let Cod_OrdTra = this.dataListadoProduccion[0].cod_OrdTra;
     let Cod_OrdTra = data_cola_trab_produccion.cod_OrdTra;
+    this.Cod_OrdTra = Cod_OrdTra;
     this.dataTenido = {
       "Corr_Carta": '',
       "Cod_OrdTra": Cod_OrdTra,
@@ -794,7 +817,7 @@ getColorClaseProduccion(row: any): string {
     this.getListarCurvas('0.00000')
     this.curvaSeleccionada = '';
 
-    setTimeout(() => { this.dialogRef1 = this.dialog.open(this.modalEnviar, { width: '500px' }); }, 300);
+    setTimeout(() => { this.dialogRef1 = this.dialog.open(this.modalEnviar, { width: '600px' }); }, 300);
   }
 
   ReformularPartida(data_cola_trab_produccion: any): void {
@@ -959,9 +982,14 @@ getColorClaseProduccion(row: any): string {
         });
       }
     })
-
   }
 
-  
+  calcularDias(fechaPcp: string | Date): number {
+    if (!fechaPcp) return 0;
+    const hoy = new Date();
+    const fecha = new Date(fechaPcp);
+    const diffMs = fecha.getTime() - hoy.getTime();
+    return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  }
 
 }
