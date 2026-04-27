@@ -114,12 +114,13 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarFijados', { headers })
   }
 
-  getListarFijadosCalculado(Colorante_Total: number, Familia: string, Tipo: string){
+  getListarFijadosCalculado(Colorante_Total: number, Familia: string, Tipo: string, Cod_Color: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Colorante_Total', Colorante_Total);
     params = params.append('Familia', Familia);
     params = params.append('Tipo', Tipo);
+    params = params.append('Cod_Color', Cod_Color);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarFijadosCalculado', { headers, params })
   }
 
@@ -529,7 +530,7 @@ export class LabColTrabajoService {
 
   patchReformularPartida(data: any){
     const headers = this.Header;
-    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/padtchReformularPartida', data, { headers })
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchReformularPartida', data, { headers })
   }
 
   patchActualizarEstadoEntregaProduccion(data: any){
@@ -560,6 +561,11 @@ export class LabColTrabajoService {
   patchActualizarEstadoDosificacion(data: any){
     const headers = this.Header;
     return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarEstadoDosificacion', data, { headers })
+  }
+
+  patchActualizarFechasTenido_2(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarFechasTenido_2', data, { headers })
   }
 
   deleteEliminarOpcionColorante(Corr_Carta: any, Sec: number, Correlativo: number, Tip_Ten: string) {

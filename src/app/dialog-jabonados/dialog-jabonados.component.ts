@@ -119,7 +119,8 @@ export class DialogJabonadosComponent {
             'neutralizado',
             'ph_Neu',
             'jab_Des',
-            'can_Jabo'
+            'can_Jabo',
+            'tip_Ten'
             //...this.getPhColumns(),
           ];
 
@@ -170,8 +171,8 @@ export class DialogJabonadosComponent {
             ...this.getPhColumns(),
             'descarga',
             'tipo_fijado',
-            'ph_Des'
-            
+            'ph_Des',
+            'tip_Ten'
           ];
 
           this.SpinnerService.hide();
@@ -850,7 +851,8 @@ export class DialogJabonadosComponent {
             ...this.getPhColumns(),
             'descarga',
             'tipo_fijado_descarga',
-            'ph_Des'
+            'ph_Des',
+            'tip_Ten'
           ];
 
           this.SpinnerService.hide();

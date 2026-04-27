@@ -836,6 +836,7 @@ getColorClaseProduccion(row: any): string {
       'Sec': 1
     }
 
+    console.log(data);
     this.patchReformularPartida(data);
 
     // this.ActualizarEstado('¿REFORMULAR PARTIDA?', Cod_OrdTra, 1, '04');

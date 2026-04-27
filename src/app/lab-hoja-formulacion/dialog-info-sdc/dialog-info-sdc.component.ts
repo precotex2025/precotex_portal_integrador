@@ -96,6 +96,7 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
             this.previoSeleccionado = this.dataInforme[0].pre_Id;
           } else {
             this.dataInformeProduccion = response.elements;
+            this.previoSeleccionado = this.dataInformeProduccion[0].pre_Id;
           }
           console.log(this.dataInformeProduccion)
             //console.log('contenido que cargará en la grilla', this.dataInforme);

@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { response } from 'express';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 interface data {
   Title: string;
@@ -375,7 +376,12 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
               'descripcion_Color',
               'jab_Des',
               'sec',
-              'correlativo'
+              'correlativo',
+              'familia',
+              'fec_ini_tenido',
+              'fec_fin_tenido',
+              'fec_ini_tenido_2',
+              'fec_fin_tenido_2'
             ].slice();
             }else{
               this.columnsToDisplay = [
@@ -391,7 +397,12 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
               'descripcion_Color',
               'jab_Des',
               'sec',
-              'correlativo'
+              'correlativo',
+              'familia',
+              'fec_ini_tenido',
+              'fec_fin_tenido',
+              'fec_ini_tenido_2',
+              'fec_fin_tenido_2'
             ].slice();
             }
             
@@ -425,38 +436,103 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
   btnFinalizarDisabled: boolean = true;
 
   IniciarProceso(): void {
-    
+    const existeSegundoTenido = this.dataSource.data.some((row: any) =>
+      row.familia === '2.00000' && row.fec_Fin_Tenido
+    );
+
     const data = {
       ahi_Id: this.itemSeleccionado.codigo,
       ahi_Est_Pro: 'I'
     }
 
+    const dataFechas = {
+      ahi_Id: this.itemSeleccionado.codigo,
+      tip_Fec: 'I'
+    }
+
+    // console.log(':::::::::::::::::::::::.', data);
+    // console.log(':::::::::::::::::::::::::::::.', dataFechas);
+
+    if (existeSegundoTenido){
+      Swal.fire({
+            title: 'SE INICIARÁ PROCESO SOLO ÓPTICO, ¿ESTAS SEGURO?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si',
+            cancelButtonText: 'No'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              
+              this.LabColTrabajoService.patchProcesoAhiba(data).subscribe({
+                next: (response: any) => {
+                  if (response.success) {
+                    this.btnIniciarDisabled = true;
+                    this.btnFinalizarDisabled = false;
+                    this.LabColTrabajoService.patchActualizarFechasTenido_2(dataFechas).subscribe({
+                      next: (response: any) => {
+                        if(response.success) {
+                          this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+                        }
+                      }
+                    });
+                  }
+                }
+              });
+            }
+          })
+    }else{
+      // this.btnIniciarDisabled = true;
+      // this.btnFinalizarDisabled = false;
+      console.log('INGRESA PORQUE ES PRIMER TENIDO');
+      console.log('DATAFFECHAS!!!!!!!!', dataFechas);
+      
+      this.LabColTrabajoService.patchProcesoAhiba(data).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.btnIniciarDisabled = true;
+            this.btnFinalizarDisabled = false;
+            this.LabColTrabajoService.patchActualizarFechasTenido_2(dataFechas).subscribe({
+              next: (response: any) => {
+                if(response.success) {
+                  this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+                }
+              }
+            });
+          }
+        }
+      });
+    }
+
+    this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+
     // if(this.tituloCurva === '29_BLQ QUIM 110x30' || this.tituloCurva === '30_BLQ QUIM 110x40' || this.tituloCurva === '31_BLQ QUIM 98x20'){
       
     // }
 
-    this.LabColTrabajoService.patchProcesoAhiba(data).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.btnIniciarDisabled = true; 
-          this.btnFinalizarDisabled = false;
+    // this.LabColTrabajoService.patchProcesoAhiba(data).subscribe({
+    //   next: (response: any) => {
+    //     if (response.success) {
+    //       this.btnIniciarDisabled = true; 
+    //       this.btnFinalizarDisabled = false;
 
-          this.dataSource.data.forEach((row: any) => {
-            const dataFechas = {
-              corr_Carta: row.corr_Carta,
-              sec: row.sec,
-              correlativo: row.correlativo,
-              tip_Fec: 'I',
-              tip_Ten: row.tip_Ten
-            }
+    //       this.dataSource.data.forEach((row: any) => {
+    //         const dataFechas = {
+    //           corr_Carta: row.corr_Carta,
+    //           sec: row.sec,
+    //           correlativo: row.correlativo,
+    //           tip_Fec: 'I',
+    //           tip_Ten: row.tip_Ten
+    //         }
 
-            this.patchActualizarFechasTenido(dataFechas);
-          });
-        }
-      },
-      error: (error: any) => {
-      }
-    });
+    //         this.patchActualizarFechasTenido(dataFechas);
+    //       });
+    //     }
+    //   },
+    //   error: (error: any) => {
+    //   }
+    // });
 
   }
 
@@ -467,29 +543,28 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
       ahi_Est_Pro: 'F'
     }
 
+    const dataFechas = {
+      ahi_Id: this.itemSeleccionado.codigo,
+      tip_Fec: 'F'
+    }
+
     this.LabColTrabajoService.patchProcesoAhiba(data).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.btnIniciarDisabled = false; 
-          this.btnFinalizarDisabled = true;
-
-          this.dataSource.data.forEach((row: any) =>{
-            const dataFechas = {
-              corr_Carta: row.corr_Carta,
-              sec: row.sec,
-              correlativo: row.correlativo,
-              tip_Fec: 'F',
-              tip_Ten: row.tip_Ten
+          this.btnFinalizarDisabled = true;     
+          this.LabColTrabajoService.patchActualizarFechasTenido_2(dataFechas).subscribe({
+            next: (response: any) => {
+              if(response.success) {
+                this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+              }
             }
-
-            this.patchActualizarFechasTenido(dataFechas);
           });
         }
       },
       error: (error: any) => {
       }
     });
-
   }
 
   patchActualizarEstadoDeColorTricomia(row: any): void {

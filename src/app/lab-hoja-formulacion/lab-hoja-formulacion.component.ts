@@ -38,7 +38,8 @@ interface receta {
   sec: number,
   descripcion_Color: string,
   familia: string,
-  tip_Ten: string
+  tip_Ten: string,
+  cod_Color: string
 }
 
 interface grillaDesplegable {
@@ -76,6 +77,7 @@ export class LabHojaFormulacionComponent implements OnInit {
   TipoReceta: string = '';
   TipoTenido: { nombre: string, codigo: string }[] = [];
   Familia: string = '';
+  Cod_Color: string = '';
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
@@ -137,8 +139,15 @@ export class LabHojaFormulacionComponent implements OnInit {
         this.getListarTiposTenido(this.Familia);
         this.TipoReceta = this.data.tip_TenR;
         this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+        
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {},
+          replaceUrl: true
+        });
         //this.onActualizarHojaFormulacion();
       }, 300);
+
       // console.log('::::::::::::::::..',encontrada.tip_Ten);
       // setTimeout(() => {
       //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
@@ -157,6 +166,7 @@ export class LabHojaFormulacionComponent implements OnInit {
     this.recetaSeleccionada = encontrada || this.recetas[0];
     this.Corr_Carta_Remover = this.recetaSeleccionada.corr_Carta;
     this.Sec_Remover = this.recetaSeleccionada.sec;
+    this.Cod_Color = this.recetaSeleccionada.cod_Color;
     const empiezaConLetra = /^[A-Za-z]/.test(this.Corr_Carta_Remover);
     this.mostrarPartidas = empiezaConLetra;
     this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
@@ -178,11 +188,12 @@ export class LabHojaFormulacionComponent implements OnInit {
   recetas: Array<receta> = [];
   recetaSeleccionada!: receta | undefined;
   grillaExpandible: Array<grillaDesplegable> = [];
-
+  
   seleccionarReceta(receta: receta) {
     this.recetaSeleccionada = receta;
     this.Corr_Carta_Remover = receta.corr_Carta;
     this.Sec_Remover = receta.sec;
+    this.Cod_Color = receta.cod_Color;
     const empiezaConLetra = /^[A-Za-z]/.test(this.Corr_Carta_Remover);
     this.mostrarPartidas = empiezaConLetra;
     if(!this.mostrarPartidas){
@@ -498,8 +509,6 @@ export class LabHojaFormulacionComponent implements OnInit {
       correlativo = 0;
     }
 
-
-
     this.router.navigate(['AgregarOpcion'],
       {
         queryParams: {
@@ -510,7 +519,8 @@ export class LabHojaFormulacionComponent implements OnInit {
           CorrelativoAnterior: 0,
           //PartidasAgrupadasE: 'L8439/L5893/L6969'//this.PartidasAgrupadas
           PartidasAgrupadasE: this.PartidasAgrupadas,
-          TipoReceta: this.TipoReceta
+          TipoReceta: this.TipoReceta,
+          Cod_Color: this.Cod_Color
         }
       }
     )

@@ -20,7 +20,8 @@ interface data {
   Correlativo: number,
   CorrelativoAnterior?: number,
   PartidasAgrupadasR?: string,
-  TipoReceta: string
+  TipoReceta: string,
+  Cod_Color: string
 }
 
 interface ColoranteCompleto {
@@ -47,8 +48,14 @@ interface ColoranteCompleto {
 }
 
 interface Datos {
+  relacionBano: any;
+  pesoMuestra: any;
+  volumen: any;
+}
+
+interface Datos2 {
   relacionBano: number;
-  pesoMuestra: number;
+  pesoMuestra: string;
   volumen: number;
 }
 
@@ -97,6 +104,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   esCopia: boolean = false;
   valorBaseAguaOxigenada: number = 2.0;
   valorBaseSodaCaustica: number = 2.0;
+  Cod_ColorSeleccionado: string = '';
+
 
   rucolaseCantidad = [
     { codigo: 0.2, nombre: '0.2' },
@@ -122,11 +131,15 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
   datos: Datos = {
     relacionBano: 0,
-    pesoMuestra: 0,
+    pesoMuestra: '',
     volumen: 0
   };
 
-
+  datos2: Datos2= {
+    relacionBano: 0,
+    pesoMuestra: '',
+    volumen: 0
+  }
   cambiosHabilitados = false;
   estadoCambio = 0;
 
@@ -170,14 +183,16 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         Correlativo: params['Correlativo'] !== undefined ? Number(params['Correlativo']) : 0,
         CorrelativoAnterior: params['CorrelativoAnterior'] !== undefined ? Number(params['CorrelativoAnterior']) : 0,
         PartidasAgrupadasR: params['PartidasAgrupadasE'] !== undefined ? String(params['PartidasAgrupadasE']) : '',
-        TipoReceta: params['TipoReceta'] !== undefined ? String(params['TipoReceta']) : ''
+        TipoReceta: params['TipoReceta'] !== undefined ? String(params['TipoReceta']) : '',
+        Cod_Color: params['Cod_Color'] !== undefined ? String(params['Cod_Color']) : '',
       };
     })
 
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>', this.data.TipoReceta);
 
     this.TipoTenidoSeleccionado = this.data.TipoReceta;
-
+    this.Cod_ColorSeleccionado = this.data.Cod_Color;
+    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>', this.data.Cod_Color);
+    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>', this.Cod_ColorSeleccionado);
     const empiezaConLetra = /^[A-Za-z]/.test(this.data.Num_SDC);
     this.esPartida = empiezaConLetra;
 
@@ -229,17 +244,17 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
 
 
-  getDatosRelBanPesMueVol(): void {
-    if (!this.esPartida) {
-      this.datos.relacionBano = 8;
-      this.datos.pesoMuestra = 10;
-      this.datos.volumen = 80;
-    } else {
-      this.datos.relacionBano = 8;
-      this.datos.pesoMuestra = 10;
-      this.datos.volumen = 80;
-    }
-  }
+  // getDatosRelBanPesMueVol(): void {
+  //   if (!this.esPartida) {
+  //     this.datos.relacionBano = 8;
+  //     this.datos.pesoMuestra = 10;
+  //     this.datos.volumen = 80;
+  //   } else {
+  //     this.datos.relacionBano = 8;
+  //     this.datos.pesoMuestra = 10;
+  //     this.datos.volumen = 80;
+  //   }
+  // }
 
 
 
@@ -315,7 +330,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     console.log(this.data.TipoReceta);
     this.GetCarbonatoSodaCalculado(this.totalFinalColorantes, this.Familia, this.condicion, this.data.TipoReceta);
     this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, this.Familia, this.data.TipoReceta);
-    this.GetFijadosCalculado(this.totalFinalColorantes, this.Familia, this.data.TipoReceta);
+    this.GetFijadosCalculado(this.totalFinalColorantes, this.Familia, this.data.TipoReceta, this.Cod_ColorSeleccionado);
     this.getListarCurvas(this.Familia);
     this.getListarTiposTenido(this.Familia);
   }
@@ -610,7 +625,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       Cur_Jabo: this.parametros.curva.toString() || '0',
       Fijado: this.parametros.fijado.toString() || '0',
       Rel_Ban: this.datos.relacionBano.toString() || '0',
-      Pes_Mue: this.datos.pesoMuestra.toString() || '0',
+      Pes_Mue: this.datos2.pesoMuestra.toString() || '0',
       Volumen: this.datos.volumen.toString() || '0',
       Car_Gr: carbonato?.cantidad.toString() || '0',
       Car_Por: carbonato?.porcentaje.toString() || '0',
@@ -842,10 +857,10 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     })
   }
 
-  GetFijadosCalculado(Colorante_Total: number, Familia: string, Tipo: string): void {
+  GetFijadosCalculado(Colorante_Total: number, Familia: string, Tipo: string, Cod_Color: string): void {
     this.SpinnerService.show();
     this.fijados = [];
-    this.LabColTraService.getListarFijadosCalculado(Colorante_Total, Familia, Tipo).subscribe({
+    this.LabColTraService.getListarFijadosCalculado(Colorante_Total, Familia, Tipo, Cod_Color).subscribe({
       next: (response: any) => {
         if (response.success) {
           console.log('los elementos fijados calculados son: ', response.elements);
@@ -855,8 +870,17 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
               nombre: c.fij_Des
             }));
 
+            const valoresPermitidos = [0.6, 0.8, 2, 3];
+            let fijadoPor = parseFloat(response.elements[0].fij_Can || 0);
+
+            if (!valoresPermitidos.includes(fijadoPor)) {
+              fijadoPor = 0.6;
+            }
+
             this.parametros.fijado = this.fijados[0]?.codigo || 0;
-            console.log('El valor en parametros fijado es: ', this.parametros.fijado);
+            this.parametros.fijadoPor = fijadoPor;
+            // console.log('El valor en parametros fijado es: ', this.parametros.fijado);
+            // console.log('El valor en parametros FIJPOR: ', this.parametros.fijadoPor);
             this.SpinnerService.hide();
           } else {
             this.fijados = [];
@@ -952,6 +976,17 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
   cargarDatosParaModificar(Corr_Carta: any, Sec: number, Correlativo: number, Tip_Ten: string): void {
     this.datosParaModificar = [];
+    this.datos = {
+      relacionBano: 0,
+      pesoMuestra: 0,
+      volumen: 0
+    }
+
+    this.datos2 = {
+      relacionBano: 0,
+      pesoMuestra: '0',
+      volumen: 0
+    }
 
     this.LabColTraService.getCargarColoranteParaCopiar(Corr_Carta, Sec, Correlativo, Tip_Ten).subscribe({
       next: (response: any) => {
@@ -1005,18 +1040,26 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           jabonadoNormal = datos.can_Jabo ?? 0;
         }
 
+        const valoresPermitidos = [0.6, 0.8, 2, 3];
+        let fijadoPor = parseFloat(datos.fij_Can);
+
+        if (!valoresPermitidos.includes(fijadoPor)) {
+          fijadoPor = 0.6;
+        }
+
         this.parametros = {
           jabonadas: jabonadoNormal,
           curva: parseInt(datos.cur_Jabo) ?? 0,
           fijado: parseInt(datos.fijado) ?? 0,
           //tiposFormulacion: datos.familia ?? ''
           tiposFormulacion: tipoFamilia ?? '',
-          fijadoPor: datos.fij_Can ?? 0
+          fijadoPor: fijadoPor
         };
 
         console.log(this.parametros);
 
-        const peso = datos.pes_Mue ?? 0;
+        //const peso: string = datos.pes_Mue ?? '0';
+        const peso = String(datos.pes_Mue);
         const relacion = Number(datos.rel_Ban ?? 0);
         const antiReductorCantidad = datos.ant_Red ?? 0;
         const antiReductorPorcentaje = datos.ant_Red_Aju ?? 0;
@@ -1024,12 +1067,26 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         const cantidadLavados = jabonadoLavado;
         const aguaOxigenadaCantidad = datos.agu_Oxi ?? 0;
         const sodaCausticaCantidad = datos.sod_Gr ?? 0;
-
+        const volumen = datos.volumen ?? 0;
+        // console.log('::::::::::::...', peso);
+        // console.log('::::::::::::...', volumen);
         this.datos = {
+          // relacionBano: Number(relacion.toFixed(2)),
+          // pesoMuestra: peso.toFixed(2),
+          // volumen: Number((relacion * peso).toFixed(2))
+          relacionBano: relacion,
+          pesoMuestra: peso.toString(),
+          volumen: datos.volumen
+        };
+
+        this.datos2 = {
           relacionBano: relacion,
           pesoMuestra: peso,
-          volumen: relacion * peso
-        };
+          volumen: datos.volumen
+        }
+
+        console.log('_::::...___', this.datos)
+        console.log('_::::...___', this.datos2)
 
         this.antiReductorCantidad = antiReductorCantidad;
         this.antiReductorPorcentaje = antiReductorPorcentaje;
@@ -1083,30 +1140,53 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   //   }
   // }
 
+  // actualizarRelacionBano(): void {
+  //   if (this.datos.pesoMuestra > 0) {
+  //     const calculo = this.datos.volumen / this.datos.pesoMuestra;
+  //     this.datos.relacionBano = parseFloat(calculo.toFixed(2));
+  //     //this.actualizarPesoMuestra();
+  //   }
+  // }
+
+
+  // actualizarVolumen(): void {
+  //   this.datos.volumen = Math.floor((this.datos.pesoMuestra * this.datos.relacionBano) * 10) / 10;
+  // }
+
+  // // actualizarPesoMuestra(): void {
+  // //   if (this.datos.relacionBano > 0) {
+  // //     this.datos.pesoMuestra = +(this.datos.volumen / this.datos.relacionBano).toFixed(2);
+  // //   }
+  // // }
+  
+  // actualizarPesoMuestra(): void {
+  //   if (this.datos.relacionBano > 0) {
+  //     const calculo = this.datos.volumen / this.datos.relacionBano;
+  //     this.datos.pesoMuestra = parseFloat(calculo.toFixed(2));
+  //     console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<.',this.datos.pesoMuestra);
+  //   }
+  // }
+
   actualizarRelacionBano(): void {
     if (this.datos.pesoMuestra > 0) {
-      const calculo = this.datos.volumen / this.datos.pesoMuestra;
-      this.datos.relacionBano = parseFloat(calculo.toFixed(2));
+      const calculo = this.datos.volumen / Number(this.datos2.pesoMuestra);
+      this.datos.relacionBano = Number(calculo.toFixed(2)); 
     }
   }
 
-
   actualizarVolumen(): void {
-    this.datos.volumen = Math.floor((this.datos.pesoMuestra * this.datos.relacionBano) * 10) / 10;
+    if (this.datos.pesoMuestra > 0 && this.datos.relacionBano > 0) {
+      const calculo = Number(this.datos2.pesoMuestra) * this.datos.relacionBano;
+      this.datos.volumen = Number(calculo.toFixed(2));
+    }
   }
 
-  // actualizarPesoMuestra(): void {
-  //   if (this.datos.relacionBano > 0) {
-  //     this.datos.pesoMuestra = +(this.datos.volumen / this.datos.relacionBano).toFixed(2);
-  //   }
-  // }
-  
   actualizarPesoMuestra(): void {
-  if (this.datos.relacionBano > 0) {
-    const calculo = this.datos.volumen / this.datos.relacionBano;
-    this.datos.pesoMuestra = parseFloat(calculo.toFixed(2));
+    if (this.datos.relacionBano > 0) {
+      const calculo = this.datos.volumen / this.datos.relacionBano;
+      this.datos2.pesoMuestra = calculo.toFixed(2).toString();
+    }
   }
-}
 
 
 

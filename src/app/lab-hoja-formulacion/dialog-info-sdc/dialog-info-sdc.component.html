@@ -77,6 +77,15 @@
     <div class="sdc-cell etiqueta">Curva Teñido</div>
     <div class="sdc-cell">{{informe.cur_Ten}}</div>
 
+    <div class="sdc-cell etiqueta" [hidden]="this.data.TipoReceta === 'O'">Previo</div>
+    <div class="sdc-cell" [hidden]="this.data.TipoReceta === 'O'">
+        <mat-select [(value)]="previoSeleccionado" (selectionChange)="patchActualizarPrevio()">
+          <mat-option *ngFor="let p of previo" [value]="p.codigo">
+            {{ p.nombre }}
+          </mat-option>
+        </mat-select>
+    </div>
+
     <div class="sdc-cell etiqueta">Clase Oc</div>
     <div class="sdc-cell">{{informe.cla_Oc}}</div>
 
