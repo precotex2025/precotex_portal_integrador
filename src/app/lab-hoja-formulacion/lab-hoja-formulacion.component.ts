@@ -77,7 +77,7 @@ export class LabHojaFormulacionComponent implements OnInit {
   TipoReceta: string = '';
   TipoTenido: { nombre: string, codigo: string }[] = [];
   Familia: string = '';
-  Cod_Color: string = '';
+  Cod_Color: string = 'NO_COL';
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
@@ -166,7 +166,8 @@ export class LabHojaFormulacionComponent implements OnInit {
     this.recetaSeleccionada = encontrada || this.recetas[0];
     this.Corr_Carta_Remover = this.recetaSeleccionada.corr_Carta;
     this.Sec_Remover = this.recetaSeleccionada.sec;
-    this.Cod_Color = this.recetaSeleccionada.cod_Color;
+    this.Cod_Color = this.recetaSeleccionada.cod_Color ?? 'NO_COL';
+    console.log(':::::::::::::::::::::::.', this.Cod_Color);
     const empiezaConLetra = /^[A-Za-z]/.test(this.Corr_Carta_Remover);
     this.mostrarPartidas = empiezaConLetra;
     this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
@@ -193,7 +194,11 @@ export class LabHojaFormulacionComponent implements OnInit {
     this.recetaSeleccionada = receta;
     this.Corr_Carta_Remover = receta.corr_Carta;
     this.Sec_Remover = receta.sec;
-    this.Cod_Color = receta.cod_Color;
+    this.Cod_Color = receta.cod_Color ?? 'NO_COL';
+    if(this.Cod_Color === undefined || this.Cod_Color === ''){
+      this.Cod_Color = 'NO_COL';
+    }
+    console.log('::::::::::::::::::::.', this.Cod_Color);
     const empiezaConLetra = /^[A-Za-z]/.test(this.Corr_Carta_Remover);
     this.mostrarPartidas = empiezaConLetra;
     if(!this.mostrarPartidas){
@@ -508,6 +513,8 @@ export class LabHojaFormulacionComponent implements OnInit {
     if (correlativo === -Infinity) {
       correlativo = 0;
     }
+
+    console.log
 
     this.router.navigate(['AgregarOpcion'],
       {

@@ -48,9 +48,9 @@ interface ColoranteCompleto {
 }
 
 interface Datos {
-  relacionBano: any;
-  pesoMuestra: any;
-  volumen: any;
+  relacionBano: string;
+  pesoMuestra: string;
+  volumen: string;
 }
 
 interface Datos2 {
@@ -61,8 +61,8 @@ interface Datos2 {
 
 interface Antireductores {
   nombre: string,
-  cantidad: number,
-  porcentaje: number
+  cantidad: string,
+  porcentaje: string
 }
 
 
@@ -104,7 +104,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   esCopia: boolean = false;
   valorBaseAguaOxigenada: number = 2.0;
   valorBaseSodaCaustica: number = 2.0;
-  Cod_ColorSeleccionado: string = '';
+  Cod_ColorSeleccionado: string = 'NO_COL';
 
 
   rucolaseCantidad = [
@@ -130,9 +130,9 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   // };
 
   datos: Datos = {
-    relacionBano: 0,
+    relacionBano: '0',
     pesoMuestra: '',
-    volumen: 0
+    volumen: '0'
   };
 
   datos2: Datos2= {
@@ -168,8 +168,10 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   }
 
   private inicializarDatos(): void {
-  this.datos.relacionBano = parseFloat(this.datos.relacionBano.toFixed(2));
-  this.datos.pesoMuestra = parseFloat(this.datos.pesoMuestra.toFixed(2));
+  // this.datos.relacionBano = parseFloat(this.datos.relacionBano.toFixed(2));
+  // this.datos.pesoMuestra = parseFloat(this.datos.pesoMuestra.toFixed(2));
+  this.datos.relacionBano = this.datos.relacionBano;
+  this.datos.pesoMuestra = this.datos.pesoMuestra;
 }
 
 
@@ -184,13 +186,13 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         CorrelativoAnterior: params['CorrelativoAnterior'] !== undefined ? Number(params['CorrelativoAnterior']) : 0,
         PartidasAgrupadasR: params['PartidasAgrupadasE'] !== undefined ? String(params['PartidasAgrupadasE']) : '',
         TipoReceta: params['TipoReceta'] !== undefined ? String(params['TipoReceta']) : '',
-        Cod_Color: params['Cod_Color'] !== undefined ? String(params['Cod_Color']) : '',
+        Cod_Color: params['Cod_Color'] !== undefined ? String(params['Cod_Color']) : 'NO_COL',
       };
     })
 
 
     this.TipoTenidoSeleccionado = this.data.TipoReceta;
-    this.Cod_ColorSeleccionado = this.data.Cod_Color;
+    this.Cod_ColorSeleccionado = this.data.Cod_Color ?? 'NO_COL';
     // console.log('>>>>>>>>>>>>>>>>>>>>>>>>', this.data.Cod_Color);
     // console.log('>>>>>>>>>>>>>>>>>>>>>>>>', this.Cod_ColorSeleccionado);
     const empiezaConLetra = /^[A-Za-z]/.test(this.data.Num_SDC);
@@ -625,7 +627,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       Cur_Jabo: this.parametros.curva.toString() || '0',
       Fijado: this.parametros.fijado.toString() || '0',
       Rel_Ban: this.datos.relacionBano.toString() || '0',
-      Pes_Mue: this.datos2.pesoMuestra.toString() || '0',
+      Pes_Mue: this.datos.pesoMuestra.toString() || '0',
       Volumen: this.datos.volumen.toString() || '0',
       Car_Gr: carbonato?.cantidad.toString() || '0',
       Car_Por: carbonato?.porcentaje.toString() || '0',
@@ -977,9 +979,9 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   cargarDatosParaModificar(Corr_Carta: any, Sec: number, Correlativo: number, Tip_Ten: string): void {
     this.datosParaModificar = [];
     this.datos = {
-      relacionBano: 0,
-      pesoMuestra: 0,
-      volumen: 0
+      relacionBano: '0',
+      pesoMuestra: '0',
+      volumen: '0'
     }
 
     this.datos2 = {
@@ -1060,7 +1062,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
         //const peso: string = datos.pes_Mue ?? '0';
         const peso = String(datos.pes_Mue);
-        const relacion = Number(datos.rel_Ban ?? 0);
+        const relacion = String(datos.rel_Ban ?? '0');
         const antiReductorCantidad = datos.ant_Red ?? 0;
         const antiReductorPorcentaje = datos.ant_Red_Aju ?? 0;
         const rucolaseCantidadSeleccionada = datos.ruc_Gr ?? 0;
@@ -1074,16 +1076,16 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           // relacionBano: Number(relacion.toFixed(2)),
           // pesoMuestra: peso.toFixed(2),
           // volumen: Number((relacion * peso).toFixed(2))
-          relacionBano: relacion,
+          relacionBano: relacion.toString(),
           pesoMuestra: peso.toString(),
           volumen: datos.volumen
         };
 
-        this.datos2 = {
-          relacionBano: relacion,
-          pesoMuestra: peso,
-          volumen: datos.volumen
-        }
+        // this.datos2 = {
+        //   relacionBano: relacion,
+        //   pesoMuestra: peso,
+        //   volumen: datos.volumen
+        // }
 
         console.log('_::::...___', this.datos)
         console.log('_::::...___', this.datos2)
@@ -1126,11 +1128,18 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     const peso = this.datos.pesoMuestra;
     const volumen = this.datos.volumen;
 
-    if (peso && volumen && peso > 0) {
-      this.datos.relacionBano = +(volumen / peso).toFixed(2);
+    // if (peso && volumen && Number(peso > 0) {
+    //   this.datos.relacionBano = +(volumen / peso).toFixed(2);
+    //   //this.datos.volumen = this.redondearHaciaArriba(volumen);
+    // } else {
+    //   this.datos.relacionBano = 0;
+    // }
+
+    if (peso && volumen && parseFloat(peso) > 0) {
+      this.datos.relacionBano = (+(parseFloat(volumen) / parseFloat(peso))).toString();
       //this.datos.volumen = this.redondearHaciaArriba(volumen);
     } else {
-      this.datos.relacionBano = 0;
+      this.datos.relacionBano = '0';
     }
   }
 
@@ -1167,27 +1176,28 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   //   }
   // }
 
+  /***********************************ANTES DE MODIFICAR**********************************************/
   actualizarRelacionBano(): void {
-    if (this.datos.pesoMuestra > 0) {
-      const calculo = this.datos.volumen / Number(this.datos2.pesoMuestra);
-      this.datos.relacionBano = Number(calculo.toFixed(2)); 
+    if (parseFloat(this.datos.pesoMuestra) > 0) {
+      const calculo = parseFloat(this.datos.volumen) / parseFloat(this.datos.pesoMuestra);
+      this.datos.relacionBano = parseFloat(calculo.toFixed(2)).toString(); 
     }
   }
 
   actualizarVolumen(): void {
-    if (this.datos.pesoMuestra > 0 && this.datos.relacionBano > 0) {
-      const calculo = Number(this.datos2.pesoMuestra) * this.datos.relacionBano;
-      this.datos.volumen = Number(calculo.toFixed(2));
+    if (parseFloat(this.datos.pesoMuestra) > 0 && parseFloat(this.datos.relacionBano) > 0) {
+      const calculo = parseFloat(this.datos2.pesoMuestra) * parseFloat(this.datos.relacionBano);
+      this.datos.volumen = parseFloat(calculo.toFixed(2)).toString();
     }
   }
 
   actualizarPesoMuestra(): void {
-    if (this.datos.relacionBano > 0) {
-      const calculo = this.datos.volumen / this.datos.relacionBano;
+    if (parseFloat(this.datos.relacionBano) > 0) {
+      const calculo = parseFloat(this.datos.volumen) / parseFloat(this.datos.relacionBano);
       this.datos2.pesoMuestra = calculo.toFixed(2).toString();
     }
   }
-
+  /******************************************************************************************************/
 
 
   getObtenerTrio(Corr_Carta: any, Sec: number, Tip_Ten: string) {
