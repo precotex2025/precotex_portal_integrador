@@ -6,6 +6,8 @@ import { ToastrService } from 'ngx-toastr';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GlobalVariable } from '../../VarGlobals';
 import { AuthService } from '../../authentication/auth.service';
+import { LabColTrabajoService } from '../../services/lab-col-trabajo/lab-col-trabajo.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -13,14 +15,15 @@ import { AuthService } from '../../authentication/auth.service';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  
+  Usuario: string | null = null;
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
     private toastr: ToastrService,
     private matSnackBar: MatSnackBar,
     private loginService: LoginService,
-    private authService: AuthService
+    private authService: AuthService,
+    private service: LabColTrabajoService
   ){}
 
   formularioLogin = this.formBuilder.group({
@@ -30,15 +33,83 @@ export class LoginComponent {
 
   dataUsuariosHabilitados: Array<any> = [];
   dataUsuariosWeb: Array<any> = [];
-  goColaTrabajo() {
-    this.router.navigate(['/ColaTrabajo']);
+  // async goColaTrabajo() {
+  //   const routes = ['/ColaTrabajo', '/HojaFormulacion', '/DispensadoAutolab', '/Jabonados'];
+  
+  //   // this.service.getObtenerPermisoUsuario(this.Usuario, )
+  //   // this.router.navigate(['/ColaTrabajo']);
+  //   for (const ruta of routes) {
+  //     try {
+  //       const response: any = await this.service.getObtenerPermisoUsuario(this.Usuario!, ruta).toPromise();
+  //       if (response.success && response.totalElements > 0) {
+  //         const permitido = response.elements[0].permitido?.trim().toUpperCase();
+  //         if (permitido === 'S') {
+  //           console.log(ruta);
+  //           this.router.navigate([ruta]);
+  //           break;
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error('Error validando acceso', error);
+  //     }
+  //   }
+  // }
+
+  // goColaTrabajo(){
+  //   const routes = ['/ColaTrabajo', '/HojaFormulacion', '/DispensadoAutolab', '/Jabonados'];
+
+  //   for (const ruta of routes){
+  //     try {
+  //       this.service.getObtenerPermisoUsuario(this.Usuario!, ruta).subscribe({
+  //         next: (response: any) => {
+  //           if(response.success){
+  //             if (response.totalElements > 0) {
+  //               const permitido = response.elements[0].permitido;
+  //               if (permitido === 'S'){
+  //                 console.log(ruta);
+  //                 this.router.navigate([ruta]);
+  //               }
+  //             }
+  //           }
+  //         }
+  //       });
+  //     }catch{
+
+  //     }
+  //   }
+  // }  
+
+  async goColaTrabajo() {
+    const routes = ['/ColaTrabajo', '/HojaFormulacion', '/DispensadoAutolab', '/Jabonados'];
+
+    for (const ruta of routes) {
+      try {
+        const response: any = await firstValueFrom(this.service.getObtenerPermisoUsuario(this.Usuario!, ruta));
+        if (response.success && response.totalElements > 0) {
+          const permitido = response.elements[0].permitido?.trim().toUpperCase();
+          if (permitido === 'S') {
+            console.log('Acceso permitido a:', ruta);
+            this.router.navigate([ruta]);
+            break;
+          }
+        }
+      } catch (error) {
+        console.error('Error validando acceso', error);
+      }
+    }
   }
 
-  onValidarUsuario(){
 
+  onValidarUsuario(){
+    
     let cod_Usuario = String(this.formularioLogin.get('Cod_Usuario')?.value).trim();
     this.dataUsuariosHabilitados = [];
     this.dataUsuariosWeb = [];
+
+    this.Usuario = cod_Usuario;
+    this.authService.setUsuario(cod_Usuario);
+    // this.goColaTrabajo();
+
     
     if(cod_Usuario == '' || cod_Usuario == null){
       this.matSnackBar.open("Campo obligatorio", "Cerrar",
@@ -55,7 +126,7 @@ export class LoginComponent {
             if (passwordText?.toLowerCase() === password.toLowerCase()) {
               this.toastr.success('Bienvenido', '', { timeOut: 2500 });
               //console.log('Redireccionando a ColaTrabajo...');
-              // localStorage.setItem('usuario', cod_Usuario);
+              localStorage.setItem('usuario', cod_Usuario);
               this.authService.setUsuario(cod_Usuario);
               // GlobalVariable.vusu = localStorage.getItem('usuario') || '';
 

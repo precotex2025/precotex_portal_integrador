@@ -8,6 +8,7 @@ import { BehaviorSubject } from 'rxjs';
 export class AuthService {
   private usuario: string | null = null;
   private nombreUsuario: string | null = null;
+  private permisos: Record<string, string> = {};
   constructor(
     private service: LabColTrabajoService
   ) {
@@ -66,6 +67,27 @@ export class AuthService {
         }
       }
     });
+  }
+
+
+
+  setPermiso(ruta: string, permitido: string) {
+    this.permisos[ruta] = permitido.trim().toUpperCase();
+    localStorage.setItem('permisos', JSON.stringify(this.permisos));
+  }
+
+  getPermiso(ruta: string): string | null {
+    if (Object.keys(this.permisos).length === 0) {
+      const stored = localStorage.getItem('permisos');
+      if (stored) {
+        this.permisos = JSON.parse(stored);
+      }
+    }
+    return this.permisos[ruta] || null;
+  }
+
+  tieneAcceso(ruta: string): boolean {
+    return this.getPermiso(ruta) === 'S';
   }
 
   

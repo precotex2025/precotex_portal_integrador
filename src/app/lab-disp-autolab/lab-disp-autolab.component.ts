@@ -109,7 +109,8 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     'descripcion_Color',
     'ingreso_Manual',
     'jab_Des',
-    'volumen'
+    'volumen',
+    'reenvio'
   ];
 
   dataSource: MatTableDataSource<data_colaautolab> = new MatTableDataSource();
@@ -916,7 +917,28 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     });
   }
 
+  revertirEstadoEnvioDeColorTricomia(row: any): void {
+    let Corr_Carta: string = row.corr_Carta;
+    let Sec: number = row.sec;
+    let Correlativo: number = row.correlativo;
+    let tip_Ten: string = row.tip_Ten;
+    const data = {
+      Corr_Carta: Corr_Carta,
+      sec: Sec,
+      correlativo: Correlativo,
+      flg_Est_Lab: '99',
+      tip_Ten: tip_Ten
+    }
 
+    this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(data).subscribe({
+      next: (response: any) => {
+        this.onListarColaAutolab(this.Usuario);
+      },
+      error: (error: any) => {
+
+      }
+    });
+  }
   patchActualizarEstadoDeColorTricomia(row: any): void {
     let Corr_Carta: string = row.corr_Carta;
     let Sec: number = row.sec;

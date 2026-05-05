@@ -57,7 +57,7 @@ interface SecuenciaOption {
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']   // ojo: debe ser styleUrls en plural
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   title = 'precotex_portal_integrador';
@@ -93,7 +93,11 @@ export class AppComponent {
         console.log('Nombre de Usuario activo', nombre);
       });
 
-      this.router.navigate(['/ColaTrabajo']);
+      // this.router.navigate(['/ColaTrabajo']);
+      const lastRoute = localStorage.getItem('lastRoute');
+      if (lastRoute) {
+        this.router.navigate([lastRoute]);
+      }
     } else { 
       this.router.navigate(['/login']); 
     }

@@ -106,6 +106,7 @@ export class LabColTrabajoService {
     params = params.append('Colorante_Total', Colorante_Total);
     params = params.append('Familia', Familia);
     params = params.append('Tipo', Tipo);
+    //params = params.append('Cambio', Cambio);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarJabonadosCalculado', { headers, params })
   }
 
@@ -365,6 +366,14 @@ export class LabColTrabajoService {
     params = params.append('Pro_Cod', Pro_Cod);
     params = params.append('Corr_Carta', Corr_Carta);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarCurvasV2', { headers, params })
+  }
+
+  getObtenerPermisoUsuario(Usr_Cod: string, Acc_Rut: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Usr_Cod', Usr_Cod);
+    params = params.append('Acc_Rut', Acc_Rut);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerPermisoUsuario', { headers, params })
   }
 
   postRegistrarDetalleColorSDC(data: any){

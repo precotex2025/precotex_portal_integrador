@@ -132,11 +132,11 @@ export class LabHojaFormulacionComponent implements OnInit {
       //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.Tipo_Receta_Remover);
       // }
       this.mostrarPartidas = empiezaConLetra
-      this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
+      //this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
       this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
       setTimeout(() => {
         
-        this.getListarTiposTenido(this.Familia);
+        //this.getListarTiposTenido(this.Familia);
         this.TipoReceta = this.data.tip_TenR;
         this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
         
@@ -170,11 +170,11 @@ export class LabHojaFormulacionComponent implements OnInit {
     console.log(':::::::::::::::::::::::.', this.Cod_Color);
     const empiezaConLetra = /^[A-Za-z]/.test(this.Corr_Carta_Remover);
     this.mostrarPartidas = empiezaConLetra;
-    this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
+    //this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
     this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
-    setTimeout(() => {
-      this.getListarTiposTenido(this.Familia);
-    }, 300);
+    // setTimeout(() => {
+    //   this.getListarTiposTenido(this.Familia);
+    // }, 300);
     // console.log('::::::::::::::::..',this.TipoReceta)
     // setTimeout(() => {
     //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
@@ -214,11 +214,11 @@ export class LabHojaFormulacionComponent implements OnInit {
 
     console.log('::::::::::::::::::::::::::::::::::::::::::.', this.FamiliaReferencia);
 
-    this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
+    //this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
     this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
-    setTimeout(() => {
-      this.getListarTiposTenido(this.Familia);
-    }, 300);
+    // setTimeout(() => {
+    //   this.getListarTiposTenido(this.Familia);
+    // }, 600);
     // console.log('::::::::::::::::..',this.TipoReceta)
     // setTimeout(() => {
     //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
@@ -273,7 +273,9 @@ export class LabHojaFormulacionComponent implements OnInit {
         if (response.success) {
           this.grillaExpandible = response.elements;
           this.Familia = response.elements[0].familia;
-          console.log('contenido que cargará en la grilla', this.grillaExpandible);
+          this.PartidasAgrupadas = response.elements[0].partidas;
+          // console.log('contenido que cargará en la grilla', this.grillaExpandible);
+          this.getListarTiposTenido(this.Familia);
           this.SpinnerService.hide();
         }
       },
@@ -1122,7 +1124,8 @@ export class LabHojaFormulacionComponent implements OnInit {
         CorrelativoAnterior: correlativoAnterior,
         //PartidasAgrupadasE: 'L8439/L5893/L6969'
         PartidasAgrupadasE: this.PartidasAgrupadas,
-        TipoReceta: this.TipoReceta
+        TipoReceta: this.TipoReceta,
+        Cod_Color: this.Cod_Color
       }
     });
   }
@@ -1219,21 +1222,23 @@ export class LabHojaFormulacionComponent implements OnInit {
   }
 
 
-  getObtenerPartidasAgrupadas(Usr_Cod: string, Corr_Carta: any): void {
-    this.LabColTrabajoService.getObtenerPartidasAgrupadas(Usr_Cod, Corr_Carta).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          if (response.totalElements > 0) {
-            this.PartidasAgrupadas = response.elements[0].partidas;
-            console.log('::::::::::::::::::::::::::.', this.PartidasAgrupadas);
-          }
-        }
-      },
-      error: (error: any) => {
-
-      }
-    });
-  }
+  // getObtenerPartidasAgrupadas(Usr_Cod: string, Corr_Carta: any): void {
+  //   this.SpinnerService.show();
+  //   this.LabColTrabajoService.getObtenerPartidasAgrupadas(Usr_Cod, Corr_Carta).subscribe({
+  //     next: (response: any) => {
+  //       if (response.success) {
+  //         if (response.totalElements > 0) {
+  //           this.PartidasAgrupadas = response.elements[0].partidas;
+  //           //console.log('::::::::::::::::::::::::::.', this.PartidasAgrupadas);
+  //           this.SpinnerService.hide();
+  //         }
+  //       }
+  //     },
+  //     error: (error: any) => {
+  //       this.SpinnerService.hide();
+  //     }
+  //   });
+  // }
 
   BuscarCorridas(event: MatSelectChange): void {
     this.TipoReceta = event.value;

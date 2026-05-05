@@ -11,6 +11,7 @@ import { MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/m
 import { Console } from 'console';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSelectChange } from '@angular/material/select';
+import { ThisReceiver } from '@angular/compiler';
 
 
 interface data {
@@ -105,7 +106,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   valorBaseAguaOxigenada: number = 2.0;
   valorBaseSodaCaustica: number = 2.0;
   Cod_ColorSeleccionado: string = 'NO_COL';
-
+  corridaConCambios: number = 0;
 
   rucolaseCantidad = [
     { codigo: 0.2, nombre: '0.2' },
@@ -313,10 +314,12 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       .reduce((acc, val) => acc + val, 0);
 
 
-    const contieneAMAVBTES = this.colorantesSeleccionados.some(c => c.codigo === 'QC000472');
+    const contieneAMAVBTES = this.colorantesSeleccionados.some(c => c.codigo === 'QC000472' || c.codigo === 'QC000063');
 
     if (contieneAMAVBTES) {
       this.condicion = 1;
+    }else{
+      this.condicion = 0;
     }
 
     // let familia: string = '';
@@ -326,13 +329,16 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     //   familia = this.Familia
     // }
 
-    console.log('::::::::::::::::::::::.', this.Familia);
-    console.log(this.totalFinalColorantes);
-    console.log(this.condicion);
-    console.log(this.data.TipoReceta);
+    // console.log('::::::::::::::::::::::.', this.Familia);
+    // console.log(this.totalFinalColorantes);
+    // console.log(this.condicion);
+    // console.log(this.data.TipoReceta);
+    if(this.corridaConCambios === 0){
+      this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, this.Familia, this.data.TipoReceta);
+      this.GetFijadosCalculado(this.totalFinalColorantes, this.Familia, this.data.TipoReceta, this.Cod_ColorSeleccionado);
+    }
+    
     this.GetCarbonatoSodaCalculado(this.totalFinalColorantes, this.Familia, this.condicion, this.data.TipoReceta);
-    this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, this.Familia, this.data.TipoReceta);
-    this.GetFijadosCalculado(this.totalFinalColorantes, this.Familia, this.data.TipoReceta, this.Cod_ColorSeleccionado);
     this.getListarCurvas(this.Familia);
     this.getListarTiposTenido(this.Familia);
   }
@@ -904,7 +910,10 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   GetCarbonatoSodaCalculado(Colorante_Total: number, Familia: string, Com_Cod_Con: number, Tipo: string): void {
     this.SpinnerService.show();
     this.productos = [];
-
+    console.log(Colorante_Total);
+    console.log(Familia);
+    console.log(Com_Cod_Con);
+    console.log(Tipo);
     this.LabColTraService.getListarCarbonatoSodaCalculado(Colorante_Total, Familia, Com_Cod_Con, Tipo).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -1070,6 +1079,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         const aguaOxigenadaCantidad = datos.agu_Oxi ?? 0;
         const sodaCausticaCantidad = datos.sod_Gr ?? 0;
         const volumen = datos.volumen ?? 0;
+        const cambiosRealizados = datos.cambio ?? 0;
         // console.log('::::::::::::...', peso);
         // console.log('::::::::::::...', volumen);
         this.datos = {
@@ -1101,6 +1111,15 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         this.aguaOxigenadaCantidad = this.valorBaseAguaOxigenada;
         this.valorBaseSodaCaustica = sodaCausticaCantidad;
         this.sodaCausticaCantidad = this.valorBaseSodaCaustica;
+
+        this.corridaConCambios = cambiosRealizados;
+        this.estadoCambio = cambiosRealizados;
+        
+        if(cambiosRealizados === 1){
+          this.cambiosHabilitados = true;
+        }else{
+          this.cambiosHabilitados = false;
+        }
         // this.getListarTiposTenido(datos.familia.toString());
         // this.getListarCurvas(datos.familia.toString());
 

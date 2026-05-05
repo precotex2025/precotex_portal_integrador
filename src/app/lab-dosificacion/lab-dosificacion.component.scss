@@ -30,7 +30,8 @@
 // }
 
 .tabla-contenido {
-  max-height: calc(24px * 19 + 50px);
+  //max-height: calc(24px * 19 + 50px);
+  height: 600px !important;
   overflow-y: auto;              
 }
 

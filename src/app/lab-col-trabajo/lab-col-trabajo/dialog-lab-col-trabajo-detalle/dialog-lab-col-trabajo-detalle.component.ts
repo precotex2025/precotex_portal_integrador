@@ -23,7 +23,8 @@ interface data_color {
 }
 
 interface data {
-  Num_SDC: any
+  Num_SDC: any,
+  Usr_Cod: any
 }
 
 @Component({
@@ -198,9 +199,11 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
 
   onEnviarAHojaFormulacion() {
     const ProcesoSeleccionado = this.curvaSeleccionada;
+    //let Usr_Cod = this.data.Usr_Cod;
+    let Usr_Cod = this.Usuario;
     this.dataTenido = {
       ...this.dataTenido,
-      "Usr_Cod": this.Usuario,
+      "Usr_Cod": Usr_Cod,
       Familia: ProcesoSeleccionado
     };
     //console.log(this.curvaSeleccionadaDes);
@@ -306,7 +309,7 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
       ...this.dataTenido,
       "Cur_Ten": parseInt(codigoSeleccionado),
       Cur_Ten_Dis: 0,
-      "Usr_Cod": GlobalVariable.vusu
+      "Usr_Cod": this.Usuario
     }
 
     console.log('LA INFORMACION AQUI ES -------------- ', this.dataTenido);

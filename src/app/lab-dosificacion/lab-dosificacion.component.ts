@@ -26,7 +26,7 @@ interface RegistroDosificacion {
   sec: number;
   color: string;
   curva: string;
-  dosificaciones: number[]; 
+  dosificaciones: number[];
   pm_final?: number;
 }
 
@@ -41,7 +41,10 @@ interface data_dosificacion {
   dosificacion2: number,
   dosificacion3: number,
   ph_Fin: string,
-  tip_Ten: string
+  tip_Ten: string,
+  dosificacion1Estado: string,
+  dosificacion2Estado: string,
+  dosificacion3Estado: string
 }
 
 @Component({
@@ -81,9 +84,9 @@ export class LabDosificacionComponent implements OnInit {
       this.router.navigate(['/login']);
     }
 
-    if(this.data.Estado === 'I'){
+    if (this.data.Estado === 'I') {
       console.log('hola');
-    }else{
+    } else {
       console.log('adios');
     }
 
@@ -163,7 +166,7 @@ export class LabDosificacionComponent implements OnInit {
         Tip_Ten: tip_Ten
       }
     });
-    
+
     dialogref.afterClosed().subscribe(result => {
       this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
     });
@@ -183,7 +186,7 @@ export class LabDosificacionComponent implements OnInit {
                 nombre: c.ahi_Des,
                 estado: c.ahi_Est_Pro
               }));
-          
+
             this.seleccionarAhiba(this.menuItems[0]);
 
             this.SpinnerService.hide();
@@ -227,8 +230,8 @@ export class LabDosificacionComponent implements OnInit {
     }).catch(err => console.error(err));
   }
 
-curvasAhiba: { codigo: number, nombre: string, cantidadPosiciones: number, estado: string }[] = [];
-validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
+  curvasAhiba: { codigo: number, nombre: string, cantidadPosiciones: number, estado: string }[] = [];
+  validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     this.SpinnerService.show();
 
     return new Promise((resolve, reject) => {
@@ -247,12 +250,12 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
             if (ahibaEncontrada) {
               console.log('Ahiba encontrada:', ahibaEncontrada);
               if (ahibaEncontrada.estado === 'I') {
-                resolve(1); 
+                resolve(1);
               } else {
-                resolve(0); 
+                resolve(0);
               }
             } else {
-              resolve(0); 
+              resolve(0);
             }
 
             this.SpinnerService.hide();
@@ -281,7 +284,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     this.LabColTrabajoService.getListarItemsEnAhiba(Ahi_Id).subscribe({
       next: (response: any) => {
         if (response.success) {
-          
+
           this.dataListadoDosificaciones = response.elements.map((item: any) => {
             const phArray = Array(item.can_Jabo).fill(null);
             if (item.ph_Jab && item.ph_Jab !== 0) phArray[0] = item.ph_Jab;
@@ -293,13 +296,13 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
           const tieneTubos = this.dataListadoDosificaciones.some(
             item => item.nro_Tubo_Jab !== null && item.nro_Tubo_Jab !== 0
           );
-          
+
 
           let SinDosificaciones = '';
           if (this.dataListadoDosificaciones.length > 0) {
             SinDosificaciones = this.dataListadoDosificaciones[0].tip_Ten ?? '';
           }
-          
+
           console.log(SinDosificaciones);
           if (tieneTubos) {
             // this.columnsToDisplay = [
@@ -313,7 +316,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
             // ].slice();
             this.TipoEnvio = 'J';
             setTimeout(() => {
-              if(SinDosificaciones === 'O' || SinDosificaciones === 'D'){
+              if (SinDosificaciones === 'O' || SinDosificaciones === 'D') {
                 this.columnsToDisplay = [
                   'seleccion',
                   'nro_Tubo',
@@ -324,7 +327,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
                   'correlativo',
                   'descripcion_Color'
                 ];
-              }else{
+              } else {
                 this.columnsToDisplay = [
                   'seleccion',
                   'nro_Tubo',
@@ -336,7 +339,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
                   'descripcion_Color'
                 ];
               }
-              
+
               this.dataSource.data = this.dataListadoDosificaciones;
             }, 0);
             this.tituloCurva = 'Jabonados';
@@ -365,47 +368,47 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
             } else {
               this.tituloCurva = curvas[0] || '';
             }
-            
-            if(SinDosificaciones === 'O' || SinDosificaciones === 'D'){
+
+            if (SinDosificaciones === 'O' || SinDosificaciones === 'D') {
               this.columnsToDisplay = [
-              'nro_Tubo',
-              'ph_Fin',
-              'descargar',
-              'reenvio',
-              'corr_Carta',
-              'descripcion_Color',
-              'jab_Des',
-              'sec',
-              'correlativo',
-              'familia',
-              'fec_ini_tenido',
-              'fec_fin_tenido',
-              'fec_ini_tenido_2',
-              'fec_fin_tenido_2'
-            ].slice();
-            }else{
+                'nro_Tubo',
+                'ph_Fin',
+                'descargar',
+                'reenvio',
+                'corr_Carta',
+                'descripcion_Color',
+                'jab_Des',
+                'sec',
+                'correlativo',
+                'familia',
+                'fec_ini_tenido',
+                'fec_fin_tenido',
+                'fec_ini_tenido_2',
+                'fec_fin_tenido_2'
+              ].slice();
+            } else {
               this.columnsToDisplay = [
-              'nro_Tubo',
-              'dosificacion1',
-              'dosificacion2',
-              'dosificacion3',
-              'soda',
-              'ph_Fin',
-              'descargar',
-              'reenvio',
-              'corr_Carta',
-              'descripcion_Color',
-              'jab_Des',
-              'sec',
-              'correlativo',
-              'familia',
-              'fec_ini_tenido',
-              'fec_fin_tenido',
-              'fec_ini_tenido_2',
-              'fec_fin_tenido_2'
-            ].slice();
+                'nro_Tubo',
+                'dosificacion1',
+                'dosificacion2',
+                'dosificacion3',
+                'soda',
+                'ph_Fin',
+                'descargar',
+                'reenvio',
+                'corr_Carta',
+                'descripcion_Color',
+                'jab_Des',
+                'sec',
+                'correlativo',
+                'familia',
+                'fec_ini_tenido',
+                'fec_fin_tenido',
+                'fec_ini_tenido_2',
+                'fec_fin_tenido_2'
+              ].slice();
             }
-            
+
           }
 
           this.dataSource.data = this.dataListadoDosificaciones;
@@ -432,7 +435,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
 
 
 
-  btnIniciarDisabled: boolean = false; 
+  btnIniciarDisabled: boolean = false;
   btnFinalizarDisabled: boolean = true;
 
   IniciarProceso(): void {
@@ -453,41 +456,41 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     // console.log(':::::::::::::::::::::::.', data);
     // console.log(':::::::::::::::::::::::::::::.', dataFechas);
 
-    if (existeSegundoTenido){
+    if (existeSegundoTenido) {
       Swal.fire({
-            title: 'SE INICIARÁ PROCESO SOLO ÓPTICO, ¿ESTAS SEGURO?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Si',
-            cancelButtonText: 'No'
-          }).then((result) => {
-            if (result.isConfirmed) {
-              
-              this.LabColTrabajoService.patchProcesoAhiba(data).subscribe({
-                next: (response: any) => {
-                  if (response.success) {
-                    this.btnIniciarDisabled = true;
-                    this.btnFinalizarDisabled = false;
-                    this.LabColTrabajoService.patchActualizarFechasTenido_2(dataFechas).subscribe({
-                      next: (response: any) => {
-                        if(response.success) {
-                          this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
-                        }
-                      }
-                    });
+        title: 'SE INICIARÁ PROCESO SOLO ÓPTICO, ¿ESTAS SEGURO?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si',
+        cancelButtonText: 'No'
+      }).then((result) => {
+        if (result.isConfirmed) {
+
+          this.LabColTrabajoService.patchProcesoAhiba(data).subscribe({
+            next: (response: any) => {
+              if (response.success) {
+                this.btnIniciarDisabled = true;
+                this.btnFinalizarDisabled = false;
+                this.LabColTrabajoService.patchActualizarFechasTenido_2(dataFechas).subscribe({
+                  next: (response: any) => {
+                    if (response.success) {
+                      this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+                    }
                   }
-                }
-              });
+                });
+              }
             }
-          })
-    }else{
+          });
+        }
+      })
+    } else {
       // this.btnIniciarDisabled = true;
       // this.btnFinalizarDisabled = false;
       console.log('INGRESA PORQUE ES PRIMER TENIDO');
       console.log('DATAFFECHAS!!!!!!!!', dataFechas);
-      
+
       this.LabColTrabajoService.patchProcesoAhiba(data).subscribe({
         next: (response: any) => {
           if (response.success) {
@@ -495,7 +498,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
             this.btnFinalizarDisabled = false;
             this.LabColTrabajoService.patchActualizarFechasTenido_2(dataFechas).subscribe({
               next: (response: any) => {
-                if(response.success) {
+                if (response.success) {
                   this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
                 }
               }
@@ -508,7 +511,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
 
     // if(this.tituloCurva === '29_BLQ QUIM 110x30' || this.tituloCurva === '30_BLQ QUIM 110x40' || this.tituloCurva === '31_BLQ QUIM 98x20'){
-      
+
     // }
 
     // this.LabColTrabajoService.patchProcesoAhiba(data).subscribe({
@@ -551,11 +554,11 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     this.LabColTrabajoService.patchProcesoAhiba(data).subscribe({
       next: (response: any) => {
         if (response.success) {
-          this.btnIniciarDisabled = false; 
-          this.btnFinalizarDisabled = true;     
+          this.btnIniciarDisabled = false;
+          this.btnFinalizarDisabled = true;
           this.LabColTrabajoService.patchActualizarFechasTenido_2(dataFechas).subscribe({
             next: (response: any) => {
-              if(response.success) {
+              if (response.success) {
                 this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
               }
             }
@@ -574,12 +577,12 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     let Flg_Est_Lab: string = '';
     let Tip_Ten: string = row.tip_Ten;
 
-    if(this.TipoEnvio === 'D'){
+    if (this.TipoEnvio === 'D') {
       Flg_Est_Lab = '05';
-    }else{
+    } else {
       Flg_Est_Lab = '10';
     }
-    
+
     const data = {
       corr_Carta: Corr_Carta,
       sec: Sec,
@@ -592,7 +595,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
 
     this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(data).subscribe({
       next: (response: any) => {
-        if(response.success){
+        if (response.success) {
           this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
         }
       },
@@ -602,7 +605,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     });
   }
 
-  patchActualizarFechasTenido(data: any): void{
+  patchActualizarFechasTenido(data: any): void {
     this.LabColTrabajoService.patchActualizarFechasTenido(data).subscribe({
       next: (response: any) => {
 
@@ -618,7 +621,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     return Array.from({ length: max }, (_, i) => 'ph_Jab' + (i + 1));
   }
 
-  patchActualizarEstadoCargaAhiba(Ahi_Id: number){
+  patchActualizarEstadoCargaAhiba(Ahi_Id: number) {
     const data = {
       ahi_Id: Ahi_Id
     }
@@ -627,7 +630,7 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
       next: (response: any) => {
 
       },
-      error: (error: any) => {}
+      error: (error: any) => { }
     });
   }
 
@@ -647,88 +650,88 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
 
 
   async Descargar(): Promise<void> {
-      const seleccionados = this.dataSource.data.filter((row: any) => row.seleccionado);
-  
-      // const confirmacion = await Swal.fire({
-      //   title: '¿Enviar a Dispensar?',
-      //   icon: 'question',
-      //   showCancelButton: true,
-      //   confirmButtonColor: '#3085d6',
-      //   cancelButtonColor: '#d33',
-      //   confirmButtonText: 'Sí',
-      //   cancelButtonText: 'No'
-      // });
-  
-      // if (!confirmacion.isConfirmed) return;
-  
-      this.SpinnerService.show();
-  
-      try {
-        for (let i = 0; i < seleccionados.length; i++) {
-          const item = seleccionados[i];
-          const dataEnviar = {
-            corr_Carta: item.corr_Carta,
-            sec: item.sec,
-            correlativo: item.correlativo,
-            flg_Est_Lab: '10', 
-            tip_Ten: item.tip_Ten
-          };
+    const seleccionados = this.dataSource.data.filter((row: any) => row.seleccionado);
 
-          console.log(':::::::::::::::::::::.', dataEnviar);
-          try {
-            const respuesta = await this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(dataEnviar).toPromise();
-          } catch (error) {
-            console.log('Error al actualizar el estado', error);
-          }
-          await new Promise(resolve => setTimeout(resolve, 2000));
+    // const confirmacion = await Swal.fire({
+    //   title: '¿Enviar a Dispensar?',
+    //   icon: 'question',
+    //   showCancelButton: true,
+    //   confirmButtonColor: '#3085d6',
+    //   cancelButtonColor: '#d33',
+    //   confirmButtonText: 'Sí',
+    //   cancelButtonText: 'No'
+    // });
+
+    // if (!confirmacion.isConfirmed) return;
+
+    this.SpinnerService.show();
+
+    try {
+      for (let i = 0; i < seleccionados.length; i++) {
+        const item = seleccionados[i];
+        const dataEnviar = {
+          corr_Carta: item.corr_Carta,
+          sec: item.sec,
+          correlativo: item.correlativo,
+          flg_Est_Lab: '10',
+          tip_Ten: item.tip_Ten
+        };
+
+        console.log(':::::::::::::::::::::.', dataEnviar);
+        try {
+          const respuesta = await this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(dataEnviar).toPromise();
+        } catch (error) {
+          console.log('Error al actualizar el estado', error);
         }
-      } finally {
-        this.SpinnerService.hide();
-        this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
+    } finally {
+      this.SpinnerService.hide();
+      this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+    }
+  }
+
+  DescargarDosificacion(row: any): void {
+    let Corr_Carta: string = '';
+    let Sec: number = 0;
+    let Correlativo: number = 0;
+    let Flg_Est_Lab: string = '';
+    let Tip_Ten: string = '';
+
+    Corr_Carta = row.corr_Carta;
+    Sec = row.sec;
+    Correlativo = row.correlativo;
+    Flg_Est_Lab = '11';
+    Tip_Ten = row.tip_Ten;
+
+    const data = {
+      corr_Carta: Corr_Carta,
+      sec: Sec,
+      correlativo: Correlativo,
+      flg_Est_Lab: Flg_Est_Lab,
+      tip_Ten: Tip_Ten
     }
 
-    DescargarDosificacion(row: any): void {
-      let Corr_Carta: string = '';
-      let Sec: number = 0;
-      let Correlativo: number = 0;
-      let Flg_Est_Lab: string = '';
-      let Tip_Ten: string = '';
-
-      Corr_Carta = row.corr_Carta;
-      Sec = row.sec;
-      Correlativo = row.correlativo;
-      Flg_Est_Lab = '11';
-      Tip_Ten = row.tip_Ten;
-
-      const data = {
-        corr_Carta: Corr_Carta,
-        sec: Sec,
-        correlativo: Correlativo,
-        flg_Est_Lab: Flg_Est_Lab,
-        tip_Ten: Tip_Ten
-      }
-
-      this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(data).subscribe({
-        next: (response: any) => {
-          if(response.success){
-            if(response.message === 'Solo se pueden descargar los BLANCOS de esta forma'){
-              this.toastr.warning(response.message, '', {
-                timeOut: 2500
-              });
-              // this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
-            }else if(response.message === 'No se ha completado su segundo tenido'){
-              this.toastr.warning(response.message, '', {
-                timeOut: 2500
-              });
-            }else{
-              this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
-            }
+    this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(data).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          if (response.message === 'Solo se pueden descargar los BLANCOS de esta forma') {
+            this.toastr.warning(response.message, '', {
+              timeOut: 2500
+            });
+            // this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
+          } else if (response.message === 'No se ha completado su segundo tenido') {
+            this.toastr.warning(response.message, '', {
+              timeOut: 2500
+            });
+          } else {
+            this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
           }
-        },
-        error:(error: any) => {}
-      });
-    }
+        }
+      },
+      error: (error: any) => { }
+    });
+  }
 
   // actualizarEstadoDosificacion(row: any, numero: number, checked: boolean): void {
   //   const nuevoEstado = checked ? 'S' : 'N';
@@ -793,6 +796,32 @@ validarEstadoahibaPorCodigo(codigo: number): Promise<number> {
     });
   }
 
+  isAllSelected2(col: number): boolean {
+    return this.dataSource.data.every(r => {
+      if (col === 1) return r.dosificacion1Estado === 'S';
+      if (col === 2) return r.dosificacion2Estado === 'S';
+      if (col === 3) return r.dosificacion3Estado === 'S';
+      return false;
+    });
+  }
+
+  toggleAll(col: number, checked: boolean) {
+    this.dataSource.data.forEach(r => {
+      const nuevoEstado = checked ? 'S' : 'N';
+      if (col === 1) {
+        r.dosificacion1Estado = nuevoEstado;
+        this.actualizarEstadoDosificacion(r, 1, checked);
+      }
+      if (col === 2) {
+        r.dosificacion2Estado = nuevoEstado;
+        this.actualizarEstadoDosificacion(r, 2, checked);
+      }
+      if (col === 3) {
+        r.dosificacion3Estado = nuevoEstado;
+        this.actualizarEstadoDosificacion(r, 3, checked);
+      }
+    });
+  }
 
 
 }

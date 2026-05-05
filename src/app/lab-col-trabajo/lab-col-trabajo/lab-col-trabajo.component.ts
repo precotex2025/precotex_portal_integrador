@@ -95,7 +95,8 @@ export class LabColTrabajoComponent implements OnInit {
     'creacion',
     'dias_comp',
     'estado',
-    'entregado'
+    'entregado',
+    'usuario'
   ]
 
   displayedColumnsProduccion: string[] = [
@@ -112,7 +113,8 @@ export class LabColTrabajoComponent implements OnInit {
     'partidas',
     'flg_estandar',
     'estado',
-    'reformular'
+    'reformular',
+    'usuario'
   ]
 
   dataSource: MatTableDataSource<data_cola_trab> = new MatTableDataSource();
@@ -540,7 +542,8 @@ getColorClaseProduccion(row: any): string {
   onCreate(objeto: any) {
 
     let num_sdc = objeto.corr_Carta;
-
+    //let usr_Cod = objeto.usr_Cod;
+    let usr_Cod = this.Usuario;
     let dialogref = this.dialog.open(DialogLabColTrabajoDetalleComponent, {
       panelClass: 'dialog-tablet',
       width: '900px',
@@ -549,7 +552,8 @@ getColorClaseProduccion(row: any): string {
       disableClose: false,
       data: {
         Title: "Detalle",
-        Num_SDC: num_sdc
+        Num_SDC: num_sdc,
+        Usr_Cod: usr_Cod
       }
     });
     dialogref.afterClosed().subscribe(result => { this.onGetListaSDC() }
@@ -593,8 +597,8 @@ getColorClaseProduccion(row: any): string {
   dataTenido: any = {}
   EncolarHojaFormulacionProduccion(): void {
     this.dataTenido = {
-      ...this.dataTenido,
-      "Usr_Cod": this.Usuario
+      ...this.dataTenido
+      //"Usr_Cod": this.Usuario
     };
     console.log(this.dataTenido);
     if (this.dataTenido.Cur_Ten == 0 || this.dataTenido.Cur_Ten == '') { this.toastr.warning('Debe seleccionar una curva', 'Atención'); return; }
@@ -694,8 +698,8 @@ getColorClaseProduccion(row: any): string {
 
     this.dataTenido = {
       ...this.dataTenido,
-      "Cur_Ten": parseInt(codigoSeleccionado),
-      "Usr_Cod": GlobalVariable.vusu
+      "Cur_Ten": parseInt(codigoSeleccionado)
+      //"Usr_Cod": GlobalVariable.vusu
     }
 
   }
@@ -748,7 +752,7 @@ getColorClaseProduccion(row: any): string {
     console.log(':::::..', ProcesoSeleccionado);
     this.dataTenido = {
       ...this.dataTenido,
-      "Usr_Cod": this.Usuario,
+      //"Usr_Cod": this.Usuario,
       Familia: ProcesoSeleccionado
     };
     //console.log(this.dataTenido);
@@ -807,11 +811,14 @@ getColorClaseProduccion(row: any): string {
   CargarModalTenido(data_cola_trab_produccion: any): void {
     //let Cod_OrdTra = this.dataListadoProduccion[0].cod_OrdTra;
     let Cod_OrdTra = data_cola_trab_produccion.cod_OrdTra;
+    //let Usr_Cod = data_cola_trab_produccion.usr_Cod;
+    let Usr_Cod = this.Usuario;
     this.Cod_OrdTra = Cod_OrdTra;
     this.dataTenido = {
       "Corr_Carta": '',
       "Cod_OrdTra": Cod_OrdTra,
       "Sec": 1,
+      "Usr_Cod": Usr_Cod
     };
 
     this.getListarCurvas('0.00000')
@@ -939,7 +946,7 @@ getColorClaseProduccion(row: any): string {
         ...this.dataTenido,
         Cur_Ten: parseInt(this.curvasSeleccionadasDes[0].codigo),
         Cur_Ten_Dis: parseInt(this.curvasSeleccionadasDes[1].codigo),
-        Usr_Cod: this.Usuario
+        //Usr_Cod: this.Usuario
       };
       console.log('DataTenido actualizado:', this.dataTenido);
     }
