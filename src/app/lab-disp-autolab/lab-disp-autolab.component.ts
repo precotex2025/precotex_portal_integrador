@@ -196,20 +196,46 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
         // console.log('::::::::::::::::::::::::::::.', dataEnviar);
         try {
           const respuesta = await this.LabColTrabajoService.patchEnviarADispensado(dataEnviar).toPromise();
+          
         } catch (error) {
           console.log('Error al enviar a dispensado:', error);
         }
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
+
+      // this.SpinnerService.hide();
+      
       const dataEnviar = {
         corr_Carta: "",
         sec: 0,
-        correlativo: 0,
-        posicion: 0
+        correlativo: 0
       };
+      
+      // let continuar = true;
 
+      // while (continuar) {
+      //   try {
+      //     const respuesta: any = await this.LabColTrabajoService.patchEnviarAutolab(dataEnviar).toPromise();
+
+      //     if (respuesta.codigo === 0 && respuesta.sMsj.includes("esperar")) {
+      //       console.log("Archivo existente, esperando...");
+      //       // esperar 10 segundos antes de reintentar
+      //       await new Promise(resolve => setTimeout(resolve, 10000));
+      //     } else if (respuesta.codigo === 1) {
+      //       console.log("Archivo enviado correctamente");
+      //       continuar = false; // salir del loop
+      //     } else {
+      //       console.error("Error: " + respuesta.sMsj);
+      //       continuar = false; // salir del loop en caso de error
+      //     }
+      //   } catch (error) {
+      //     console.error("Error al llamar al SP:", error);
+      //     continuar = false;
+      //   }
+      // }
       try {
-        const exitoso = await this.LabColTrabajoService.patchEnviarAutolab(dataEnviar).subscribe({});
+        //const exitoso = await this.LabColTrabajoService.getEnviarAutolabModoGet().subscribe({});
+        const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
       } catch (error) {
         // console.log('Error al enviar a Autolab:', error);
       }
@@ -222,6 +248,210 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
       this.SpinnerService.hide();
     }
   }
+
+  // enviarAutolab(): void {
+  //   this.LabColTrabajoService.getEnviarAutolabModoGet().subscribe({
+  //     next: (response: any) => {
+  //       console.log(response.elements);
+  //     },
+  //     error: (error: any) => {
+
+  //     }
+  //   });
+  // }
+
+//   async enviarAutolab(): Promise<void> {
+//   let continuar = true;
+
+//   while (continuar) {
+//     const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+
+//     if (respuesta.codigo === 1) {
+//       console.log(respuesta.mensaje);
+//       // seguir hasta que no queden grupos
+//     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("NO HAY GRUPOS")) {
+//       console.log("Todos los grupos procesados");
+//       continuar = false;
+//     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("espera")) {
+//       console.log("Archivo existente, esperando...");
+//       await new Promise(resolve => setTimeout(resolve, 10000));
+//     } else {
+//       console.error("Error: " + respuesta.mensaje);
+//       continuar = false;
+//     }
+//   }
+// }
+
+// async enviarAutolab(): Promise<void> {
+
+//   await this.obtenerCantidadGrupos();
+//   // Primera llamada para saber cuántos grupos hay
+//   // const inicial: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+//   // const totalGrupos = inicial.gruposPendientes;
+//   // console.log(totalGrupos);
+//   // for (let i = 0; i < totalGrupos; i++) {
+//   //   const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+
+//   //   if (respuesta.codigo === 1) {
+//   //     console.log(`Grupo ${i+1} procesado: ${respuesta.mensaje}`);
+//   //   } else {
+//   //     console.error(`Error en grupo ${i+1}: ${respuesta.mensaje}`);
+//   //     break;
+//   //   }
+//   // }
+
+//   // console.log("Todos los grupos procesados");
+// }
+
+// async enviarAutolab(): Promise<void> {
+//   const totalGrupos = await this.obtenerCantidadGrupos();
+
+//   for (let i = 0; i < totalGrupos; i++) {
+//     const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+//     console.log(respuesta);
+//     if (respuesta.codigo === 1) {
+//       console.log(`Grupo ${i+1} procesado: ${respuesta.mensaje}`);
+//     } else {
+//       console.error(`Error en grupo ${i+1}: ${respuesta.mensaje}`);
+//       break;
+//     }
+//   }
+
+//   console.log("Todos los grupos procesados");
+// }
+
+async enviarAutolab(): Promise<void> {
+  const totalGrupos = await this.obtenerCantidadGrupos();
+  console.log(totalGrupos);
+  const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+  // for (let i = 0; i < totalGrupos; i++) {
+  //   let procesado = false;
+
+  //   while (!procesado) {
+  //     const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+
+  //     if (respuesta.codigo === 1) {
+  //       console.log(`Grupo ${i+1} procesado: ${respuesta.mensaje}`);
+  //       procesado = true; // pasamos al siguiente grupo
+  //     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("ESPERAR")) {
+  //       console.log(`Grupo ${i+1}: archivo ocupado, reintentando en 10s...`);
+  //       await new Promise(resolve => setTimeout(resolve, 10000));
+  //       // seguimos en el mismo grupo, no avanzamos el índice
+  //     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("NO HAY GRUPOS")) {
+  //       console.log("Todos los grupos procesados");
+  //       return; // salimos del bucle principal
+  //     } else {
+  //       console.error(`Error en grupo ${i+1}: ${respuesta.mensaje}`);
+  //       return; // cortamos el proceso
+  //     }
+  //   }
+  // }
+
+  // console.log("Proceso terminado");
+
+  // 1. Asignar grupos
+  // await this.asignarGrupos();
+  // console.log("Grupos asignados");
+
+  // // 2. Obtener cantidad de grupos
+  // const totalGrupos = await this.obtenerCantidadGrupos();
+  // console.log("Cantidad de grupos:", totalGrupos);
+
+  // // 3. Enviar a Autolab
+  // for (let i = 0; i < totalGrupos; i++) {
+  //   let procesado = false;
+
+  //   while (!procesado) {
+  //     const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+
+  //     if (respuesta.codigo === 1) {
+  //       console.log(`Grupo ${i+1} procesado: ${respuesta.mensaje}`);
+  //       procesado = true; // pasamos al siguiente grupo
+  //     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("ESPERAR")) {
+  //       console.log(`Grupo ${i+1}: archivo ocupado, reintentando en 10s...`);
+  //       await new Promise(resolve => setTimeout(resolve, 10000));
+  //       // seguimos en el mismo grupo
+  //     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("NO HAY GRUPOS")) {
+  //       console.log("Todos los grupos procesados");
+  //       return;
+  //     } else {
+  //       console.error(`Error en grupo ${i+1}: ${respuesta.mensaje}`);
+  //       return;
+  //     }
+  //   }
+  // }
+
+  console.log("Proceso terminado");
+}
+
+
+
+
+  cantidadGrupos: number = 0;
+  // obtenerCantidadGrupos(): void {
+  //   this.LabColTrabajoService.getObtenerCantidadGrupos().subscribe({
+  //     next: (response: any) => {
+  //       if(response.success){
+  //         if (response.totalElements > 0){
+  //           this.cantidadGrupos = response.elements[0].cantidadGrupos;
+  //           console.log(this.cantidadGrupos);
+  //         }
+  //       }
+  //     }
+  //   });
+  // }
+
+  async obtenerCantidadGrupos(): Promise<number> {
+    const response: any = await this.LabColTrabajoService.getObtenerCantidadGrupos().toPromise();
+    if (response.success && response.totalElements > 0) {
+      return response.elements[0].cantidadGrupos;
+    }
+    return 0;
+  }
+
+  async asignarGrupos(): Promise<void> {
+    const response: any = await this.LabColTrabajoService.getAsignarGrupos().toPromise();
+    if (response.success && response.totalElements > 0) {
+      return response.elements[0].corr_Carta;
+    }
+    console.log('Grupos Asignados')
+  }
+
+  async procesarAutolab(): Promise<void> {
+  // 1. Asignar grupos
+  await this.asignarGrupos();
+  console.log("Grupos asignados");
+
+  // 2. Obtener cantidad de grupos
+  const totalGrupos = await this.obtenerCantidadGrupos();
+  console.log("Cantidad de grupos:", totalGrupos);
+
+  // 3. Enviar a Autolab
+  for (let i = 0; i < totalGrupos; i++) {
+    let procesado = false;
+
+    while (!procesado) {
+      const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+
+      if (respuesta.codigo === 1) {
+        console.log(`Grupo ${i+1} procesado: ${respuesta.mensaje}`);
+        procesado = true; // pasamos al siguiente grupo
+      } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("ESPERAR")) {
+        console.log(`Grupo ${i+1}: archivo ocupado, reintentando en 10s...`);
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        // seguimos en el mismo grupo
+      } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("NO HAY GRUPOS")) {
+        console.log("Todos los grupos procesados");
+        return;
+      } else {
+        console.error(`Error en grupo ${i+1}: ${respuesta.mensaje}`);
+        return;
+      }
+    }
+  }
+
+  console.log("Proceso terminado");
+}
 
 
 

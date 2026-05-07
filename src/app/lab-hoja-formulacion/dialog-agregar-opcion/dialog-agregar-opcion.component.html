@@ -77,26 +77,32 @@
           <div class="colorante-header">%</div>
           <div class="colorante-header">Acción</div>
 
-          <ng-container *ngFor="let colorante of colorantesSeleccionados">
+          <ng-container *ngFor="let colorante of colorantesSeleccionados; let i = index">
               <div class="colorante-cell codigo">{{ colorante.codigo }}</div>
               <div class="colorante-cell nombre">{{ colorante.nombre }}</div>
               <div class="colorante-cell inicial">
                 <input class="colorante-inicial" 
                 type="number"
                 [(ngModel)]="colorante.inicial"
+                (keydown.enter)="focusNext(i + 1 , 'inicial')"
                 (ngModelChange)="limitarDecimales(colorante); actualizarFinal(colorante)"
                 step="0.01"
                 (keypress)="validarNumero($event)" 
-                [disabled]="data.Title === 'Copiar' || data.Title === 'Entregar'"/>
+                [disabled]="data.Title === 'Copiar' || data.Title === 'Entregar'"
+                id="inicial{{i}}"
+                #inicial/>
               </div>
               <div class="colorante-cell ajuste">
               <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.50); actualizarFinal(colorante)">−</button>
               <input class="casillaAjuste" 
                     type="number" 
                     [(ngModel)]="colorante.ajuste" 
+                    (keydown.enter)="focusNext(i + 1, 'ajuste')"
                     step="0.01" 
                     (ngModelChange)="actualizarFinal(colorante)" 
-                    (keypress)="validarNumero($event)" />
+                    (keypress)="validarNumero($event)" 
+                    id="ajuste{{i}}"
+                    #ajuste/>
               <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.50); actualizarFinal(colorante); " >+</button>
               </div>
               <!-- <div class="colorante-cell final">{{ calcularFinal(colorante).toFixed(5) }}</div> -->
@@ -105,10 +111,13 @@
                 <input type="number"
                       class="colorante-final"
                       [(ngModel)]="colorante.final"
+                      (keydown.enter)="focusNext(i + 1, 'final')"
                       step="0.00001"
                       (ngModelChange)="actualizarDesdeFinal(colorante)"
                       (keypress)="validarNumero($event)" 
-                      [disabled]="data.Title === 'Insertar'" />
+                      [disabled]="data.Title === 'Insertar'" 
+                      id="final{{i}}"
+                      #final/>
               </div>
 
               <div class="colorante-cell accion">

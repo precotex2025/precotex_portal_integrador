@@ -208,7 +208,6 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       this.colorantesFiltrados = filtrados;
     });
     this.GetFamiliasProceso();
-    this.getObtenerTrio(this.data.Num_SDC, this.data.Num_Sec, this.data.TipoReceta);
     this.GetColorantes();
     this.GetCurvasJabonado();
     this.GetFijados();
@@ -224,6 +223,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       this.esCopia = true;
       //this.actualizarTotalFinal();
     } else if (this.data.Title === 'Insertar') {
+      this.getObtenerTrio(this.data.Num_SDC, this.data.Num_Sec, this.data.TipoReceta);
       this.valorBaseAguaOxigenada = 2.0;
       this.valorBaseSodaCaustica = 2.0;
       this.aguaOxigenadaCantidad = this.valorBaseAguaOxigenada;
@@ -1494,6 +1494,16 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       },
       error: (error: any) => { }
     });
+  }
+
+  focusNext(index: number, target: string) {
+    const nextElement = document.querySelector<HTMLInputElement>(
+      `#${target}${index}`
+    );
+    if (nextElement) {
+      nextElement.focus();
+      nextElement.select();
+    }
   }
 
 

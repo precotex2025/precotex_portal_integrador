@@ -4,7 +4,7 @@ import { GlobalVariable } from '../../VarGlobals';
 import _moment from 'moment';
 import { param } from 'jquery';
 import { Observable } from 'rxjs';
-
+import { timeout } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -374,6 +374,24 @@ export class LabColTrabajoService {
     params = params.append('Usr_Cod', Usr_Cod);
     params = params.append('Acc_Rut', Acc_Rut);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerPermisoUsuario', { headers, params })
+  }
+
+  getEnviarAutolabModoGet() {
+    const headers = this.Header;
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getEnviarAutolabModoGet', { headers })
+    .pipe(
+      timeout(600000)
+    );
+  }
+
+  getObtenerCantidadGrupos() {
+    const headers = this.Header;
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerCantidadGrupos', { headers })
+  }
+
+  getAsignarGrupos() {
+    const headers = this.Header;
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getAsignarGrupos', { headers })
   }
 
   postRegistrarDetalleColorSDC(data: any){
