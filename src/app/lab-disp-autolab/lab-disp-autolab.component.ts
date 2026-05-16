@@ -195,7 +195,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
 
         // console.log('::::::::::::::::::::::::::::.', dataEnviar);
         try {
-          const respuesta = await this.LabColTrabajoService.patchEnviarADispensado(dataEnviar).toPromise();
+            const respuesta = await this.LabColTrabajoService.patchEnviarADispensado(dataEnviar).toPromise();
           
         } catch (error) {
           console.log('Error al enviar a dispensado:', error);

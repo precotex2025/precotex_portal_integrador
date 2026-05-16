@@ -278,6 +278,7 @@ export class LabDosificacionComponent implements OnInit {
   tituloCurva: string = '';
 
   listarDosificacionesXAhiba(Ahi_Id: number): void {
+    console.log(Ahi_Id)
     this.SpinnerService.show();
     this.dataListadoDosificaciones = [];
 
@@ -787,6 +788,7 @@ export class LabDosificacionComponent implements OnInit {
     this.LabColTrabajoService.patchActualizarEstadoDosificacion(data).subscribe({
       next: (response: any) => {
         if (response.success) {
+          console.log (this.itemSeleccionado.codigo);
           this.listarDosificacionesXAhiba(this.itemSeleccionado.codigo);
         }
       },

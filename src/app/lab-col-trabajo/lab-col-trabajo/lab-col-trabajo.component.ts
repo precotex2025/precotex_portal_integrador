@@ -16,6 +16,7 @@ import { DialogLabColTrabajoDetalleComponent } from './dialog-lab-col-trabajo-de
 import { GlobalVariable } from '../../VarGlobals';
 import { AuthService } from '../../authentication/auth.service';
 import Swal from 'sweetalert2';
+import { timeout } from 'rxjs';
 
 
 interface data_cola_trab {
@@ -666,6 +667,33 @@ getColorClaseProduccion(row: any): string {
     });
   }
 
+  getListarCurvaObtenidaOrgatex(Pro_Cod: string, Corr_Carta: string) {
+    console.log('entra a metodo');
+    this.toastr.info('BUSCANDO PROCESO EN ORGATEX', '',{ timeOut: 3500 });
+    this.LabColaTrabajoService.getListarCurvasV2(Pro_Cod, Corr_Carta).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          // this.curvas = response.elements.map((c: any) => ({
+          //   codigo: c.codigo,
+          //   descripcion: c.descripcion
+          // }));
+          //console.log(response.elements);
+          if(response.elements.length === 1){
+            this.toastr.success('PROCESO ENCONTRADO', '',{ timeOut: 3500 });
+            this.curvaSeleccionada = response.elements[0].codigo;
+            //console.log(this.curvaSeleccionada);
+            this.onSeleccionarCurva(this.curvaSeleccionada);
+          }else{
+            this.toastr.warning('NO CUENTA CON PROCESO EN ORGATEX', '',{ timeOut: 3500 });
+          }
+        }
+      },
+      error: (error: any) => {
+        console.log(error.error.message, 'Cancelar', { timeout: 3000 });
+      }
+    });
+  } 
+
   onSeleccionarCurva(codigoSeleccionado: string): void {
     this.curvaSeleccionada = codigoSeleccionado;
     this.onCargarCurvaDes(codigoSeleccionado, this.Cod_OrdTra);
@@ -813,17 +841,19 @@ getColorClaseProduccion(row: any): string {
     let Cod_OrdTra = data_cola_trab_produccion.cod_OrdTra;
     //let Usr_Cod = data_cola_trab_produccion.usr_Cod;
     let Usr_Cod = this.Usuario;
+    let partidas = data_cola_trab_produccion.partidas;
     this.Cod_OrdTra = Cod_OrdTra;
     this.dataTenido = {
       "Corr_Carta": '',
       "Cod_OrdTra": Cod_OrdTra,
       "Sec": 1,
-      "Usr_Cod": Usr_Cod
+      "Usr_Cod": Usr_Cod,
+      "Partidas": partidas
     };
 
     this.getListarCurvas('0.00000')
     this.curvaSeleccionada = '';
-
+    this.getListarCurvaObtenidaOrgatex('0.00000', Cod_OrdTra);
     setTimeout(() => { this.dialogRef1 = this.dialog.open(this.modalEnviar, { width: '600px' }); }, 300);
   }
 

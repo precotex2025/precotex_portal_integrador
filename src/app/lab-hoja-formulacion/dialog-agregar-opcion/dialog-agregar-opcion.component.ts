@@ -191,6 +191,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       };
     })
 
+    console.log(this.data);
 
     this.TipoTenidoSeleccionado = this.data.TipoReceta;
     this.Cod_ColorSeleccionado = this.data.Cod_Color ?? 'NO_COL';
@@ -392,7 +393,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         queryParams: {
           corr_CartaE: this.data.Num_SDC,
           secE: this.data.Num_Sec,
-          tip_TenE: this.data.TipoReceta
+          tip_TenE: this.data.TipoReceta,
+          cod_Color: this.data.Cod_Color
         }
       });
   }
@@ -868,6 +870,10 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   GetFijadosCalculado(Colorante_Total: number, Familia: string, Tipo: string, Cod_Color: string): void {
     this.SpinnerService.show();
     this.fijados = [];
+    console.log(Colorante_Total);
+    console.log(Familia);
+    console.log(Tipo);
+    console.log(Cod_Color);
     this.LabColTraService.getListarFijadosCalculado(Colorante_Total, Familia, Tipo, Cod_Color).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -889,6 +895,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
             this.parametros.fijadoPor = fijadoPor;
             // console.log('El valor en parametros fijado es: ', this.parametros.fijado);
             // console.log('El valor en parametros FIJPOR: ', this.parametros.fijadoPor);
+            console.log(response.elements);
             this.SpinnerService.hide();
           } else {
             this.fijados = [];

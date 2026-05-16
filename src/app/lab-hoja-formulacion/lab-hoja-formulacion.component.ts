@@ -56,7 +56,8 @@ interface grillaDesplegable {
 interface data {
   corr_CartaR: any,
   secR: number,
-  tip_TenR: string
+  tip_TenR: string,
+  cod_ColorR: string
   //familiaR: string
 }
 
@@ -107,7 +108,7 @@ export class LabHojaFormulacionComponent implements OnInit {
         corr_CartaR: params['corr_CartaE'] !== undefined ? String(params['corr_CartaE']) : '',
         secR: params['secE'] !== undefined ? Number(params['secE']) : 0,
         tip_TenR: params['tip_TenE'] !== undefined ? String(params['tip_TenE']): '',
-        //familiaR: params ['familiaE'] !== undefined ? String(params['familiaE']): ''
+        cod_ColorR: params ['cod_ColorE'] !== undefined ? String(params['cod_ColorE']): 'NO_COL'
       };
     });
 
@@ -119,10 +120,11 @@ export class LabHojaFormulacionComponent implements OnInit {
       this.recetaSeleccionada = encontrada;
       this.Corr_Carta_Remover = encontrada.corr_Carta;
       this.Sec_Remover = encontrada.sec;
+      this.Cod_Color = encontrada.cod_Color;
       // this.Tipo_Receta_Remover = this.data.tip_TenR;
       //this.Familia = this.data.familiaR;
       
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<', this.TipoReceta);
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<', this.Cod_Color);
       /************************************************************/
       
       // if(this.Tipo_Receta_Remover !== ''){
@@ -135,7 +137,6 @@ export class LabHojaFormulacionComponent implements OnInit {
       //this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
       this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
       setTimeout(() => {
-        
         //this.getListarTiposTenido(this.Familia);
         this.TipoReceta = this.data.tip_TenR;
         this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
