@@ -47,6 +47,10 @@ interface informacionSDCProduccion{
   ruta: string[];      
   familia: string;  
   pre_Id: number;
+  cod_OrdTra_Ref: string;
+  tela_Ref: string;
+  rel_Ban_Ref: string;
+  lote_Ref: string
 }
 
 @Component({
