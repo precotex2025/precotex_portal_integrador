@@ -23,7 +23,8 @@ interface data_color {
 }
 
 interface data {
-  Num_SDC: any
+  Num_SDC: any,
+  Usr_Cod: any
 }
 
 @Component({
@@ -79,7 +80,7 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
   descripcion: string = '';
   curvas: { codigo: string, descripcion: string }[] = [];
   curvaSeleccionada: string = '';
-  curvasDescripcion: { codigo: string, descripcion: string }[] = [];
+  curvasDescripcion: { codigo: string, descripcion: string, tipo: string }[] = [];
   curvaSeleccionadaDes: string = '';
 
 
@@ -97,9 +98,9 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
       return 'Color-Verde'
     } else if (est_lab === '07') {
       return 'Color-Verde'
-    } else if (est_lab === '09'){
+    } else if (est_lab === '09') {
       return 'Color-Verde'
-    } 
+    }
     else {
       return 'Color-Negro';
     }
@@ -129,10 +130,12 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
     })
   }
   dataTenido: any = {}
+  Corr_Carta: string = '';
   CargarModalTenido(data_cola_trab: any): void {
     let Corr_Carta = this.dataListadoDetalle[0].corr_Carta;
     let Sec = data_cola_trab.sec;
     let sFormulado = data_cola_trab.formulado;
+    this.Corr_Carta = Corr_Carta;
     const sCorr_Carta = Corr_Carta;
     const sSec = Sec;
 
@@ -141,56 +144,120 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
       "Sec": sSec,
       "Cur_Ten": 0,
     };
+
+    this.curvasSeleccionadasDes = [];
     this.getListarCurvas('0.00000')
     this.curvaSeleccionada = '';
     // this.dialogRef1 = this.dialog.open(this.modalEnviar, { 
     //   width: '500px', 
     //   }); 
 
-    setTimeout(() => { this.dialogRef1 = this.dialog.open(this.modalEnviar, { width: '500px' }); }, 300);
+    setTimeout(() => { this.dialogRef1 = this.dialog.open(this.modalEnviar, { width: '600px' }); }, 300);
 
   }
 
+  // onEnviarAHojaFormulacion() {
+  //   this.dataTenido = {
+  //     ...this.dataTenido,
+  //     "Usr_Cod": this.Usuario
+  //   };
+  //   console.log(this.dataTenido);
+  //   if (this.dataTenido.Cur_Ten == 0 || this.dataTenido.Cur_Ten == '') { this.toastr.warning('Debe seleccionar una curva', 'Atención'); return; }
+  //   this.SpinnerService.show();
+  //   this.LabColTrabajoService.postRegistrarDetalleColorSDC(this.dataTenido).subscribe({
+  //     next: (response: any) => {
+  //       if (response.success) {
+  //         if (response.codeResult == 200) {
+  //           this.onGetDetalle();
+  //           this.toastr.success(response.message, '', {
+  //             timeOut: 2500,
+  //           });
+  //         } else if (response.codeResult == 201) {
+  //           this.toastr.info(response.message, '', {
+  //             timeOut: 2500,
+  //           });
+  //         }
+  //         this.SpinnerService.hide();
+  //         this.dialogRef1.close();
+  //       } else {
+  //         this.toastr.error(response.message, 'Cerrar', {
+  //           timeOut: 2500
+  //         });
+  //         this.SpinnerService.hide();
+  //       }
+  //     },
+  //     error: (error) => {
+  //       this.SpinnerService.hide();
+  //       this.toastr.error(error.message, 'Cerrar', {
+  //         timeOut: 2500
+  //       });
+  //     }
+
+  //   })
+
+  // }
+
   onEnviarAHojaFormulacion() {
+    const ProcesoSeleccionado = this.curvaSeleccionada;
+    //let Usr_Cod = this.data.Usr_Cod;
+    let Usr_Cod = this.Usuario;
     this.dataTenido = {
       ...this.dataTenido,
-      "Usr_Cod": this.Usuario
+      "Usr_Cod": Usr_Cod,
+      Familia: ProcesoSeleccionado
     };
-    console.log(this.dataTenido);
-    if (this.dataTenido.Cur_Ten == 0 || this.dataTenido.Cur_Ten == '') { this.toastr.warning('Debe seleccionar una curva', 'Atención'); return; }
+    //console.log(this.curvaSeleccionadaDes);
+      // Validar que haya al menos una curva seleccionada
+      if(this.dataTenido.Cur_Ten_Dis === '0'){
+        if (!this.curvasSeleccionadasDes || this.curvasSeleccionadasDes.length === 0) {
+          this.toastr.warning('Debe seleccionar una curva', 'Atención');
+          return;
+        }
+
+        // Si hay una sola curva, la asignamos a Cur_Ten
+        if (this.curvasSeleccionadasDes.length === 1) {
+          this.toastr.warning('Debe seleccionar 2 curvas');
+          return;
+        }
+
+        // Si hay dos curvas, disgregamos en Cur_Ten y Cur_Ten_Dis
+        if (this.curvasSeleccionadasDes.length === 2) {
+          // Ordenar ascendente por código antes de asignar
+          const ordenadas = [...this.curvasSeleccionadasDes].sort(
+            (a, b) => parseInt(a.codigo) - parseInt(b.codigo)
+          );
+
+          this.dataTenido.Cur_Ten = parseInt(ordenadas[0].codigo);
+          this.dataTenido.Cur_Ten_Dis = parseInt(ordenadas[1].codigo);
+        }
+      }
+
+    //console.log('DataTenido listo para enviar:', this.dataTenido);
+
     this.SpinnerService.show();
     this.LabColTrabajoService.postRegistrarDetalleColorSDC(this.dataTenido).subscribe({
       next: (response: any) => {
         if (response.success) {
           if (response.codeResult == 200) {
             this.onGetDetalle();
-            this.toastr.success(response.message, '', {
-              timeOut: 2500,
-            });
+            this.toastr.success(response.message, '', { timeOut: 2500 });
           } else if (response.codeResult == 201) {
-            this.toastr.info(response.message, '', {
-              timeOut: 2500,
-            });
+            this.toastr.info(response.message, '', { timeOut: 2500 });
           }
           this.SpinnerService.hide();
           this.dialogRef1.close();
         } else {
-          this.toastr.error(response.message, 'Cerrar', {
-            timeOut: 2500
-          });
+          this.toastr.error(response.message, 'Cerrar', { timeOut: 2500 });
           this.SpinnerService.hide();
         }
       },
       error: (error) => {
         this.SpinnerService.hide();
-        this.toastr.error(error.message, 'Cerrar', {
-          timeOut: 2500
-        });
+        this.toastr.error(error.message, 'Cerrar', { timeOut: 2500 });
       }
-
-    })
-
+    });
   }
+
 
   getListarCurvas(Pro_Cod: string): void {
     this.LabColTrabajoService.getListarCurvas(Pro_Cod).subscribe({
@@ -211,16 +278,17 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
   onSeleccionarCurva(codigoSeleccionado: string): void {
     this.curvaSeleccionada = codigoSeleccionado;
     //this.getListarCurvas('0.00000');
-    this.onCargarCurvaDes(codigoSeleccionado);
+    this.onCargarCurvaDes(codigoSeleccionado, this.Corr_Carta);
   }
 
-  onCargarCurvaDes(codigo: string): void {
-    this.LabColTrabajoService.getListarCurvas(codigo).subscribe({
+  onCargarCurvaDes(codigo: string, Corr_Carta: string): void {
+    this.LabColTrabajoService.getListarCurvasV2(codigo, Corr_Carta).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.curvasDescripcion = response.elements.map((c: any) => ({
             codigo: c.codigo,
-            descripcion: c.descripcion
+            descripcion: c.descripcion,
+            tipo: c.tipo
           }));
         }
       },
@@ -233,19 +301,68 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
   onSeleccionarCurvaDescripcion(codigoSeleccionado: string): void {
     //OBTENER EL NOMBRE DE LA CURVA
     const curva = this.curvas.find(c => c.codigo === codigoSeleccionado);
-
     this.curvaSeleccionadaDes = curva ? curva.descripcion : '';
-
-    console.log(this.curvaSeleccionadaDes);
+    this.curvasSeleccionadasDes = [];
+    //console.log(this.curvaSeleccionadaDes);
 
     this.dataTenido = {
       ...this.dataTenido,
       "Cur_Ten": parseInt(codigoSeleccionado),
-      "Usr_Cod": GlobalVariable.vusu
+      Cur_Ten_Dis: 0,
+      "Usr_Cod": this.Usuario
     }
 
-    //console.log('LA INFORMACION AQUI ES -------------- ', this.dataTenido);
+    console.log('LA INFORMACION AQUI ES -------------- ', this.dataTenido);
   }
+
+  curvasSeleccionadasDes: any[] = [];
+
+  onSeleccionarCurvas(event: any): void {
+    const seleccionadas = event.value as any[];
+    if (!seleccionadas) return;
+
+    console.log('Curvas seleccionadas:', seleccionadas);
+
+    // Validar máximo 2
+    if (seleccionadas.length > 2) {
+      this.toastr.warning('Solo puedes seleccionar máximo 2 curvas');
+      seleccionadas.splice(2);
+    }
+
+    // Validar que sean de tipo distinto SOLO si ya hay 2
+    if (seleccionadas.length === 2) {
+      const tipos = seleccionadas.map(c => c.tipo);
+      const tieneR = tipos.includes('R');
+      const tieneD = tipos.includes('D');
+
+      if (!(tieneR && tieneD)) {
+        this.toastr.warning('Debes seleccionar una curva tipo R y otra tipo D');
+        this.curvasSeleccionadasDes = [];
+        return;
+      }
+    }
+
+    // Ordenar siempre por código ascendente
+    seleccionadas.sort((a, b) => parseInt(a.codigo) - parseInt(b.codigo));
+
+    this.curvasSeleccionadasDes = seleccionadas;
+    this.curvaSeleccionadaDes = '';
+
+    // Solo actualizamos dataTenido si ya hay 2 válidas
+    if (this.curvasSeleccionadasDes.length === 2) {
+      this.dataTenido = {
+        ...this.dataTenido,
+        Cur_Ten: parseInt(this.curvasSeleccionadasDes[0].codigo),
+        Cur_Ten_Dis: parseInt(this.curvasSeleccionadasDes[1].codigo),
+        Usr_Cod: this.Usuario
+      };
+      console.log('DataTenido actualizado:', this.dataTenido);
+    }
+  }
+
+
+
+
 
 
 
@@ -275,7 +392,7 @@ export class DialogLabColTrabajoDetalleComponent implements OnInit {
                 secE: sSec
               }
             });
-          } 
+          }
           this.SpinnerService.hide();
         } else {
           this.toastr.error(response.message, 'Cerrar', {

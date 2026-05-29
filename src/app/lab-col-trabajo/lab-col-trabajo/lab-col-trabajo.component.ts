@@ -16,6 +16,7 @@ import { DialogLabColTrabajoDetalleComponent } from './dialog-lab-col-trabajo-de
 import { GlobalVariable } from '../../VarGlobals';
 import { AuthService } from '../../authentication/auth.service';
 import Swal from 'sweetalert2';
+import { timeout } from 'rxjs';
 
 
 interface data_cola_trab {
@@ -92,9 +93,11 @@ export class LabColTrabajoComponent implements OnInit {
     //'fec_asig',
     //'dias_lab',
     'fec_comp',
+    'creacion',
     'dias_comp',
     'estado',
-    'entregado'
+    'entregado',
+    'usuario'
   ]
 
   displayedColumnsProduccion: string[] = [
@@ -103,12 +106,16 @@ export class LabColTrabajoComponent implements OnInit {
     'num_sdc',
     'des_tela',
     'fec_comp',
+    'dias_diferencia',
+    'fechaasignaanalista',
     //'dias_comp',
     'cod_Color',
     'des_Color',
     'partidas',
+    'flg_estandar',
     'estado',
-    'reformular'
+    'reformular',
+    'usuario'
   ]
 
   dataSource: MatTableDataSource<data_cola_trab> = new MatTableDataSource();
@@ -123,10 +130,15 @@ export class LabColTrabajoComponent implements OnInit {
   estadoSeleccionadoChild: string = '04'
   curvas: { codigo: string, descripcion: string }[] = [];
   curvaSeleccionada: string = '';
-  curvasDescripcion: { codigo: string, descripcion: string }[] = [];
+  curvasDescripcion: { codigo: string, descripcion: string, tipo: string }[] = [];
   curvaSeleccionadaDes: string = '';
   dialogRef1!: MatDialogRef<any>;
-
+  curvasSeleccionadasDes: any[] = [];
+  private readonly prioridadColor: Record<string, number> = {
+    'fila-rojo': 1,
+    'fila-amarillo': 2,
+    'fila-verde': 3
+  };
   filtrarPorEstado() { }
 
   BuscadorRadio(): void {
@@ -168,7 +180,18 @@ export class LabColTrabajoComponent implements OnInit {
             if (response.totalElements > 0) {
               this.dataListadoSDC = response.elements;
               //console.log('dataListadoSDC: ', this.dataListadoSDC);
-              this.dataSource.data = this.dataListadoSDC;
+              //this.dataSource.data = this.dataListadoSDC;
+              this.dataSource.data = this.dataListadoSDC.sort((a, b) => {
+                const colorA = this.prioridadColor[this.getColorClase(a)] ?? 99;
+                const colorB = this.prioridadColor[this.getColorClase(b)] ?? 99;
+                if (colorA !== colorB) {
+                  return colorA - colorB;
+                }
+                  const fechaA = new Date(a.fec_compromiso).getTime();
+                  const fechaB = new Date(b.fec_compromiso).getTime();
+                  return fechaA - fechaB;
+              });
+
               this.dataSource.sort = this.sortLabDips;
               this.SpinnerService.hide();
             } else {
@@ -212,7 +235,18 @@ export class LabColTrabajoComponent implements OnInit {
             if (response.totalElements > 0) {
               this.dataListadoProduccion = response.elements;
               //console.log('dataListadoProduccion: -------------------------', this.dataListadoProduccion);
-              this.dataSourceProduccion.data = this.dataListadoProduccion;
+              //this.dataSourceProduccion.data = this.dataListadoProduccion;
+              this.dataSourceProduccion.data = this.dataListadoProduccion.sort((a, b) => {
+                const colorA = this.prioridadColor[this.getColorClaseProduccion(a)] ?? 99;
+                const colorB = this.prioridadColor[this.getColorClaseProduccion(b)] ?? 99;
+                if (colorA !== colorB) {
+                  return colorA - colorB;
+                }
+                  const fechaA = new Date(a.fec_Teorico_Inicio_Tenido).getTime();
+                  const fechaB = new Date(b.fec_Teorico_Inicio_Tenido).getTime();
+                  return fechaA - fechaB;
+              });
+
               this.dataSourceProduccion.sort = this.sortProduccion;
               this.SpinnerService.hide();
             } else {
@@ -236,26 +270,281 @@ export class LabColTrabajoComponent implements OnInit {
     }
   }
 
-  getColorClase(row: any): string {
-    const dias = row.dias_Falt_Compromiso;
-    if (this.estadoSeleccionado === '01') {
-      if (dias <= 0) {
-        return 'fila-roja';      // YA SE PASARON
-      } else if (dias <= 3) {
-        return 'fila-amarilla';   // TIEMPO AJUSTADO
-      } else {
-        return 'fila-verde';       // TIEMPO DE SOBRA
-      }
-    } else {
-      return '';
-    }
+  // getColorClase(row: any): string {
+  //   const dias = row.dias_Falt_Compromiso;
+  //   if (this.estadoSeleccionado === '01') {
+  //     if (dias <= 0) {
+  //       return 'fila-roja';      // YA SE PASARON
+  //     } else if (dias <= 3) {
+  //       return 'fila-amarilla';   // TIEMPO AJUSTADO
+  //     } else {
+  //       return 'fila-verde';       // TIEMPO DE SOBRA
+  //     }
+  //   } else {
+  //     return '';
+  //   }
 
+  // }
+
+//   getColorClase(row: any): string {
+//   const hoy = new Date();
+//   const fechaCompromiso = new Date(row.fec_compromiso);
+
+//   // Diferencia en días entre hoy y la fecha de compromiso
+//   const diasDiff = Math.floor((fechaCompromiso.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+
+//   // Condiciones
+//   if (diasDiff > 3) {
+//     return 'fila-verde'; // faltan más de 3 días
+//   } else if (diasDiff < -3) {
+//     return 'fila-rojo'; // ya pasaron más de 3 días
+//   } else {
+//     return 'fila-amarillo'; // intervalo intermedio
+//   }
+// }
+
+// getColorClase(row: any): string {
+//   const hoy = new Date();
+
+//   // Fechas que vienen como DateTime del backend
+//   const fechaCompromiso = new Date(row.fec_compromiso);
+//   const fechaCreacion = new Date(row.fec_creacion);
+
+//   // Diferencia en días con fecha de compromiso
+//   const diasCompromiso = Math.floor((fechaCompromiso.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+
+//   // Diferencia en días desde la fecha de creación
+//   const diasCreacion = Math.floor((hoy.getTime() - fechaCreacion.getTime()) / (1000 * 60 * 60 * 24));
+
+//   // --- PRIORIDAD: Fecha de compromiso ---
+//   if (diasCompromiso > 3) {
+//     return 'fila-verde';   // faltan más de 3 días
+//   } else if (diasCompromiso < -3) {
+//     return 'fila-rojo';    // ya pasaron más de 3 días
+//   } else if (diasCompromiso >= -3 && diasCompromiso <= 3) {
+//     return 'fila-amarillo'; // intervalo intermedio
+//   }
+
+//   // --- Si no aplica compromiso, usamos fecha de creación ---
+//   if (diasCreacion <= 4) {
+//     return 'fila-verde';   // han pasado 4 o menos días desde creación
+//   } else if (diasCreacion >= 7) {
+//     return 'fila-rojo';    // ya pasaron 7 días o más desde creación
+//   } else {
+//     return 'fila-amarillo'; // intermedio entre 5 y 6 días
+//   }
+// }
+
+// getColorClase(row: any): string {
+//   const hoy = new Date();
+//   const fechaCompromiso = new Date(row.fec_compromiso);
+//   const fechaCreacion = new Date(row.fec_creacion);
+
+//   const diasCompromiso = Math.floor((fechaCompromiso.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+//   const diasCreacion = Math.floor((hoy.getTime() - fechaCreacion.getTime()) / (1000 * 60 * 60 * 24));
+
+//   let clase = '';
+
+//   if (diasCompromiso > 3) {
+//     clase = 'fila-verde';
+//   } else if (diasCompromiso < -3) {
+//     clase = 'fila-rojo';
+//   } else if (diasCompromiso >= -3 && diasCompromiso <= 3) {
+//     clase = 'fila-amarillo';
+//   } else if (diasCreacion <= 4) {
+//     clase = 'fila-verde';
+//   } else if (diasCreacion >= 7) {
+//     clase = 'fila-rojo';
+//   } else {
+//     clase = 'fila-amarillo';
+//   }
+
+//   //console.log('Row:', row, 'Clase:', clase, 'DiffComp:', diasCompromiso, 'DiffCre:', diasCreacion);
+//   return clase;
+// }
+
+getColorClase(row: any): string {
+  const hoy = new Date();
+  const fechaCompromiso = new Date(row.fec_compromiso);
+
+  const diasCompromiso = Math.floor((fechaCompromiso.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+
+  let clase = '';
+
+  if (diasCompromiso <= 0) {
+    clase = 'fila-rojo';
+  } else if (diasCompromiso > 0 && diasCompromiso <= 3) {
+    clase = 'fila-amarillo';
+  } else if (diasCompromiso > 3) {
+    clase = 'fila-verde';
   }
+
+  return clase;
+}
+
+
+// getColorClaseProduccion(row: any): string {
+//   const hoy = new Date();
+
+//   const fechaAsignacion = new Date(row.fecha_AsignaAnalista);
+//   const fechaPCP = new Date(row.fec_Teorico_Inicio_Tenido);
+
+//   // Diferencia en días con PCP
+//   const diasPCP = Math.floor((fechaPCP.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+
+//   // Diferencia en días desde asignación
+//   const diasAsignacion = Math.floor((hoy.getTime() - fechaAsignacion.getTime()) / (1000 * 60 * 60 * 24));
+
+//   console.log(row.cod_OrdTra);  
+//   console.log('Hoy:', hoy);
+//   console.log('Fecha Asignación:', fechaAsignacion);
+//   console.log('Fecha PCP:', fechaPCP);
+//   console.log('diasAsignacion:', diasAsignacion);
+//   console.log('diasPCP:', diasPCP);
+
+//   //01/04/2026 
+//   //04/05/2026
+//   //Si no aplica PCP, usamos fecha de asignación
+//   // if (diasAsignacion <= 5) {
+//   //   if(diasPCP < 3){
+//   //     return 'fila-rojo';
+//   //   }else if (diasPCP >= 3){
+//   //     return 'fila-verde'; // faltan más de 3 días  
+//   //   }
+//   //   else{
+//   //     return 'fila-verde';   // asignado hace ≤ 5 días  
+//   //   }
+//   // } else if (diasAsignacion > 5) {
+//   //   if(diasPCP > 3){
+//   //     return 'fila-verde'; // faltan más de 3 días
+//   //   }else{
+//   //     return 'fila-rojo';    // asignado hace ≥ 6 días
+//   //   }
+//   // } else {
+//   //   return 'fila-amarillo'; // intervalo intermedio
+//   // }
+
+
+//   if(diasAsignacion <= 5){
+//     return 'fila-verde';
+//   }else if (diasAsignacion > 5){
+//     return 'fila-rojo';
+//   }else{
+//     return 'fila-amarillo';
+//   }
+
+//   // if(diasPCP < 3){    
+//   //   return 'fila-verde';
+//   // }else if(diasPCP >= 3){
+//   //   return 'fila-rojo';
+//   // }else{
+//   //   return 'fila-amarillo';
+//   // }
+
+//   // PRIORIDAD: Fecha PCP 
+//   if (diasPCP <= 3) {
+//     return 'fila-plomo'; // faltan 3 días o menos
+//   } else if (diasPCP > 3) {
+//     return 'fila-plomo'; // faltan más de 3 días
+//   }  
+// }
+
+// getColorClaseProduccion(row: any): string {
+//   const hoy = new Date();
+
+//   const fechaAsignacion = new Date(row.fecha_AsignaAnalista);
+//   const fechaPCP = new Date(row.fec_Teorico_Inicio_Tenido);
+
+//   // Diferencia en días con PCP
+//   const diasPCP = Math.floor((fechaPCP.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+
+//   // Diferencia en días desde asignación
+//   const diasAsignacion = Math.floor((hoy.getTime() - fechaAsignacion.getTime()) / (1000 * 60 * 60 * 24));
+
+//   console.log(row.cod_OrdTra);  
+//   console.log('Hoy:', hoy);
+//   console.log('Fecha Asignación:', fechaAsignacion);
+//   console.log('Fecha PCP:', fechaPCP);
+//   console.log('diasAsignacion:', diasAsignacion);
+//   console.log('diasPCP:', diasPCP);
+
+//   // --- PRIORIDAD PCP ---
+//   if (!isNaN(diasPCP)) {
+//     if (diasPCP <= 3) {
+//       return 'fila-rojo'; // PCP <= 3 días
+//     } else {
+//       return 'fila-verde'; // PCP > 3 días
+//     }
+//   }
+
+//   // --- Si no aplica PCP, usamos fecha de asignación ---
+//   if (!isNaN(diasAsignacion)) {
+//     if (diasAsignacion <= 5) {
+//       return 'fila-rojo'; // asignado hace ≤ 5 días
+//     } else {
+//       return 'fila-verde'; // asignado hace > 5 días
+//     }
+//   }
+
+//   // --- Caso de error o fechas inválidas ---
+//   return 'fila-amarillo';
+// }
+
+getColorClaseProduccion(row: any): string {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0); // Normalizar a inicio del día
+
+  const fechaAsignacion = new Date(row.fecha_AsignaAnalista);
+  const fechaPCP = new Date(row.fec_Teorico_Inicio_Tenido);
+
+  // Diferencia en días: PCP respecto a hoy (positivo = días que faltan)
+  const diasPCP = Math.floor(
+    (fechaPCP.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  // Diferencia en días: desde asignación hasta hoy (positivo = días transcurridos)
+  const diasAsignacion = Math.floor(
+    (hoy.getTime() - fechaAsignacion.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  const pcpValido = !isNaN(fechaPCP.getTime());
+  const asignacionValida = !isNaN(fechaAsignacion.getTime());
+
+  // --- Semáforo PCP ---
+  // Rojo: faltan < 3 días | Amarillo: exactamente 3 días | Verde: > 3 días
+  let colorPCP = '';
+  if (pcpValido) {
+    if (diasPCP < 3)       colorPCP = 'fila-rojo';
+    else if (diasPCP === 3) colorPCP = 'fila-amarillo';
+    else                   colorPCP = 'fila-verde';
+  }
+
+  // Rojo: > 5 días | Amarillo: exactamente 5 días | Verde: < 5 días
+  let colorLab = '';
+  if (asignacionValida) {
+    if (diasAsignacion > 5)       colorLab = 'fila-rojo';
+    else if (diasAsignacion === 5) colorLab = 'fila-amarillo';
+    else                          colorLab = 'fila-verde';
+  }
+
+  const colores = [colorPCP, colorLab].filter(c => c !== '');
+
+  if (colores.includes('fila-rojo'))    return 'fila-rojo';
+  if (colores.includes('fila-amarillo')) return 'fila-amarillo';
+  if (colores.includes('fila-verde'))   return 'fila-verde';
+
+  // Fechas inválidas
+  return 'fila-amarillo';
+}
+
+
+
 
   onCreate(objeto: any) {
 
     let num_sdc = objeto.corr_Carta;
-
+    //let usr_Cod = objeto.usr_Cod;
+    let usr_Cod = this.Usuario;
     let dialogref = this.dialog.open(DialogLabColTrabajoDetalleComponent, {
       panelClass: 'dialog-tablet',
       width: '900px',
@@ -264,7 +553,8 @@ export class LabColTrabajoComponent implements OnInit {
       disableClose: false,
       data: {
         Title: "Detalle",
-        Num_SDC: num_sdc
+        Num_SDC: num_sdc,
+        Usr_Cod: usr_Cod
       }
     });
     dialogref.afterClosed().subscribe(result => { this.onGetListaSDC() }
@@ -273,12 +563,12 @@ export class LabColTrabajoComponent implements OnInit {
 
   aplicarFiltrarTodo(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    if(this.estadoSeleccionadoChild === '05'){
+    if (this.estadoSeleccionadoChild === '05') {
       this.dataSourceProduccion.filter = filterValue;
-    }else{
+    } else {
       this.dataSource.filter = filterValue;
     }
-    
+
   }
 
   filtrarTodo(): void {
@@ -308,8 +598,8 @@ export class LabColTrabajoComponent implements OnInit {
   dataTenido: any = {}
   EncolarHojaFormulacionProduccion(): void {
     this.dataTenido = {
-      ...this.dataTenido,
-      "Usr_Cod": this.Usuario
+      ...this.dataTenido
+      //"Usr_Cod": this.Usuario
     };
     console.log(this.dataTenido);
     if (this.dataTenido.Cur_Ten == 0 || this.dataTenido.Cur_Ten == '') { this.toastr.warning('Debe seleccionar una curva', 'Atención'); return; }
@@ -377,18 +667,46 @@ export class LabColTrabajoComponent implements OnInit {
     });
   }
 
+  getListarCurvaObtenidaOrgatex(Pro_Cod: string, Corr_Carta: string) {
+    console.log('entra a metodo');
+    this.toastr.info('BUSCANDO PROCESO EN ORGATEX', '',{ timeOut: 3500 });
+    this.LabColaTrabajoService.getListarCurvasV2(Pro_Cod, Corr_Carta).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          // this.curvas = response.elements.map((c: any) => ({
+          //   codigo: c.codigo,
+          //   descripcion: c.descripcion
+          // }));
+          //console.log(response.elements);
+          if(response.elements.length === 1){
+            this.toastr.success('PROCESO ENCONTRADO', '',{ timeOut: 3500 });
+            this.curvaSeleccionada = response.elements[0].codigo;
+            //console.log(this.curvaSeleccionada);
+            this.onSeleccionarCurva(this.curvaSeleccionada);
+          }else{
+            this.toastr.warning('NO CUENTA CON PROCESO EN ORGATEX', '',{ timeOut: 3500 });
+          }
+        }
+      },
+      error: (error: any) => {
+        console.log(error.error.message, 'Cancelar', { timeout: 3000 });
+      }
+    });
+  } 
+
   onSeleccionarCurva(codigoSeleccionado: string): void {
     this.curvaSeleccionada = codigoSeleccionado;
-    this.onCargarCurvaDes(codigoSeleccionado);
+    this.onCargarCurvaDes(codigoSeleccionado, this.Cod_OrdTra);
   }
 
-  onCargarCurvaDes(codigo: string): void {
-    this.LabColaTrabajoService.getListarCurvas(codigo).subscribe({
+  onCargarCurvaDes(codigo: string, Corr_Carta: string): void {
+    this.LabColaTrabajoService.getListarCurvasV2(codigo, Corr_Carta).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.curvasDescripcion = response.elements.map((c: any) => ({
             codigo: c.codigo,
-            descripcion: c.descripcion
+            descripcion: c.descripcion,
+            tipo: c.tipo
           }));
         }
       },
@@ -408,68 +726,135 @@ export class LabColTrabajoComponent implements OnInit {
 
     this.dataTenido = {
       ...this.dataTenido,
-      "Cur_Ten": parseInt(codigoSeleccionado),
-      "Usr_Cod": GlobalVariable.vusu
+      "Cur_Ten": parseInt(codigoSeleccionado)
+      //"Usr_Cod": GlobalVariable.vusu
     }
 
   }
 
 
+  // onEnviarAHojaFormulacion() {
+  //   this.dataTenido = {
+  //     ...this.dataTenido,
+  //     "Usr_Cod": this.Usuario
+  //   };
+  //   console.log(this.dataTenido);
+  //   if (this.dataTenido.Cur_Ten == 0 || this.dataTenido.Cur_Ten == '') { this.toastr.warning('Debe seleccionar una curva', 'Atención'); return; }
+  //   this.SpinnerService.show();
+  //   this.LabColaTrabajoService.postRegistrarDetalleColorSDC(this.dataTenido).subscribe({
+  //     next: (response: any) => {
+  //       if (response.success) {
+  //         if (response.codeResult == 200) {
+
+  //           this.toastr.success(response.message, '', {
+  //             timeOut: 2500,
+  //           });
+  //         } else if (response.codeResult == 201) {
+  //           this.toastr.info(response.message, '', {
+  //             timeOut: 2500,
+  //           });
+  //         }
+  //         this.SpinnerService.hide();
+  //         this.getObtenerDatosProduccion();
+  //         this.dialogRef1.close();
+  //       } else {
+  //         this.toastr.error(response.message, 'Cerrar', {
+  //           timeOut: 2500
+  //         });
+  //         this.SpinnerService.hide();
+  //       }
+  //     },
+  //     error: (error: any) => {
+  //       this.SpinnerService.hide();
+  //       this.toastr.error(error.message, 'Cerrar', {
+  //         timeOut: 2500
+  //       });
+  //     }
+
+  //   })
+
+  // }
+
   onEnviarAHojaFormulacion() {
+    const ProcesoSeleccionado = this.curvaSeleccionada;
+    console.log(':::::..', ProcesoSeleccionado);
     this.dataTenido = {
       ...this.dataTenido,
-      "Usr_Cod": this.Usuario
+      //"Usr_Cod": this.Usuario,
+      Familia: ProcesoSeleccionado
     };
-    console.log(this.dataTenido);
-    if (this.dataTenido.Cur_Ten == 0 || this.dataTenido.Cur_Ten == '') { this.toastr.warning('Debe seleccionar una curva', 'Atención'); return; }
+    //console.log(this.dataTenido);
+      // Validar que haya al menos una curva seleccionada
+      if(this.dataTenido.Cur_Ten_Dis === '0'){
+        if (!this.curvasSeleccionadasDes || this.curvasSeleccionadasDes.length === 0) {
+          this.toastr.warning('Debe seleccionar una curva', 'Atención');
+          return;
+        }
+
+        // Si hay una sola curva, la asignamos a Cur_Ten
+        if (this.curvasSeleccionadasDes.length === 1) {
+          this.toastr.warning('Debe seleccionar 2 curvas');
+          return;
+        }
+
+        // Si hay dos curvas, disgregamos en Cur_Ten y Cur_Ten_Dis
+        if (this.curvasSeleccionadasDes.length === 2) {
+          // Ordenar ascendente por código antes de asignar
+          const ordenadas = [...this.curvasSeleccionadasDes].sort(
+            (a, b) => parseInt(a.codigo) - parseInt(b.codigo)
+          );
+
+          this.dataTenido.Cur_Ten = parseInt(ordenadas[0].codigo);
+          this.dataTenido.Cur_Ten_Dis = parseInt(ordenadas[1].codigo);
+        }
+      }
+
+    console.log('DataTenido listo para enviar:', this.dataTenido);
+
     this.SpinnerService.show();
     this.LabColaTrabajoService.postRegistrarDetalleColorSDC(this.dataTenido).subscribe({
       next: (response: any) => {
         if (response.success) {
           if (response.codeResult == 200) {
-
-            this.toastr.success(response.message, '', {
-              timeOut: 2500,
-            });
+            this.onGetListaSDC();
+            this.toastr.success(response.message, '', { timeOut: 2500 });
           } else if (response.codeResult == 201) {
-            this.toastr.info(response.message, '', {
-              timeOut: 2500,
-            });
+            this.toastr.info(response.message, '', { timeOut: 2500 });
           }
           this.SpinnerService.hide();
-          this.getObtenerDatosProduccion();
           this.dialogRef1.close();
         } else {
-          this.toastr.error(response.message, 'Cerrar', {
-            timeOut: 2500
-          });
+          this.toastr.error(response.message, 'Cerrar', { timeOut: 2500 });
           this.SpinnerService.hide();
         }
+        this.getObtenerDatosProduccion();
       },
-      error: (error: any) => {
+      error: (error) => {
         this.SpinnerService.hide();
-        this.toastr.error(error.message, 'Cerrar', {
-          timeOut: 2500
-        });
+        this.toastr.error(error.message, 'Cerrar', { timeOut: 2500 });
       }
-
-    })
-
+    });
   }
-
+  Cod_OrdTra: string = '';
   CargarModalTenido(data_cola_trab_produccion: any): void {
     //let Cod_OrdTra = this.dataListadoProduccion[0].cod_OrdTra;
     let Cod_OrdTra = data_cola_trab_produccion.cod_OrdTra;
+    //let Usr_Cod = data_cola_trab_produccion.usr_Cod;
+    let Usr_Cod = this.Usuario;
+    let partidas = data_cola_trab_produccion.partidas;
+    this.Cod_OrdTra = Cod_OrdTra;
     this.dataTenido = {
       "Corr_Carta": '',
       "Cod_OrdTra": Cod_OrdTra,
       "Sec": 1,
+      "Usr_Cod": Usr_Cod,
+      "Partidas": partidas
     };
 
     this.getListarCurvas('0.00000')
     this.curvaSeleccionada = '';
-
-    setTimeout(() => { this.dialogRef1 = this.dialog.open(this.modalEnviar, { width: '500px' }); }, 300);
+    this.getListarCurvaObtenidaOrgatex('0.00000', Cod_OrdTra);
+    setTimeout(() => { this.dialogRef1 = this.dialog.open(this.modalEnviar, { width: '600px' }); }, 300);
   }
 
   ReformularPartida(data_cola_trab_produccion: any): void {
@@ -485,9 +870,10 @@ export class LabColTrabajoComponent implements OnInit {
 
     const data = {
       'Corr_Carta': Cod_OrdTra,
-      'Sec': 1 
+      'Sec': 1
     }
 
+    console.log(data);
     this.patchReformularPartida(data);
 
     // this.ActualizarEstado('¿REFORMULAR PARTIDA?', Cod_OrdTra, 1, '04');
@@ -553,6 +939,95 @@ export class LabColTrabajoComponent implements OnInit {
     })
   }
 
+  onSeleccionarCurvas(event: any): void {
+    const seleccionadas = event.value as any[];
+    if (!seleccionadas) return;
+
+    console.log('Curvas seleccionadas:', seleccionadas);
+
+    // Validar máximo 2
+    if (seleccionadas.length > 2) {
+      this.toastr.warning('Solo puedes seleccionar máximo 2 curvas');
+      seleccionadas.splice(2);
+    }
+
+    // Validar que sean de tipo distinto SOLO si ya hay 2
+    if (seleccionadas.length === 2) {
+      const tipos = seleccionadas.map(c => c.tipo);
+      const tieneR = tipos.includes('R');
+      const tieneD = tipos.includes('D');
+
+      if (!(tieneR && tieneD)) {
+        this.toastr.warning('Debes seleccionar una curva tipo R y otra tipo D');
+        this.curvasSeleccionadasDes = [];
+        return;
+      }
+    }
+
+    // Ordenar siempre por código ascendente
+    seleccionadas.sort((a, b) => parseInt(a.codigo) - parseInt(b.codigo));
+
+    this.curvasSeleccionadasDes = seleccionadas;
+    this.curvaSeleccionadaDes = '';
+
+    // Solo actualizamos dataTenido si ya hay 2 válidas
+    if (this.curvasSeleccionadasDes.length === 2) {
+      this.dataTenido = {
+        ...this.dataTenido,
+        Cur_Ten: parseInt(this.curvasSeleccionadasDes[0].codigo),
+        Cur_Ten_Dis: parseInt(this.curvasSeleccionadasDes[1].codigo),
+        //Usr_Cod: this.Usuario
+      };
+      console.log('DataTenido actualizado:', this.dataTenido);
+    }
+  }
+
   /*******************************************PRODUCCION*************************************************/
+
+  ActualizarEstadoEnvio(corr_carta: any, sec: number, flg_est_lab: string) {
+
+    const sCorr_Carta = corr_carta;
+    const sSec = sec;
+    const sFlg_Est_Lab = flg_est_lab;
+    let data: any = {
+      "Corr_Carta": sCorr_Carta,
+      "Sec": sSec,
+      "Flg_Est_Lab": sFlg_Est_Lab
+    };
+
+    console.log(':::::::::::::::::::::::::.', data);
+    this.SpinnerService.show();
+    this.LabColaTrabajoService.patchActualizarEstadoDeColor(data).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          if (response.codeResult == 200) {
+            this.toastr.success(response.message, 'Cerrar', {
+              timeOut: 2500
+            });
+          }
+          this.SpinnerService.hide();
+        } else {
+          this.toastr.error(response.message, 'Cerrar', {
+            timeOut: 2500
+          });
+          this.SpinnerService.hide();
+        }
+      },
+      error: (error) => {
+        this.SpinnerService.hide();
+        this.toastr.error(error.message, 'Cerrar', {
+          timeOut: 2500
+        });
+      }
+    })
+  }
+
+  calcularDias(fechaPcp: string | Date): number {
+    if (!fechaPcp) return 0;
+    const hoy = new Date();
+    const fecha = new Date(fechaPcp);
+    const diffMs = fecha.getTime() - hoy.getTime();
+    return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  }
 
 }

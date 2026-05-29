@@ -19,6 +19,7 @@ interface data_jabonado {
   descripcion_color: string;
   tela: string;
   ph_Jab: number[];
+  tip_Ten: string;
 }
 
 @Component({
@@ -40,7 +41,7 @@ export class DialogJabonadosComponent {
   ) { }
 
   filtroSeleccionado: string = 'pendientes';
-  ahibaSeleccionado: number = 1;
+  ahibaSeleccionado: number = 0;
   cantidadRequerida: number = 0;
   seleccionadosActuales: number = 0;
   ahiSeleccionadoNombre: string = '';
@@ -115,9 +116,11 @@ export class DialogJabonadosComponent {
             'sec',
             'correlativo',
             'descripcion_Color',
+            'neutralizado',
             'ph_Neu',
             'jab_Des',
-            'can_Jabo'
+            'can_Jabo',
+            'tip_Ten'
             //...this.getPhColumns(),
           ];
 
@@ -168,7 +171,8 @@ export class DialogJabonadosComponent {
             ...this.getPhColumns(),
             'descarga',
             'tipo_fijado',
-            'ph_Des'
+            'ph_Des',
+            'tip_Ten'
           ];
 
           this.SpinnerService.hide();
@@ -184,6 +188,12 @@ export class DialogJabonadosComponent {
     let num_sdc = row.corr_Carta;
     let sec = row.sec;
     let correlativo = row.correlativo;
+    let tip_Ten = row.tip_Ten;
+
+    if (tip_Ten === 'O') {
+      this.toastr.warning('No se puede ingresar ph de un BLANCO');
+      return;
+    }
 
     if (this.filtroSeleccionado === 'completosDescarga'){
       this.toastr.warning('No se puede modificar una corrida completa');
@@ -201,7 +211,8 @@ export class DialogJabonadosComponent {
         Sec: sec,
         Correlativo: correlativo,
         JabonadoIndex: jabIndex,
-        Condicion: 3
+        Condicion: 3,
+        Tip_Ten: tip_Ten
       }
     });
 
@@ -215,6 +226,12 @@ export class DialogJabonadosComponent {
     let num_sdc = row.corr_Carta;
     let sec = row.sec;
     let correlativo = row.correlativo;
+    let tip_Ten = row.tip_Ten;
+  
+    if (tip_Ten === 'O') {
+      this.toastr.warning('No se puede ingresar ph de un BLANCO');
+      return;
+    }
 
     if (this.filtroSeleccionado === 'completosDescarga'){
       this.toastr.warning('No se puede modificar una corrida completa');
@@ -231,7 +248,8 @@ export class DialogJabonadosComponent {
         Corr_Carta: num_sdc,
         Sec: sec,
         Correlativo: correlativo,
-        Condicion: 4
+        Condicion: 4,
+        Tip_Ten: tip_Ten
       }
     });
 
@@ -244,11 +262,11 @@ export class DialogJabonadosComponent {
     let num_sdc = row.corr_Carta;
     let sec = row.sec;
     let correlativo = row.correlativo;
-
-    // if (this.filtroSeleccionado === 'completosDescarga'){
-    //   this.toastr.warning('No se puede modificar una corrida completa');
-    //   return;
-    // }
+    let tip_Ten = row.tip_Ten;
+    if (this.filtroSeleccionado === 'completosDescarga') {
+      this.toastr.warning('No se puede modificar una corrida completa');
+      return;
+    }
 
     let dialogref = this.dialog.open(DialogAgregarPhComponent, {
       width: '500px',
@@ -260,7 +278,8 @@ export class DialogJabonadosComponent {
         Corr_Carta: num_sdc,
         Sec: sec,
         Correlativo: correlativo,
-        Condicion: 5
+        Condicion: 5,
+        Tip_Ten: tip_Ten
       }
     });
 
@@ -320,7 +339,8 @@ export class DialogJabonadosComponent {
       corr_Carta: row.corr_Carta,
       sec: row.sec,
       correlativo: row.correlativo,
-      tip_Fij: row.fijadoSeleccionado
+      tip_Fij: row.fijadoSeleccionado,
+      tip_Ten: row.tip_Ten
     }
 
     this.LabColTrabajoService.patchActualizarFijadoTipo(data).subscribe({
@@ -508,6 +528,7 @@ export class DialogJabonadosComponent {
 
   seleccionadasModal: any[] = [];
   abrirModalPosiciones(cantidad: number, ahiNombre: string) {
+    const seleccionadas = this.dataSource.data.filter((row: any) => row.seleccionado);
     const cantidadSeleccionada = this.dataSource.data
       .filter((row: any) => row.seleccionado).length;
 
@@ -537,7 +558,17 @@ export class DialogJabonadosComponent {
       return;
     }
 
-    const seleccionadas = this.dataSource.data.filter((row: any) => row.seleccionado);
+    
+
+    const tipos = [...new Set(seleccionadas.map((row: any) => row.tip_Ten))];
+    if (tipos.length > 1) {
+      this.toastr.warning(
+        `Existen múltiples tipos de tenido seleccionados`,
+        'Advertencia', { timeOut: 3000 }
+      );
+      this.ahibaSeleccionado = 0;
+      return;
+    }
 
     console.log(':::::::::::::::::::', seleccionadas);
     this.seleccionadasModal = seleccionadas.map((item: any) => ({
@@ -653,11 +684,12 @@ export class DialogJabonadosComponent {
     let Corr_Carta: string = row.corr_Carta;
     let Sec: number = row.sec;
     let Correlativo: number = row.correlativo;
-
+    let Tip_Ten: string = row.tip_Ten;
     const data = {
       corr_Carta: Corr_Carta,
       sec: Sec,
       correlativo: Correlativo,
+      tip_Ten: Tip_Ten
       //flg_Est_Lab: '05'
     }
 
@@ -711,6 +743,12 @@ export class DialogJabonadosComponent {
       return;
     }
 
+    const tipTenSet = new Set(seleccionadas.map((row: any) => row.tip_Ten));
+    if (tipTenSet.size > 1) {
+      this.toastr.error('Combinación Inválida', '', { timeOut: 3000 });
+      return;
+    }
+
 
     const confirmacion = await Swal.fire({
       title: '¿Cargar a Ahiba?',
@@ -738,7 +776,8 @@ export class DialogJabonadosComponent {
           correlativo: item.correlativo,
           ahi_Id: this.ahibaSeleccionado,
           nro_Tubo: tubo,
-          tip_Carga: 'J'
+          tip_Carga: 'J',
+          tip_Ten: item.tip_Ten
         };
 
         try {
@@ -799,16 +838,21 @@ export class DialogJabonadosComponent {
             'sec',
             'correlativo',
             'descripcion_Color',
-            'jab_Des',
+            'curva_tenido',
             'dosificacion1',
             'dosificacion2',
             'dosificacion3',
             'sod_gr',
+            'phIni',
+            'phFin',
+            'jab_Des',            
+            'ph_Neu',
             'can_Jabo',
             ...this.getPhColumns(),
             'descarga',
-            'tipo_fijado',
-            'ph_Des'
+            'tipo_fijado_descarga',
+            'ph_Des',
+            'tip_Ten'
           ];
 
           this.SpinnerService.hide();

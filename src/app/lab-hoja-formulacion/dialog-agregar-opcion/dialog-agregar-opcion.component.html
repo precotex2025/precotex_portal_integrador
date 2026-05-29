@@ -2,6 +2,9 @@
   <div *ngIf="data.Title === 'Copiar'">
       <h2>Copia de Corrida # {{ this.correlativoAnterior}}</h2>
   </div>
+  <div *ngIf="data.Title === 'Entregar'">
+      <h2>Entrega de Corrida # {{ this.correlativoAnterior}}</h2>
+  </div>
   <div class="selector-botones-wrapper">
     <!-- SELECTOR FAMILIA -->
     <div class="tipo-formulacion-wrapper">
@@ -74,26 +77,32 @@
           <div class="colorante-header">%</div>
           <div class="colorante-header">Acción</div>
 
-          <ng-container *ngFor="let colorante of colorantesSeleccionados">
+          <ng-container *ngFor="let colorante of colorantesSeleccionados; let i = index">
               <div class="colorante-cell codigo">{{ colorante.codigo }}</div>
               <div class="colorante-cell nombre">{{ colorante.nombre }}</div>
               <div class="colorante-cell inicial">
                 <input class="colorante-inicial" 
                 type="number"
                 [(ngModel)]="colorante.inicial"
+                (keydown.enter)="focusNext(i + 1 , 'inicial')"
                 (ngModelChange)="limitarDecimales(colorante); actualizarFinal(colorante)"
                 step="0.01"
                 (keypress)="validarNumero($event)" 
-                [disabled]="data.Title === 'Copiar'"/>
+                [disabled]="data.Title === 'Copiar' || data.Title === 'Entregar'"
+                id="inicial{{i}}"
+                #inicial/>
               </div>
               <div class="colorante-cell ajuste">
               <button mat-mini-button color="primary" (click)="ajustar(colorante, -0.50); actualizarFinal(colorante)">−</button>
               <input class="casillaAjuste" 
                     type="number" 
                     [(ngModel)]="colorante.ajuste" 
+                    (keydown.enter)="focusNext(i + 1, 'ajuste')"
                     step="0.01" 
                     (ngModelChange)="actualizarFinal(colorante)" 
-                    (keypress)="validarNumero($event)" />
+                    (keypress)="validarNumero($event)" 
+                    id="ajuste{{i}}"
+                    #ajuste/>
               <button mat-mini-button color="primary" (click)="ajustar(colorante, 0.50); actualizarFinal(colorante); " >+</button>
               </div>
               <!-- <div class="colorante-cell final">{{ calcularFinal(colorante).toFixed(5) }}</div> -->
@@ -102,10 +111,13 @@
                 <input type="number"
                       class="colorante-final"
                       [(ngModel)]="colorante.final"
+                      (keydown.enter)="focusNext(i + 1, 'final')"
                       step="0.00001"
                       (ngModelChange)="actualizarDesdeFinal(colorante)"
                       (keypress)="validarNumero($event)" 
-                      [disabled]="data.Title === 'Insertar'" />
+                      [disabled]="data.Title === 'Insertar'" 
+                      id="final{{i}}"
+                      #final/>
               </div>
 
               <div class="colorante-cell accion">
@@ -123,7 +135,7 @@
     </section>
 
     <section class="parametros-section" *ngIf="TipoTenidoSeleccionado === 'R'">
-      <h3>Jabonado - Curva - Fijado</h3>
+      <h3>Jabonado - Curva - Descarga</h3>
 
       <mat-form-field appearance="fill">
         <mat-label>CAN JABONADAS</mat-label>
@@ -138,11 +150,46 @@
       </mat-form-field>
 
       <mat-form-field appearance="fill">
-        <mat-label>FIJADO</mat-label>
+        <mat-label>DESCARGA</mat-label>
         <mat-select [(ngModel)]="parametros.fijado" [disabled]="!cambiosHabilitados">
           <mat-option *ngFor="let fijado of fijados" [value]="fijado.codigo">{{ fijado.nombre }}</mat-option>
         </mat-select>
       </mat-form-field>
+
+      <!-- <mat-form-field appearance="fill">
+        <mat-label>% DESCARGA</mat-label>
+        <input matInput type="number" [(ngModel)]="parametros.fijadoPor" [disabled]="!cambiosHabilitados"/>
+      </mat-form-field> -->
+
+      <!-- <mat-form-field appearance="fill">
+        <mat-label>% DESCARGA</mat-label>
+        <mat-select [(ngModel)]="parametros.fijadoPor" [disabled]="!cambiosHabilitados">
+          <mat-option [value]="0.600">0.6</mat-option>
+          <mat-option [value]="0.800">0.8</mat-option>
+          <mat-option [value]="2.000">2</mat-option>
+          <mat-option [value]="3.000">3</mat-option>
+        </mat-select>
+      </mat-form-field> -->
+
+      <mat-form-field appearance="fill">
+        <mat-label>% DESCARGA</mat-label>
+        <mat-select [(ngModel)]="parametros.fijadoPor" [disabled]="!cambiosHabilitados">
+          <ng-container *ngIf="parametros.fijado === 1">
+            <mat-option [value]="0.6">0.6</mat-option>
+            <mat-option [value]="0.8">0.8</mat-option>
+          </ng-container>
+          <ng-container *ngIf="parametros.fijado === 2">
+            <mat-option [value]="2">2</mat-option>
+            <mat-option [value]="3">3</mat-option>
+          </ng-container>
+          <ng-container *ngIf="parametros.fijado === 4">
+            <mat-option [value]="0.6">0.6</mat-option>
+            <mat-option [value]="0.8">0.8</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+
     </section>
 
   <div class="seccion-doble">
@@ -168,37 +215,98 @@
       </mat-form-field>
     </div>
     </section>
+
+    <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'O'">
+      <h3>Agua Oxigenada / Soda / Rucolase</h3>
+    <div class="quimico-row">
+      <span class="col-nombre">Agua Oxigenada</span>
+      <mat-form-field appearance="outline" class="col-gr">
+        <mat-label>Cantidad (gr)</mat-label>
+        <input matInput type="number" [(ngModel)]="aguaOxigenadaCantidad" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col-porcentaje">
+        <mat-label>Ajuste</mat-label>
+        <input matInput type="number" [(ngModel)]="aguaOxigenadaPorcentaje" (ngModelChange)="actualizarCantidadAguaOxigenada()"
+          step="1" />
+      </mat-form-field>
+    </div>
+    <div class="quimico-row">
+      <span class="col-nombre">Soda</span>
+      <mat-form-field appearance="outline" class="col-gr">
+        <mat-label>Cantidad (gr)</mat-label>
+        <input matInput type="number" [(ngModel)]="sodaCausticaCantidad" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col-porcentaje">
+        <mat-label>Ajuste</mat-label>
+        <input matInput type="number" [(ngModel)]="sodaCausticaPorcentaje" (ngModelChange)="actualizarCantidadSoda()"
+          step="1" />
+      </mat-form-field>
+    </div>
+    <div class="quimico-row">
+      <span class="col-nombre">Rucolase CAT-PE</span>
+      <mat-form-field appearance="fill">
+        <mat-label>Cantidad</mat-label>
+        <mat-select [(ngModel)]="rucolaseCantidadSeleccionada" [disabled]="true">
+          <mat-option *ngFor="let r of rucolaseCantidad" [value]="r.codigo">
+            {{ r.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    </section>
+
     <section class="quimicos-section" *ngIf="TipoTenidoSeleccionado === 'D'">
       <h3>Antireductor</h3>
       <div class="quimico-row">
         <mat-form-field appearance="outline" class="col-gr">
           <mat-label>Cantidad (gr)</mat-label>
-          <input matInput type="number" [(ngModel)]="antiReductorCantidad" [disabled]="!cambiosHabilitados" />
+          <!-- [disabled]="!cambiosHabilitados" -->
+          <input matInput type="number" [(ngModel)]="antiReductorCantidad" />
         </mat-form-field>
       
         <mat-form-field appearance="outline" class="col-porcentaje">
           <mat-label>Ajuste</mat-label>
+          <!-- [disabled]="!cambiosHabilitados" -->
           <input matInput type="number" [(ngModel)]="antiReductorPorcentaje" (ngModelChange)="actualizarCantidadAntireductor()"
-            step="0.5" [disabled]="!cambiosHabilitados" />
+            step="0.5" />
         </mat-form-field>
       </div>
     </section>
 
-    <section class="datos-section" *ngIf="TipoTenidoSeleccionado === 'R' || TipoTenidoSeleccionado === 'D'">
+    <section class="datos-section" *ngIf="(TipoTenidoSeleccionado === 'R' || TipoTenidoSeleccionado === 'D' || TipoTenidoSeleccionado === 'O')">
       <h3>Baño - Peso - Volumen</h3>
       <mat-form-field appearance="fill">
         <mat-label>Relación baño</mat-label>
-        <input matInput type="number" [ngModel]="datos.relacionBano | number:'1.2-2'" step="1" min="0" [disabled]="!cambiosHabilitados"/>
+         <!-- | number:'1.2-2' -->
+        <input matInput type="number" [(ngModel)]="datos.relacionBano" (ngModelChange)="actualizarVolumen()" step="1" min="0" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
-
+      <!-- | number: '1.2-2' -->
+      
       <mat-form-field appearance="fill">
         <mat-label>Peso de muestra</mat-label>
-        <input matInput type="number" [ngModel]="datos.pesoMuestra | number: '1.2-2'" (ngModelChange)="calcularRelacionBano()" [disabled]="!cambiosHabilitados"/>
+        <input matInput type="text" 
+        [(ngModel)]="datos.pesoMuestra"
+        (ngModelChange)="actualizarVolumen()" 
+        [disabled]="!cambiosHabilitados"/>
+        <!-- <span>{{ datos.pesoMuestra | number:'1.2-2' }}</span> -->
       </mat-form-field>
 
+
+
+      <!-- <span>{{ datos.pesoMuestra | number:'1.2-2' }}</span> -->
+      <!-- | number:'1.0-0' -->
       <mat-form-field appearance="fill">
         <mat-label>Volumen</mat-label>
-        <input matInput type="number" [(ngModel)]="datos.volumen" (ngModelChange)="calcularRelacionBano()" [disabled]="!cambiosHabilitados"/>
+        <input matInput type="number"
+        [(ngModel)]="datos.volumen" 
+        (ngModelChange)="actualizarRelacionBano(); actualizarPesoMuestra()" [disabled]="!cambiosHabilitados"/>
+      </mat-form-field>
+      
+      <mat-form-field appearance="fill" *ngIf="TipoTenidoSeleccionado === 'D'">
+        <mat-label>Cantidad Lavado</mat-label>
+        <input matInput type="number" [(ngModel)]="cantidadLavados" [disabled]="!cambiosHabilitados"/>
       </mat-form-field>
     </section>
   </div>

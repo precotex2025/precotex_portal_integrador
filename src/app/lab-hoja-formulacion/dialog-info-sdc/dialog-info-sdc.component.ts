@@ -8,6 +8,11 @@ interface data {
   Title: string,
   Num_SDC: any,
   Num_Sec: number,
+  TipoReceta: string
+}
+
+interface Luz {
+  descripcion: string;
 }
 
 interface informacionSDC{
@@ -17,7 +22,11 @@ interface informacionSDC{
   pantone: string;
   com_Comer: string;
   ruta: string[];       
-  solidez: string[];    
+  solidez: string[];
+  luz: Luz[];
+  familia: string;
+  cur_Ten: string;
+  pre_Id: number;
 }
 
 interface informacionSDCProduccion{
@@ -35,7 +44,13 @@ interface informacionSDCProduccion{
   ref_Com: string;
   lote: string;
   obs: string;
-  ruta: string[];        
+  ruta: string[];      
+  familia: string;  
+  pre_Id: number;
+  cod_OrdTra_Ref: string;
+  tela_Ref: string;
+  rel_Ban_Ref: string;
+  lote_Ref: string
 }
 
 @Component({
@@ -45,6 +60,9 @@ interface informacionSDCProduccion{
 })
 export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
 
+
+  previo: { codigo: number, nombre: string }[] = [];
+  previoSeleccionado: number = 0;
   constructor(
     private LabColTrabService: LabColTrabajoService, 
     private SpinnerService: NgxSpinnerService,
@@ -52,7 +70,8 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
     @Optional() @Inject(MAT_DIALOG_DATA) public data: data,
   ){}
   ngOnInit(): void {
-    this.onLoadData();
+    this.getListarPrevios();
+    this.onLoadData();    
   }
 
   ngAfterViewInit(): void {
@@ -67,18 +86,21 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
   onLoadData(){
     let Corr_Carta = this.data.Num_SDC;
     let Sec = this.data.Num_Sec;
+    let TipoReceta = this.data.TipoReceta
     this.SpinnerService.show();
     this.dataInforme = [];
-    this.LabColTrabService.getCargarInformeSDC(Corr_Carta, Sec).subscribe({
+    this.LabColTrabService.getCargarInformeSDC(Corr_Carta, Sec, TipoReceta).subscribe({
       next:(response: any) => {
         if(response.success){
           
           let empiezaConNumero = !isNaN(Number(Corr_Carta.charAt(0))) && Corr_Carta.charAt(0) !== "0";
-
+          
           if (empiezaConNumero) {
             this.dataInforme = response.elements;
+            this.previoSeleccionado = this.dataInforme[0].pre_Id;
           } else {
             this.dataInformeProduccion = response.elements;
+            this.previoSeleccionado = this.dataInformeProduccion[0].pre_Id;
           }
           console.log(this.dataInformeProduccion)
             //console.log('contenido que cargará en la grilla', this.dataInforme);
@@ -93,7 +115,39 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
   }
 
 
+  getListarPrevios(): void {
+    this.LabColTrabService.getListarPrevios().subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          console.log('>>>>>>>>>>>>>>>>>>>>', response.elements);
+          this.previo = response.elements.map((p: any) => ({
+            codigo: p.pre_Id,
+            nombre: p.pre_Des
+          }));
+        }
+      }
+    });
+  }
 
+  patchActualizarPrevio(): void {
+
+    const data = {
+      corr_Carta: this.data.Num_SDC,
+      sec: this.data.Num_Sec,
+      previo: this.previoSeleccionado
+    }
+
+    console.log('>>>>>>>>>>>>>>', data);
+
+    this.LabColTrabService.patchActualizarPrevio(data).subscribe({
+      next: (response: any) => {
+        // this.toastr.success(response.message, 'Exito', {
+        //   timeOut: 2500
+        // });
+      },
+      error: (error: any) => { }
+    });
+  }
 
 
 

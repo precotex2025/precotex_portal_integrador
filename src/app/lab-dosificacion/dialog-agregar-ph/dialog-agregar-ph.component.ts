@@ -15,7 +15,8 @@ interface data {
   Sec: number,
   Correlativo: number,
   JabonadoIndex: number,
-  Condicion: number
+  Condicion: number,
+  Tip_Ten: string
 }
 
 @Component({
@@ -61,17 +62,18 @@ export class DialogAgregarPhComponent implements OnInit {
     return;
   }
 
-
+  
   const payload = {
     corr_Carta: this.data.Corr_Carta,
     sec: this.data.Sec,
     correlativo: this.data.Correlativo,
     tip_Ph: this.data.Condicion,
     jabonadoIndex: this.data.JabonadoIndex,
-    ph_Val: parseFloat(valorPh)
+    ph_Val: parseFloat(valorPh),
+    tip_Ten: this.data.Tip_Ten
   };
 
-  //console.log('-----------------------', payload);
+  console.log('-----------------------', payload);
   this.SpinnerService.show();
 
   this.labColTrabajoService.patchActualizarPH(payload)

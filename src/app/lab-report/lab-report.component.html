@@ -18,45 +18,47 @@
     <div [hidden]="this.mostrarCabecera">
       <div class="cabecera">
         <div class="col">
-          <p><strong>Analista:</strong> {{ grupos[0].reporte.analista }}</p>
+          <p><strong>ANALISTA:</strong> {{ grupos[0].reporte.analista }}</p>
           <p><strong>SDC:</strong> {{ grupos[0].reporte.corr_Carta }}</p>
-          <p><strong>Cliente:</strong> {{ grupos[0].reporte.nom_Cliente }}</p>
-          <p><strong>Artículo:</strong> {{ grupos[0].reporte.articulo }}</p>
-          <p><strong>Color:</strong> {{ grupos[0].reporte.descripcion_Color }}</p>
+          <p><strong>CLIENTE:</strong> {{ grupos[0].reporte.nom_Cliente }}</p>
+          <p><strong>ARTÍCULO:</strong> {{ grupos[0].reporte.articulo }}</p>
+          <p><strong>COLOR:</strong> {{ grupos[0].reporte.descripcion_Color }}</p>
         </div>
         <div class="col">
-          <p><strong>Previo:</strong> {{ grupos[0].reporte.previo }}</p>
-          <!-- <p><strong>Cantidad Enzimático:</strong> {{ grupos[0].reporte.enz_Can }}</p>
-          <p><strong>Enzima dentro de baño:</strong> {{ grupos[0].reporte.enz_Den_Bno }}</p> -->
-          <p><strong>Tipo teñido:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
-          <p><strong>Curva teñido:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
+          <p><strong>TIPO RECETA:</strong> {{ grupos[0].reporte.tipoPartida }}</p>
+          <p [hidden]="this.data.tipoRecetaR === 'O'"><strong>Previo:</strong> {{ grupos[0].reporte.previo }}</p>
+          <p><strong>TIPO TEÑIDO:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
+          <p><strong>CURVA TEÑIDO:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
         </div>
-        <div class="col">
-          <p><strong>Curva jabonado:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
-          <p><strong>Cantidad jabonados:</strong> {{ grupos[0].reporte.can_Jab }}</p>
-          <p><strong>Fijado:</strong> {{ grupos[0].reporte.fijado }}</p>
-          <p><strong>Acabado:</strong> {{ grupos[0].reporte.acabado }}</p>
+        <div class="col" *ngIf="this.data.tipoRecetaR === 'R'">
+          <p><strong>CANTIDAD JABONADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
+          <p><strong>CURVA JABONADO:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
+          <!-- <p><strong>Descarga:</strong> {{ grupos[0].reporte.fijado }}</p> -->
+          <p><strong>DESCARGA:</strong> {{ grupos[0].reporte.descarga }}</p>
+        </div>
+        <div class="col" *ngIf="this.data.tipoRecetaR === 'D'">
+          <p><strong>CANTIDAD LAVADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
+          <p><strong>TIPO LAVADO:</strong> {{ grupos[0].reporte.corr_Carta }}</p>
         </div>
       </div>
     </div>
     <div [hidden]="!this.mostrarCabecera">
       <div class="cabecera">
         <div class="col">
-          <p><strong>Analista:</strong> {{ grupos[0].reporte.analista }}</p>
+          <p><strong>ANALISTA:</strong> {{ grupos[0].reporte.analista }}</p>
           <p><strong>PARTIDAS:</strong> {{ grupos[0].reporte.partidasAgrupadas }}</p>
-          <p><strong>Cliente:</strong> {{ grupos[0].reporte.nom_Cliente }}</p>
-          <p><strong>Artículo:</strong> {{ grupos[0].reporte.articulo }}</p>
-          <p><strong>Color:</strong> {{ grupos[0].reporte.descripcion_Color }}</p>
-          <p><strong>Color:</strong> {{ grupos[0].reporte.cod_Color }}</p>
+          <p><strong>CLIENTE:</strong> {{ grupos[0].reporte.nom_Cliente }}</p>
+          <p><strong>TEMPORADA:</strong> {{ grupos[0].reporte.temporada }}</p>
+          <p><strong>ARTÍCULO:</strong> {{ grupos[0].reporte.articulo }}</p>
+          <!-- <p><strong>Color:</strong> {{ grupos[0].reporte.descripcion_Color }}</p> -->
+          <p><strong>COLOR:</strong> {{ grupos[0].reporte.cod_Color }}</p>
         </div>
         <div class="col">
-<<<<<<< Updated upstream
           <p><strong>Previo:</strong> {{ grupos[0].reporte.previo }}</p>
           <p><strong>Tipo:</strong> {{ grupos[0].reporte.tipoPartida }}</p>
           <p><strong>Tipo teñido:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
           <p><strong>Curva teñido:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
           <p><strong>Temporada: </strong> {{ grupos[0].reporte.temporada }}</p>
-=======
           <p><strong>TIPO RECETA:</strong> {{ grupos[0].reporte.tipoPartida }}</p>
           <p><strong>TIPO TEÑIDO:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
           <p [hidden]="this.data.tipoRecetaR === 'O'"><strong>PREVIO:</strong> {{ grupos[0].reporte.previo }}</p>
@@ -64,16 +66,31 @@
           <p><strong>MAQUINA:</strong> {{ grupos[0].reporte.maquina }}</p>
           <p><strong>KG:</strong> {{ grupos[0].reporte.kgs_Prod }}</p>
           <p><strong>LOTE:</strong> {{ grupos[0].reporte.lote_Hilado }}</p>
->>>>>>> Stashed changes
         </div>
-        <div class="col">
-          <p><strong>Curva jabonado:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
-          <p><strong>Cantidad jabonados:</strong> {{ grupos[0].reporte.can_Jab }}</p>
-          <p><strong>Fijado:</strong> {{ grupos[0].reporte.fijado }}</p>
-          <p><strong>Maquina:</strong> {{ grupos[0].reporte.maquina }}</p>
-          <p><strong>Kg Tela:</strong> {{ grupos[0].reporte.kgs_Prod }}</p>
+      
+        <div class="col" *ngIf="this.data.tipoRecetaR === 'R'">
           <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p>
+          <p><strong>CANTIDAD JABONADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
+          <p><strong>CURVA JABONADO:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
+          <!-- <p><strong>Descarga:</strong> {{ grupos[0].reporte.fijado }}</p> -->
+          <!-- <p><strong>Maquina</strong> {{ grupos[0].reporte.maquina }}</p> -->
+          <!-- <p><strong>Kg:</strong> {{ grupos[0].reporte.kgs_Prod }}</p> -->
+          <p><strong>DESCARGA:</strong> {{ grupos[0].reporte.descarga }}</p>
         </div>
+        <div class="col" *ngIf="this.data.tipoRecetaR === 'D'">
+          <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p>
+          <p><strong>CANTIDAD LAVADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
+          <p><strong>TIPO LAVADO:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
+          <!-- <p><strong>Maquina:</strong> {{ grupos[0].reporte.maquina }}</p> -->
+          <!-- <p><strong>Kg:</strong> {{ grupos[0].reporte.kgs_Prod }}</p> -->
+        </div>
+        <div class="col" *ngIf="this.data.tipoRecetaR === 'O'">
+          <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p>
+          <!-- <p><strong>Tipo de Lavado:</strong> {{ grupos[0].reporte.jab_Des }}</p> -->
+          <!-- <p><strong>Maquina:</strong> {{ grupos[0].reporte.maquina }}</p> -->
+          <!-- <p><strong>Kg:</strong> {{ grupos[0].reporte.kgs_Prod }}</p> -->
+        </div>
+
       </div>
     </div>
 

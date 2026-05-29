@@ -4,7 +4,7 @@ import { GlobalVariable } from '../../VarGlobals';
 import _moment from 'moment';
 import { param } from 'jquery';
 import { Observable } from 'rxjs';
-
+import { timeout } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -72,11 +72,12 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarComboBoxItem', { headers })
   }
 
-  getCargarInformeSDC(Corr_Carta: any, Sec: number){
+  getCargarInformeSDC(Corr_Carta: any, Sec: number, TipoReceta: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
+    params = params.append('Tip_Ten', TipoReceta)
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarInformeSDC', { headers, params })
   }
 
@@ -99,11 +100,13 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarJabonados', { headers })
   }
 
-  getListarJabonadosCalculado(Colorante_Total: number, Familia: string){
+  getListarJabonadosCalculado(Colorante_Total: number, Familia: string, Tipo: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Colorante_Total', Colorante_Total);
     params = params.append('Familia', Familia);
+    params = params.append('Tipo', Tipo);
+    //params = params.append('Cambio', Cambio);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarJabonadosCalculado', { headers, params })
   }
 
@@ -112,20 +115,23 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarFijados', { headers })
   }
 
-  getListarFijadosCalculado(Colorante_Total: number, Familia: string){
+  getListarFijadosCalculado(Colorante_Total: number, Familia: string, Tipo: string, Cod_Color: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Colorante_Total', Colorante_Total);
     params = params.append('Familia', Familia);
+    params = params.append('Tipo', Tipo);
+    params = params.append('Cod_Color', Cod_Color);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarFijadosCalculado', { headers, params })
   }
 
-  getListarCarbonatoSodaCalculado(Colorante_Total: number, Familia: string, Com_Cod_Con: number){
+  getListarCarbonatoSodaCalculado(Colorante_Total: number, Familia: string, Com_Cod_Con: number, Tipo: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Colorante_Total', Colorante_Total);
     params = params.append('Familia', Familia);
     params = params.append('Com_Cod_Con', Com_Cod_Con);
+    params = params.append('Tipo', Tipo);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarCarbonatoSodaCalculado', { headers, params })
   }
 
@@ -167,39 +173,42 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarFamiliasProceso', { headers })
   }
 
-  getCargarColoranteParaCopiar(Corr_Carta: any, Sec: number, Correlativo: number){
+  getCargarColoranteParaCopiar(Corr_Carta: any, Sec: number, Correlativo: number, Tip_Ten: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
     params = params.append('Correlativo', Correlativo);
+    params = params.append('Tip_Ten', Tip_Ten);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarColoranteParaCopiar', { headers, params })
   }
   
-  getCargarColoranteParaDetalle(Corr_Carta: any, Sec: number, Correlativo: number){
+  getCargarColoranteParaDetalle(Corr_Carta: any, Sec: number, Correlativo: number, Tip_Ten: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
     params = params.append('Correlativo', Correlativo);
+    params = params.append('Tip_Ten', Tip_Ten);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarColoranteParaDetalle', { headers, params })
   }
 
-  getListarIngresoManual(Corr_Carta: any, Sec: number, Correlativo: number){
+  getListarIngresoManual(Corr_Carta: any, Sec: number, Correlativo: number, Tip_Ten: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
     params = params.append('Correlativo', Correlativo);
+    params = params.append('Tip_Ten', Tip_Ten);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarIngresoManual', { headers, params })
   }
 
-  getCargarDatosReporte(Corr_Carta: any, Sec: number, Correlativo: number){
+  getCargarDatosReporte(Corr_Carta: any, Sec: number, Tip_Ten: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
-    params = params.append('Correlativo', Correlativo);
+    params = params.append('Tip_Ten', Tip_Ten);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarDatosReporte', { headers, params })
   }
 
@@ -247,12 +256,13 @@ export class LabColTrabajoService {
     params = params.append('Usr_Cod', Usr_Cod);
     return this.http.get(this.baseUrlTinto + 'LbColatrabajo/getListarJabonadoExcluido', { headers, params })
   }
-
-  getObtenerTrio(Corr_Carta: any, Sec: number) {
+  //FALTA OBTENER TIP_TEN
+  getObtenerTrio(Corr_Carta: any, Sec: number, Tip_Ten: string) {
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
+    params = params.append('Tip_Ten', Tip_Ten);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerTrio', { headers, params })
   }
 
@@ -341,6 +351,49 @@ export class LabColTrabajoService {
 
   }
 
+  getObtenerCurvaReactivoDisperso(Corr_Carta: string, Sec: number, Tip_Ten: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Corr_Carta', Corr_Carta);
+    params = params.append('Sec', Sec);
+    params = params.append('Tip_Ten', Tip_Ten);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerCurvaReactivoDisperso', { headers, params })
+  }
+
+  getListarCurvasV2(Pro_Cod: string, Corr_Carta: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Pro_Cod', Pro_Cod);
+    params = params.append('Corr_Carta', Corr_Carta);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarCurvasV2', { headers, params })
+  }
+
+  getObtenerPermisoUsuario(Usr_Cod: string, Acc_Rut: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Usr_Cod', Usr_Cod);
+    params = params.append('Acc_Rut', Acc_Rut);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerPermisoUsuario', { headers, params })
+  }
+
+  getEnviarAutolabModoGet() {
+    const headers = this.Header;
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getEnviarAutolabModoGet', { headers })
+    .pipe(
+      timeout(600000)
+    );
+  }
+
+  getObtenerCantidadGrupos() {
+    const headers = this.Header;
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getObtenerCantidadGrupos', { headers })
+  }
+
+  getAsignarGrupos() {
+    const headers = this.Header;
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getAsignarGrupos', { headers })
+  }
+
   postRegistrarDetalleColorSDC(data: any){
     const headers = this.Header;
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarDetalleColorSDC', data, { headers })
@@ -361,6 +414,7 @@ export class LabColTrabajoService {
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postAgregarAuxiliaresHojaFormulacion', data, { headers })
   }
 
+  //FALTA ARREGLAR EL ENVIO AL TEXTO
   postLlenarTextoFinal(data: any){
     const headers = this.Header;
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postLlenarTextoFinal', data, { headers })
@@ -395,7 +449,7 @@ export class LabColTrabajoService {
     const headers = this.Header;
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postRegistrarProcesoValor', data, { headers })
   }
-
+  //FALTA ARREGLAR 
   postAgregarOpcionAjustada(data: any){
     const headers = this.Header;
     return this.http.post(this.baseUrlTinto + 'LbColaTrabajo/postAgregarOpcionAjustada', data, { headers })
@@ -503,7 +557,7 @@ export class LabColTrabajoService {
 
   patchReformularPartida(data: any){
     const headers = this.Header;
-    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/padtchReformularPartida', data, { headers })
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchReformularPartida', data, { headers })
   }
 
   patchActualizarEstadoEntregaProduccion(data: any){
@@ -531,12 +585,23 @@ export class LabColTrabajoService {
     return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarPrevio', data, { headers })
   }
 
-  deleteEliminarOpcionColorante(Corr_Carta: any, Sec: number, Correlativo: number) {
+  patchActualizarEstadoDosificacion(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarEstadoDosificacion', data, { headers })
+  }
+
+  patchActualizarFechasTenido_2(data: any){
+    const headers = this.Header;
+    return this.http.patch(this.baseUrlTinto + 'LbColaTrabajo/patchActualizarFechasTenido_2', data, { headers })
+  }
+
+  deleteEliminarOpcionColorante(Corr_Carta: any, Sec: number, Correlativo: number, Tip_Ten: string) {
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
     params = params.append('Sec', Sec);
     params = params.append('Correlativo', Correlativo);
+    params = params.append('Tip_Ten', Tip_Ten);
     return this.http.delete(this.baseUrlTinto + 'LbColaTrabajo/deleteEliminarOpcionColorante', { headers, params })
   }
 

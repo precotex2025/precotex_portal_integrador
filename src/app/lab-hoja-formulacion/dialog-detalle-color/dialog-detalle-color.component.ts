@@ -8,6 +8,7 @@ interface data {
   corr_Carta: any;
   sec: number;
   correlativo: number;
+  tipoTenido: string;
 }
 
 @Component({
@@ -30,7 +31,7 @@ export class DialogDetalleColorComponent implements OnInit, AfterViewInit {
   previo: { codigo: number, nombre: string }[] = [];
   previoSeleccionado: number = 0;
   ngOnInit(): void {
-    this.cargarReceta(this.data.corr_Carta, this.data.sec, this.data.correlativo);
+    this.cargarReceta(this.data.corr_Carta, this.data.sec, this.data.correlativo, this.data.tipoTenido);
     this.getListarPrevios();
   }
 
@@ -41,17 +42,20 @@ export class DialogDetalleColorComponent implements OnInit, AfterViewInit {
     }
   }
 
-  cargarReceta(corrCarta: any, sec: number, correlativo: number): void {
+  cargarReceta(corrCarta: any, sec: number, correlativo: number, Tip_Ten: string): void {
     this.SpinnerService.show();
-    this.LabColTraService.getCargarColoranteParaDetalle(corrCarta, sec, correlativo).subscribe({
+    this.LabColTraService.getCargarColoranteParaDetalle(corrCarta, sec, correlativo, Tip_Ten).subscribe({
       next: (response: any) => {
         if (response.success && response.totalElements > 0) {
           this.recetaDetalle = response.elements[0];
-          //console.log('Receta cargada:', this.recetaDetalle);
+          console.log('Receta cargada:', this.recetaDetalle);
           if(this.recetaDetalle?.previo) {
             this.recetaDetalle.previo = parseInt(this.recetaDetalle.previo);
             this.previoSeleccionado = this.recetaDetalle.previo;
           }
+        }else{
+          this.toastr.warning('No existe información de la receta');
+          return;
         }
         this.SpinnerService.hide();
       },

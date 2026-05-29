@@ -25,7 +25,8 @@ interface data_colaautolab {
   correlativo: number,
   descripcion_Color: string,
   jab_Des: string,
-  volumen: number
+  volumen: number,
+  tip_Ten: string
 }
 
 interface data_dispensado {
@@ -39,6 +40,7 @@ interface data_dispensado {
   sulfato: string,
   peso_Muestra: number,
   ph_Ini: number,
+  tip_Ten: string
 }
 
 @Component({
@@ -107,7 +109,8 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     'descripcion_Color',
     'ingreso_Manual',
     'jab_Des',
-    'volumen'
+    'volumen',
+    'reenvio'
   ];
 
   dataSource: MatTableDataSource<data_colaautolab> = new MatTableDataSource();
@@ -163,7 +166,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
 
   async enviarADispensar(): Promise<void> {
     const seleccionados = this.dataSource.data.filter((row: any) => row.seleccionado);
-
+    console.log(seleccionados);
     const confirmacion = await Swal.fire({
       title: '¿Enviar a Dispensar?',
       icon: 'question',
@@ -179,32 +182,62 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     this.SpinnerService.show();
 
     try {
+      //console.log('ENTRAMOS');
       for (let i = 0; i < seleccionados.length; i++) {
         const item = seleccionados[i];
         const dataEnviar = {
           corr_Carta: item.corr_Carta,
           sec: item.sec,
           correlativo: item.correlativo,
-          posicion: 0
+          posicion: 0,
+          tip_Ten: item.tip_Ten
         };
+
+        // console.log('::::::::::::::::::::::::::::.', dataEnviar);
         try {
-          const respuesta = await this.LabColTrabajoService.patchEnviarADispensado(dataEnviar).toPromise();
+            const respuesta = await this.LabColTrabajoService.patchEnviarADispensado(dataEnviar).toPromise();
+          
         } catch (error) {
           console.log('Error al enviar a dispensado:', error);
         }
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
+
+      // this.SpinnerService.hide();
+      
       const dataEnviar = {
         corr_Carta: "",
         sec: 0,
-        correlativo: 0,
-        posicion: 0
+        correlativo: 0
       };
+      
+      // let continuar = true;
 
+      // while (continuar) {
+      //   try {
+      //     const respuesta: any = await this.LabColTrabajoService.patchEnviarAutolab(dataEnviar).toPromise();
+
+      //     if (respuesta.codigo === 0 && respuesta.sMsj.includes("esperar")) {
+      //       console.log("Archivo existente, esperando...");
+      //       // esperar 10 segundos antes de reintentar
+      //       await new Promise(resolve => setTimeout(resolve, 10000));
+      //     } else if (respuesta.codigo === 1) {
+      //       console.log("Archivo enviado correctamente");
+      //       continuar = false; // salir del loop
+      //     } else {
+      //       console.error("Error: " + respuesta.sMsj);
+      //       continuar = false; // salir del loop en caso de error
+      //     }
+      //   } catch (error) {
+      //     console.error("Error al llamar al SP:", error);
+      //     continuar = false;
+      //   }
+      // }
       try {
-        const exitoso = await this.LabColTrabajoService.patchEnviarAutolab(dataEnviar).subscribe({});
+        //const exitoso = await this.LabColTrabajoService.getEnviarAutolabModoGet().subscribe({});
+        const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
       } catch (error) {
-        console.log('Error al enviar a Autolab:', error);
+        // console.log('Error al enviar a Autolab:', error);
       }
 
       if (this.estadoSeleccionado === 'cola') {
@@ -215,6 +248,210 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
       this.SpinnerService.hide();
     }
   }
+
+  // enviarAutolab(): void {
+  //   this.LabColTrabajoService.getEnviarAutolabModoGet().subscribe({
+  //     next: (response: any) => {
+  //       console.log(response.elements);
+  //     },
+  //     error: (error: any) => {
+
+  //     }
+  //   });
+  // }
+
+//   async enviarAutolab(): Promise<void> {
+//   let continuar = true;
+
+//   while (continuar) {
+//     const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+
+//     if (respuesta.codigo === 1) {
+//       console.log(respuesta.mensaje);
+//       // seguir hasta que no queden grupos
+//     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("NO HAY GRUPOS")) {
+//       console.log("Todos los grupos procesados");
+//       continuar = false;
+//     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("espera")) {
+//       console.log("Archivo existente, esperando...");
+//       await new Promise(resolve => setTimeout(resolve, 10000));
+//     } else {
+//       console.error("Error: " + respuesta.mensaje);
+//       continuar = false;
+//     }
+//   }
+// }
+
+// async enviarAutolab(): Promise<void> {
+
+//   await this.obtenerCantidadGrupos();
+//   // Primera llamada para saber cuántos grupos hay
+//   // const inicial: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+//   // const totalGrupos = inicial.gruposPendientes;
+//   // console.log(totalGrupos);
+//   // for (let i = 0; i < totalGrupos; i++) {
+//   //   const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+
+//   //   if (respuesta.codigo === 1) {
+//   //     console.log(`Grupo ${i+1} procesado: ${respuesta.mensaje}`);
+//   //   } else {
+//   //     console.error(`Error en grupo ${i+1}: ${respuesta.mensaje}`);
+//   //     break;
+//   //   }
+//   // }
+
+//   // console.log("Todos los grupos procesados");
+// }
+
+// async enviarAutolab(): Promise<void> {
+//   const totalGrupos = await this.obtenerCantidadGrupos();
+
+//   for (let i = 0; i < totalGrupos; i++) {
+//     const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+//     console.log(respuesta);
+//     if (respuesta.codigo === 1) {
+//       console.log(`Grupo ${i+1} procesado: ${respuesta.mensaje}`);
+//     } else {
+//       console.error(`Error en grupo ${i+1}: ${respuesta.mensaje}`);
+//       break;
+//     }
+//   }
+
+//   console.log("Todos los grupos procesados");
+// }
+
+async enviarAutolab(): Promise<void> {
+  const totalGrupos = await this.obtenerCantidadGrupos();
+  console.log(totalGrupos);
+  const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+  // for (let i = 0; i < totalGrupos; i++) {
+  //   let procesado = false;
+
+  //   while (!procesado) {
+  //     const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+
+  //     if (respuesta.codigo === 1) {
+  //       console.log(`Grupo ${i+1} procesado: ${respuesta.mensaje}`);
+  //       procesado = true; // pasamos al siguiente grupo
+  //     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("ESPERAR")) {
+  //       console.log(`Grupo ${i+1}: archivo ocupado, reintentando en 10s...`);
+  //       await new Promise(resolve => setTimeout(resolve, 10000));
+  //       // seguimos en el mismo grupo, no avanzamos el índice
+  //     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("NO HAY GRUPOS")) {
+  //       console.log("Todos los grupos procesados");
+  //       return; // salimos del bucle principal
+  //     } else {
+  //       console.error(`Error en grupo ${i+1}: ${respuesta.mensaje}`);
+  //       return; // cortamos el proceso
+  //     }
+  //   }
+  // }
+
+  // console.log("Proceso terminado");
+
+  // 1. Asignar grupos
+  // await this.asignarGrupos();
+  // console.log("Grupos asignados");
+
+  // // 2. Obtener cantidad de grupos
+  // const totalGrupos = await this.obtenerCantidadGrupos();
+  // console.log("Cantidad de grupos:", totalGrupos);
+
+  // // 3. Enviar a Autolab
+  // for (let i = 0; i < totalGrupos; i++) {
+  //   let procesado = false;
+
+  //   while (!procesado) {
+  //     const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+
+  //     if (respuesta.codigo === 1) {
+  //       console.log(`Grupo ${i+1} procesado: ${respuesta.mensaje}`);
+  //       procesado = true; // pasamos al siguiente grupo
+  //     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("ESPERAR")) {
+  //       console.log(`Grupo ${i+1}: archivo ocupado, reintentando en 10s...`);
+  //       await new Promise(resolve => setTimeout(resolve, 10000));
+  //       // seguimos en el mismo grupo
+  //     } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("NO HAY GRUPOS")) {
+  //       console.log("Todos los grupos procesados");
+  //       return;
+  //     } else {
+  //       console.error(`Error en grupo ${i+1}: ${respuesta.mensaje}`);
+  //       return;
+  //     }
+  //   }
+  // }
+
+  console.log("Proceso terminado");
+}
+
+
+
+
+  cantidadGrupos: number = 0;
+  // obtenerCantidadGrupos(): void {
+  //   this.LabColTrabajoService.getObtenerCantidadGrupos().subscribe({
+  //     next: (response: any) => {
+  //       if(response.success){
+  //         if (response.totalElements > 0){
+  //           this.cantidadGrupos = response.elements[0].cantidadGrupos;
+  //           console.log(this.cantidadGrupos);
+  //         }
+  //       }
+  //     }
+  //   });
+  // }
+
+  async obtenerCantidadGrupos(): Promise<number> {
+    const response: any = await this.LabColTrabajoService.getObtenerCantidadGrupos().toPromise();
+    if (response.success && response.totalElements > 0) {
+      return response.elements[0].cantidadGrupos;
+    }
+    return 0;
+  }
+
+  async asignarGrupos(): Promise<void> {
+    const response: any = await this.LabColTrabajoService.getAsignarGrupos().toPromise();
+    if (response.success && response.totalElements > 0) {
+      return response.elements[0].corr_Carta;
+    }
+    console.log('Grupos Asignados')
+  }
+
+  async procesarAutolab(): Promise<void> {
+  // 1. Asignar grupos
+  await this.asignarGrupos();
+  console.log("Grupos asignados");
+
+  // 2. Obtener cantidad de grupos
+  const totalGrupos = await this.obtenerCantidadGrupos();
+  console.log("Cantidad de grupos:", totalGrupos);
+
+  // 3. Enviar a Autolab
+  for (let i = 0; i < totalGrupos; i++) {
+    let procesado = false;
+
+    while (!procesado) {
+      const respuesta: any = await this.LabColTrabajoService.getEnviarAutolabModoGet().toPromise();
+
+      if (respuesta.codigo === 1) {
+        console.log(`Grupo ${i+1} procesado: ${respuesta.mensaje}`);
+        procesado = true; // pasamos al siguiente grupo
+      } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("ESPERAR")) {
+        console.log(`Grupo ${i+1}: archivo ocupado, reintentando en 10s...`);
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        // seguimos en el mismo grupo
+      } else if (respuesta.codigo === 0 && respuesta.mensaje.includes("NO HAY GRUPOS")) {
+        console.log("Todos los grupos procesados");
+        return;
+      } else {
+        console.error(`Error en grupo ${i+1}: ${respuesta.mensaje}`);
+        return;
+      }
+    }
+  }
+
+  console.log("Proceso terminado");
+}
 
 
 
@@ -248,9 +485,9 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
   // }
 
   cargarItemsManuales(row: any): void {
-    const { corr_Carta, sec, correlativo } = row;
+    const { corr_Carta, sec, correlativo, tip_Ten } = row;
 
-    this.LabColTrabajoService.getListarIngresoManual(corr_Carta, sec, correlativo).subscribe({
+    this.LabColTrabajoService.getListarIngresoManual(corr_Carta, sec, correlativo, tip_Ten).subscribe({
       next: (response: any) => {
         if (response.success) {
           row.ingreso_Manual = response.elements
@@ -402,6 +639,11 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
       return;
     }
     
+    const tipTenSet = new Set(seleccionadas.map((row: any) => row.tip_Ten));
+    if (tipTenSet.size > 1) {
+      this.toastr.error('Combinación Inválida', '', { timeOut: 3000 });
+      return;
+    }
 
     const confirmacion = await Swal.fire({
       title: '¿Cargar a Ahiba?',
@@ -429,7 +671,8 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
           correlativo: item.correlativo,
           ahi_Id: this.ahibaSeleccionado,
           nro_Tubo: tubo,
-          tip_Carga: 'D'
+          tip_Carga: 'D',
+          tip_Ten: item.tip_Ten
         };
 
         try {
@@ -466,7 +709,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     let corre = row.correlativo;
     let corr_carta = row.corr_Carta;
     let sec1 = row.sec;
-
+    let tipoTenido = row.tip_Ten
     let dialogref = this.dialog.open(DialogDetalleColorComponent, {
       width: '700px',
       //height: '700px',
@@ -478,6 +721,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
         corr_Carta: corr_carta,
         sec: sec1,
         correlativo: corre,
+        tipoTenido: tipoTenido
       }
     });
   }
@@ -508,6 +752,13 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     let num_sdc = row.corr_Carta;
     let sec = row.sec;
     let correlativo = row.correlativo;
+    let tip_Ten = row.tip_Ten;
+
+    // if(tip_Ten === 'O'){
+    //   this.toastr.warning('No se puede ingresar ph de un BLANCO');
+    //   return;
+    // }
+
     let dialogref = this.dialog.open(DialogAgregarPhComponent, {
       width: '500px',
       height: '300px',
@@ -518,7 +769,8 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
         Corr_Carta: num_sdc,
         Sec: sec,
         Correlativo: correlativo,
-        Condicion: 1
+        Condicion: 1,
+        Tip_Ten: tip_Ten
       }
     });
 
@@ -745,6 +997,12 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
       //     return;
       //   }
       // }
+      const tipos = [...new Set(seleccionadas.map((row: any) => row.tip_Ten))];
+      if (tipos.length > 1) {
+        this.toastr.warning(`Existen múltiples tipos de tenido seleccionados`, 'Advertencia', { timeOut: 3000 });
+        this.ahibaSeleccionado = 0;
+        return;
+      }
     }
 
     this.seleccionadosActuales = 0;
@@ -889,17 +1147,39 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     });
   }
 
+  revertirEstadoEnvioDeColorTricomia(row: any): void {
+    let Corr_Carta: string = row.corr_Carta;
+    let Sec: number = row.sec;
+    let Correlativo: number = row.correlativo;
+    let tip_Ten: string = row.tip_Ten;
+    const data = {
+      Corr_Carta: Corr_Carta,
+      sec: Sec,
+      correlativo: Correlativo,
+      flg_Est_Lab: '99',
+      tip_Ten: tip_Ten
+    }
 
+    this.LabColTrabajoService.patchActualizarEstadoDeColorTricomia(data).subscribe({
+      next: (response: any) => {
+        this.onListarColaAutolab(this.Usuario);
+      },
+      error: (error: any) => {
+
+      }
+    });
+  }
   patchActualizarEstadoDeColorTricomia(row: any): void {
     let Corr_Carta: string = row.corr_Carta;
     let Sec: number = row.sec;
     let Correlativo: number = row.correlativo;
-
+    let Tip_Ten: string = row.tip_Ten;
     const data = {
       corr_Carta: Corr_Carta,
       sec: Sec,
       correlativo: Correlativo,
-      flg_Est_Lab: '05'
+      flg_Est_Lab: '05',
+      tip_Ten: Tip_Ten
     }
 
     //console.log('la data para reenviar es:::::::::::::::::::::....', data);

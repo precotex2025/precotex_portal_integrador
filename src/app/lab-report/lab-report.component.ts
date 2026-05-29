@@ -49,14 +49,11 @@ interface ReporteBackend {
   kgs_Prod: string;
   r_B_Prod: string;
   maquina: string;
-<<<<<<< Updated upstream
-=======
   rel_Ban: string;
   pro_Des: string;
   tipoReceta: string;
   descarga: string;
   lote_Hilado: string;
->>>>>>> Stashed changes
   colorantes_Reporte: Insumo[];
   ruta_Reporte: Ruta[];
   solidez_Reporte: Solidez[];
@@ -65,6 +62,7 @@ interface ReporteBackend {
 interface data {
   sdcR: any,
   secuenciaR: number,
+  tipoRecetaR: string
 }
 
 @Component({
@@ -101,18 +99,19 @@ export class LabReportComponent implements OnInit {
       this.data = {
         sdcR: params['sdcE'] !== undefined ? String(params['sdcE']) : '',
         secuenciaR: params['secuenciaE'] !== undefined ? Number(params['secuenciaE']) : 0,
+        tipoRecetaR: params['tipoRecetaE'] !== undefined ? String(params['tipoRecetaE']): ''
       };
     });
     const empiezaConLetra = /^[A-Za-z]/.test(this.data.sdcR);
     this.mostrarCabecera = empiezaConLetra;
     console.log('la cabecera está en::::::::::::::::::::.', this.mostrarCabecera);
-    this.cargarDatosReporte(this.data.sdcR, this.data.secuenciaR, 0);
+    this.cargarDatosReporte(this.data.sdcR, this.data.secuenciaR, this.data.tipoRecetaR);
   }
 
 
-  cargarDatosReporte(corrCarta: any, sec: number, correlativo: number): void {
+  cargarDatosReporte(corrCarta: any, sec: number, Tip_Ten: string): void {
     this.loading = true;
-    this.labColTrabajoService.getCargarDatosReporte(corrCarta, sec, correlativo).subscribe({
+    this.labColTrabajoService.getCargarDatosReporte(corrCarta, sec, Tip_Ten).subscribe({
 
       next: (response: any) => {
         const reporte: ReporteBackend = {

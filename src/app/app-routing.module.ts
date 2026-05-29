@@ -15,25 +15,26 @@ import { DetalleJabFijComponent } from './mantenimientos/mantenimientos-lst/deta
 import { DetalleCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/detalle-comp-extra.component';
 import { DialogNuevoCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/dialog-nuevo-comp-extra/dialog-nuevo-comp-extra.component';
 import { LabAnalisisDeltaComponent } from './lab-analisis-delta/lab-analisis-delta.component';
+import { AccessGuard } from './guard/access.guard';
 
 const routes: Routes = [
   // { path: '', redirectTo: 'Login', pathMatch: 'full' },
   // { path: 'Login', component: LoginComponent },
   // { path: 'ColaTrabajo', component: LabColTrabajoComponent }
   { path: 'Login', component: LoginComponent },
-  { path: 'ColaTrabajo', component: LabColTrabajoComponent },
-  { path: 'HojaFormulacion', component: LabHojaFormulacionComponent },
-  { path: 'AgregarOpcion', component: DialogAgregarOpcionComponent },
-  { path: 'DispensadoAutolab', component: LabDispAutolabComponent },
-  { path: 'Dosificacion', component:LabDosificacionComponent },
-  { path: 'AgregarPh', component: DialogAgregarPhComponent },
-  { path: 'Jabonados', component: DialogJabonadosComponent },
-  { path: 'Mantenimientos', component: MantenimientosLstComponent },
-  { path: 'DetalleJabFij', component: DetalleJabFijComponent },
-  { path: 'DetalleCompExtra', component: DetalleCompExtraComponent },
-  { path: 'NuevoCompExtra', component: DialogNuevoCompExtraComponent },
+  { path: 'ColaTrabajo', component: LabColTrabajoComponent, canActivate: [AccessGuard] },
+  { path: 'HojaFormulacion', component: LabHojaFormulacionComponent, canActivate: [AccessGuard] },
+  { path: 'AgregarOpcion', component: DialogAgregarOpcionComponent, canActivate: [AccessGuard] },
+  { path: 'DispensadoAutolab', component: LabDispAutolabComponent, canActivate: [AccessGuard] },
+  { path: 'Dosificacion', component:LabDosificacionComponent, canActivate: [AccessGuard] },
+  { path: 'AgregarPh', component: DialogAgregarPhComponent, canActivate: [AccessGuard] },
+  { path: 'Jabonados', component: DialogJabonadosComponent, canActivate: [AccessGuard] },
+  { path: 'Mantenimientos', component: MantenimientosLstComponent, canActivate: [AccessGuard] },
+  { path: 'DetalleJabFij', component: DetalleJabFijComponent, canActivate: [AccessGuard] },
+  { path: 'DetalleCompExtra', component: DetalleCompExtraComponent, canActivate: [AccessGuard] },
+  { path: 'NuevoCompExtra', component: DialogNuevoCompExtraComponent, canActivate: [AccessGuard] },
   { path: 'Reporte', component: LabReportComponent },
-  { path: 'AnalisisDelta', component: LabAnalisisDeltaComponent },
+  { path: 'AnalisisDelta', component: LabAnalisisDeltaComponent, canActivate: [AccessGuard] },
   
   { path: '**', redirectTo: 'Login' }
 ];

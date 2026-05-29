@@ -28,9 +28,9 @@
    </div>
 </mat-expansion-panel>
 <!-- Botones de acción --> 
-<div class="botones-acciones"> <button mat-raised-button color="primary" (click)="onInformeSDC()">Informe SDC/PARTIDA</button>
+<div class="botones-acciones"> <button mat-raised-button color="primary" (click)="onInformeSDC()">Informe</button>
    <button mat-raised-button color="accent" 
-      (click)="onAgregarOpcion()">Agregar opción
+      (click)="onAgregarOpcion()">Agregar
    </button> 
    <button mat-raised-button style="background-color: green; color: white;" [disabled]="!puedeEntregar"
    (click)="onEntregarReceta()">Entregar
@@ -41,7 +41,20 @@
    <button mat-raised-button color="primary"
       (click)="onActualizarHojaFormulacion()">Actualizar
    </button> 
-   <ng-container *ngIf="this.TipoReceta === 'R'">
+   <button mat-raised-button color="primary"
+      (click)="onAbrirReporte()">Reporte
+   </button> 
+   <div>
+      <mat-form-field appearance="fill">
+         <mat-label>Tenido</mat-label>
+         <mat-select [(ngModel)]="TipoReceta" (selectionChange)="BuscarCorridas($event)">
+            <mat-option *ngFor="let t of TipoTenido" [value]="t.codigo">
+               {{ t.nombre }}
+            </mat-option>
+         </mat-select>
+      </mat-form-field>
+   </div>
+   <!-- <ng-container *ngIf="this.TipoReceta === 'R'">
       <div>
          <button mat-raised-button style="background-color: green; color: white;" (click)="BuscarReactivo()">
             Reactivo
@@ -55,7 +68,7 @@
       </button>
    
    </div>
-   </ng-container>
+   </ng-container> -->
 </div>
 <!-- Grilla de formulaciones con scroll horizontal --> 
 <div class="tabla-wrapper-scale">

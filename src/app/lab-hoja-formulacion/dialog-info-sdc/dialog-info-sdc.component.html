@@ -9,6 +9,21 @@
     <div class="sdc-cell etiqueta">Tipo Teñido</div>
     <div class="sdc-cell">{{informe.descripcion}}</div>
 
+    <div class="sdc-cell etiqueta">Proceso</div>
+    <div class="sdc-cell">{{informe.familia}}</div>
+
+    <div class="sdc-cell etiqueta">Curva Teñido</div>
+    <div class="sdc-cell">{{informe.cur_Ten}}</div>
+    
+    <div class="sdc-cell etiqueta" [hidden]="this.data.TipoReceta === 'O'">Previo</div>
+    <div class="sdc-cell" [hidden]="this.data.TipoReceta === 'O'">
+        <mat-select [(value)]="previoSeleccionado" (selectionChange)="patchActualizarPrevio()">
+          <mat-option *ngFor="let p of previo" [value]="p.codigo">
+            {{ p.nombre }}
+          </mat-option>
+        </mat-select>
+    </div>
+
     <div class="sdc-cell etiqueta">Referencia Comercial</div>
     <div class="sdc-cell">{{informe.descripcion_Color}}</div>
 
@@ -32,7 +47,15 @@
       <ul>
         <li *ngFor="let solidez of informe.solidez">{{ solidez }}</li>
       </ul>
-    </div> 
+    </div>
+    
+    <div class="sdc-cell etiqueta">Luz</div>
+    <div class="sdc-cell">
+      <ul class="texto">
+        <li *ngFor="let luz of informe.luz">{{ luz.descripcion }}</li>
+      </ul>
+    </div>
+    
   </div>
 </div>
 </div>
@@ -48,8 +71,20 @@
     <div class="sdc-cell etiqueta">Tipo Teñido</div>
     <div class="sdc-cell">{{informe.descripcion}}</div>
 
+    <div class="sdc-cell etiqueta">Proceso</div>
+    <div class="sdc-cell">{{informe.familia}}</div>
+
     <div class="sdc-cell etiqueta">Curva Teñido</div>
     <div class="sdc-cell">{{informe.cur_Ten}}</div>
+
+    <div class="sdc-cell etiqueta" [hidden]="this.data.TipoReceta === 'O'">Previo</div>
+    <div class="sdc-cell" [hidden]="this.data.TipoReceta === 'O'">
+        <mat-select [(value)]="previoSeleccionado" (selectionChange)="patchActualizarPrevio()">
+          <mat-option *ngFor="let p of previo" [value]="p.codigo">
+            {{ p.nombre }}
+          </mat-option>
+        </mat-select>
+    </div>
 
     <div class="sdc-cell etiqueta">Clase Oc</div>
     <div class="sdc-cell">{{informe.cla_Oc}}</div>
@@ -72,8 +107,20 @@
     <div class="sdc-cell etiqueta">Máquina</div>
     <div class="sdc-cell">{{informe.maq_Tinto}}</div>
 
+    <!-- <div class="sdc-cell etiqueta">Referencia Partida</div>
+    <div class="sdc-cell">{{informe.ref_Par}}</div> -->
+
     <div class="sdc-cell etiqueta">Referencia Partida</div>
-    <div class="sdc-cell">{{informe.ref_Par}}</div>
+    <div class="sdc-cell">{{informe.cod_OrdTra_Ref}}</div>
+
+    <div class="sdc-cell etiqueta">Referencia Tela</div>
+    <div class="sdc-cell">{{informe.tela_Ref}}</div>
+
+    <div class="sdc-cell etiqueta">Referencia Relacion Baño</div>
+    <div class="sdc-cell">{{informe.rel_Ban_Ref}}</div>
+
+    <div class="sdc-cell etiqueta">Referencia Lote</div>
+    <div class="sdc-cell">{{informe.lote_Ref}}</div>
 
     <div class="sdc-cell etiqueta">Referencia Comercial</div>
     <div class="sdc-cell">{{informe.ref_Com}}</div>
