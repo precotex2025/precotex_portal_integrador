@@ -50,11 +50,21 @@
           <p><strong>Color:</strong> {{ grupos[0].reporte.cod_Color }}</p>
         </div>
         <div class="col">
+<<<<<<< Updated upstream
           <p><strong>Previo:</strong> {{ grupos[0].reporte.previo }}</p>
           <p><strong>Tipo:</strong> {{ grupos[0].reporte.tipoPartida }}</p>
           <p><strong>Tipo teñido:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
           <p><strong>Curva teñido:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
           <p><strong>Temporada: </strong> {{ grupos[0].reporte.temporada }}</p>
+=======
+          <p><strong>TIPO RECETA:</strong> {{ grupos[0].reporte.tipoPartida }}</p>
+          <p><strong>TIPO TEÑIDO:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
+          <p [hidden]="this.data.tipoRecetaR === 'O'"><strong>PREVIO:</strong> {{ grupos[0].reporte.previo }}</p>
+          <p><strong>CURVA TEÑIDO:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
+          <p><strong>MAQUINA:</strong> {{ grupos[0].reporte.maquina }}</p>
+          <p><strong>KG:</strong> {{ grupos[0].reporte.kgs_Prod }}</p>
+          <p><strong>LOTE:</strong> {{ grupos[0].reporte.lote_Hilado }}</p>
+>>>>>>> Stashed changes
         </div>
         <div class="col">
           <p><strong>Curva jabonado:</strong> {{ grupos[0].reporte.cur_Jab }}</p>

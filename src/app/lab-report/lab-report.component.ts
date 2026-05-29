@@ -49,6 +49,14 @@ interface ReporteBackend {
   kgs_Prod: string;
   r_B_Prod: string;
   maquina: string;
+<<<<<<< Updated upstream
+=======
+  rel_Ban: string;
+  pro_Des: string;
+  tipoReceta: string;
+  descarga: string;
+  lote_Hilado: string;
+>>>>>>> Stashed changes
   colorantes_Reporte: Insumo[];
   ruta_Reporte: Ruta[];
   solidez_Reporte: Solidez[];
