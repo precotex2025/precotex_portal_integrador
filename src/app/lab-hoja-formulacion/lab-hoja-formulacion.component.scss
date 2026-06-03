@@ -565,3 +565,30 @@ mat-expansion-panel {
   display: inline-block;
   text-align: right;
 }
+
+.grupo-partidas {
+  margin: 2px 0;   /* reduce espacio vertical */
+    margin: 0;            /* elimina espacio vertical extra */
+  padding: 0;           /* elimina relleno */
+  line-height: 1.2; /* compacta la altura de línea */
+}
+
+.titulo-grupo {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.partidas-maquina {
+  color: #1976d2; /* azul */
+  font-weight: bold;
+  background-color: #C6E8F5;
+  border-radius: 4px;
+  size: 10px;
+}
+
+.partidas-bano {
+  color: #2e7d32; /* verde */
+  background-color: #BCF5CA;
+  border-radius: 4px;
+  size: 10px;  
+}

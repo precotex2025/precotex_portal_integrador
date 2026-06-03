@@ -74,6 +74,8 @@ export class LabHojaFormulacionComponent implements OnInit {
   TituloEstado: string = ''
   mostrarPartidas: boolean = false;
   PartidasAgrupadas: string = '';
+  PartidasAgrupadas_Tinto: string = '';
+
   //TipoReceta: string = 'R';
   TipoReceta: string = '';
   TipoTenido: { nombre: string, codigo: string }[] = [];
@@ -204,6 +206,7 @@ export class LabHojaFormulacionComponent implements OnInit {
     this.mostrarPartidas = empiezaConLetra;
     if(!this.mostrarPartidas){
       this.PartidasAgrupadas = '';
+      this.PartidasAgrupadas_Tinto = ''; //Nuevo
     }
     const recetaSel = this.recetas.find(
       r =>
@@ -275,6 +278,8 @@ export class LabHojaFormulacionComponent implements OnInit {
           this.grillaExpandible = response.elements;
           this.Familia = response.elements[0].familia;
           this.PartidasAgrupadas = response.elements[0].partidas;
+          this.PartidasAgrupadas_Tinto = response.elements[0].partida_Agrupada_Tinto;//Nuevo
+
           // console.log('contenido que cargará en la grilla', this.grillaExpandible);
           this.getListarTiposTenido(this.Familia);
           this.SpinnerService.hide();
@@ -529,6 +534,7 @@ export class LabHojaFormulacionComponent implements OnInit {
           CorrelativoAnterior: 0,
           //PartidasAgrupadasE: 'L8439/L5893/L6969'//this.PartidasAgrupadas
           PartidasAgrupadasE: this.PartidasAgrupadas,
+          PartidasAgrupadasT: this.PartidasAgrupadas_Tinto, //Nuevo
           TipoReceta: this.TipoReceta,
           Cod_Color: this.Cod_Color
         }
@@ -1125,6 +1131,7 @@ export class LabHojaFormulacionComponent implements OnInit {
         CorrelativoAnterior: correlativoAnterior,
         //PartidasAgrupadasE: 'L8439/L5893/L6969'
         PartidasAgrupadasE: this.PartidasAgrupadas,
+        PartidasAgrupadasT: this.PartidasAgrupadas_Tinto, //Nuevo
         TipoReceta: this.TipoReceta,
         Cod_Color: this.Cod_Color
       }
@@ -1191,6 +1198,7 @@ export class LabHojaFormulacionComponent implements OnInit {
       sec: this.Sec_Remover,
       correlativos: seleccionados,
       PartidasAgrupadasE: this.PartidasAgrupadas,
+      PartidasAgrupadasT: this.PartidasAgrupadas_Tinto, //Nuevo
       TipoReceta: this.TipoReceta
     };
 
@@ -1217,6 +1225,7 @@ export class LabHojaFormulacionComponent implements OnInit {
         CorrelativoAnterior: seleccionados,
         //PartidasAgrupadasE: 'L8439/L5893/L6969'
         PartidasAgrupadasE: this.PartidasAgrupadas,
+        PartidasAgrupadasT: this.PartidasAgrupadas_Tinto, //Nuevo
         TipoReceta: this.TipoReceta
       }
     });

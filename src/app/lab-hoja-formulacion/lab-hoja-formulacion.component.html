@@ -24,7 +24,26 @@
       <div><strong>Fecha Entrega:</strong> {{ grilla.fec_Entrega | date:'dd/MM/yyyy' }}</div>
       <div><strong>Tipo:</strong> {{ grilla.tipo }}</div>
       <div><strong>Artículo:</strong> {{ grilla.des_Tela }}</div>
-      <div *ngIf="mostrarPartidas"><strong>Partidas:</strong> {{ this.PartidasAgrupadas }} </div>      
+      <div *ngIf="mostrarPartidas">
+         <strong>Partidas Agrupadas:</strong> 
+         <!-- Grupo por máquina -->
+         <div class="grupo-partidas">
+            <span class="titulo-grupo">Máquina:</span>
+            <span class="partidas-maquina">
+               {{ PartidasAgrupadas }}
+            </span>
+         </div>
+
+         <!-- Grupo por baño ciego -->
+         <div class="grupo-partidas">
+            <span class="titulo-grupo">Baño ciego:</span>
+            <span class="partidas-bano">
+               <b>{{ PartidasAgrupadas_Tinto }}</b>
+            </span>
+         </div>         
+         <!--{{ this.PartidasAgrupadas }} {{ this.PartidasAgrupadas_Tinto }} -->
+      </div>    
+
    </div>
 </mat-expansion-panel>
 <!-- Botones de acción --> 

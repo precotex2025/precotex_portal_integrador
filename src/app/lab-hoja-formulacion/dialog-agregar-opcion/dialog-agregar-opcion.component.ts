@@ -20,7 +20,8 @@ interface data {
   Num_Sec: number,
   Correlativo: number,
   CorrelativoAnterior?: number,
-  PartidasAgrupadasR?: string,
+  PartidasAgrupadasR? : string,
+  PartidasAgrupadasT? : string,
   TipoReceta: string,
   Cod_Color: string
 }
@@ -186,6 +187,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         Correlativo: params['Correlativo'] !== undefined ? Number(params['Correlativo']) : 0,
         CorrelativoAnterior: params['CorrelativoAnterior'] !== undefined ? Number(params['CorrelativoAnterior']) : 0,
         PartidasAgrupadasR: params['PartidasAgrupadasE'] !== undefined ? String(params['PartidasAgrupadasE']) : '',
+        PartidasAgrupadasT: params['PartidasAgrupadasT'] !== undefined ? String(params['PartidasAgrupadasT']) : '',//Nuevo
         TipoReceta: params['TipoReceta'] !== undefined ? String(params['TipoReceta']) : '',
         Cod_Color: params['Cod_Color'] !== undefined ? String(params['Cod_Color']) : 'NO_COL',
       };
@@ -272,6 +274,13 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     }
     const colorante = event.option.value;
     this.coloranteSeleccionado = colorante;
+
+    // Validar si ya existe el código en el array
+    const existe = this.colorantesSeleccionados.some(c => c.codigo === colorante.codigo);
+    if (existe) {
+      this.toastr.warning('Este código ya fue agregado', '', { timeOut: 2500 });
+      return;
+    }
 
     this.colorantesSeleccionados.push({
       codigo: colorante.codigo,

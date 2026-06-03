@@ -165,6 +165,17 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
   }
 
   async enviarADispensar(): Promise<void> {
+
+    //1RA VALIDACION --> consulta estado de proceso dispensado
+    const result : any = await this.LabColTrabajoService.getVerificarEstadoDispensado('E', this.Usuario).toPromise();
+    const sEstado   = String(result.elements[0].flg_Dispensando);
+    const sUsuario  = String(result.elements[0].cod_Usuario_Dispensando);
+
+    if (sEstado == 'S'){
+      this.toastr.warning('Proceso de envio de Dispensado, se encuentra en proceso por el Usuario ' + sUsuario, '', { timeOut: 3000 });
+      return;
+    }
+
     const seleccionados = this.dataSource.data.filter((row: any) => row.seleccionado);
     console.log(seleccionados);
     const confirmacion = await Swal.fire({
@@ -178,6 +189,9 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     });
 
     if (!confirmacion.isConfirmed) return;
+
+    //2DA VALIDACION INICIA CONTROL
+    await this.LabColTrabajoService.getVerificarEstadoDispensado('I', this.Usuario).toPromise();    
 
     this.SpinnerService.show();
 

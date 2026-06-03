@@ -662,6 +662,14 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getAnalisisDelta_ObtienePartidaDespachadas', { headers, params })
   }     
 
+  getVerificarEstadoDispensado(sTipo: string, sCodUsuario: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('sTipo', sTipo)
+    params = params.append('sCodUsuario', sCodUsuario)
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getVerificarEstadoDispensado', { headers, params })
+  }  
+
 
 
 }
