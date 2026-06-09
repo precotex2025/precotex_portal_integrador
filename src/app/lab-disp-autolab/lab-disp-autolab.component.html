@@ -112,8 +112,8 @@
             </div>
             <ng-template #sinIngreso>
               <span *ngIf="row.procedencia === 'Mosquito'" class="dispensado-automatico">:.Mosquito.:</span>
-              <span *ngIf="row.procedencia !== 'Mosquito' && row.descripcion_Color !== 'BLANCO' && row.tip_Ten !== 'D'" class="dispensado-automatico">Ingreso Automático</span>
-              <span *ngIf="row.tip_Ten === 'D'" class="dispensado-manual">Dispensado Manual</span>
+              <span *ngIf="row.procedencia !== 'Mosquito' && row.descripcion_Color !== 'BLANCO'" class="dispensado-automatico">Ingreso Automático</span>
+              <!-- <span *ngIf="row.tip_Ten === 'D'" class="dispensado-manual">Dispensado Manual</span> -->
               <span *ngIf="row.descripcion_Color === 'BLANCO'" class="dispensado-manual">Dispensado Manual</span>
             </ng-template>
           </td>

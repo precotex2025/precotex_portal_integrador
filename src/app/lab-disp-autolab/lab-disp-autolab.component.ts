@@ -71,7 +71,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
   ) { }
   posiciones: { numero: number, seleccionado: boolean, ocupado: boolean }[] = [];
   ngOnInit(): void {
-
+    console.log('marca jabonado');           
     if (this.authService.isLoggedIn()) {
       //console.log('Usuario activo: -------', this.authService.getUsuario());
       this.Usuario = this.authService.getUsuario()!;
@@ -116,17 +116,33 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
   dataSource: MatTableDataSource<data_colaautolab> = new MatTableDataSource();
 
   toggleAllRows(checked: boolean): void {
-    this.dataSource.data.forEach((row: any) => row.seleccionado = checked);
+    const target = this.dataSource.filteredData.length > 0 
+      ? this.dataSource.filteredData 
+      : this.dataSource.data;
+
+    target.forEach((row: any) => row.seleccionado = checked);      
+    //this.dataSource.data.forEach((row: any) => row.seleccionado = checked);
   }
 
-
   isAllSelected(): boolean {
-    return this.dataSource.data.every((row: any) => row.seleccionado);
+    const target = this.dataSource.filteredData.length > 0 
+        ? this.dataSource.filteredData 
+        : this.dataSource.data;
+
+    return target.every((row: any) => row.seleccionado);    
+    //return this.dataSource.data.every((row: any) => row.seleccionado);
   }
 
   isIndeterminate(): boolean {
-    const selected = this.dataSource.data.filter((row: any) => row.seleccionado);
-    return selected.length > 0 && selected.length < this.dataSource.data.length;
+    const target = this.dataSource.filteredData.length > 0 
+      ? this.dataSource.filteredData 
+      : this.dataSource.data;
+
+    const numSeleccionados = target.filter((row: any) => row.seleccionado).length;
+    return numSeleccionados > 0 && numSeleccionados < target.length;
+        
+    //const selected = this.dataSource.data.filter((row: any) => row.seleccionado);
+    //return selected.length > 0 && selected.length < this.dataSource.data.length;
   }
 
   dataListadoColaAutolab = [];
@@ -601,26 +617,57 @@ async enviarAutolab(): Promise<void> {
   }
 
   toggleAll(checked: boolean): void {
+    const target = this.dataSourceDispensado.filteredData.length > 0
+      ? this.dataSourceDispensado.filteredData
+      : this.dataSourceDispensado.data;
+
+    target.forEach((row: any) => {
+      if (this.isGroupEnabled(row)) {
+        row.seleccionado = checked;
+      }
+    });    
+    /*
     this.dataSourceDispensado.data.forEach((row: any) => {
       if (this.isGroupEnabled(row)) {
         row.seleccionado = checked;
       }
     });
+    */
   }
 
   isAllSelectedDispensado(): boolean {
+    const target = this.dataSourceDispensado.filteredData.length > 0
+      ? this.dataSourceDispensado.filteredData
+      : this.dataSourceDispensado.data;
+
+    const enabledRows = target.filter((row: any) => this.isGroupEnabled(row));
+    return enabledRows.length > 0 && enabledRows.every((row: any) => row.seleccionado);
+
+    /*
     const enabledRows = this.dataSourceDispensado.data.filter((row: any) =>
       this.isGroupEnabled(row)
     );
     return enabledRows.length > 0 && enabledRows.every((row: any) => row.seleccionado);
+    */
   }
 
   isIndeterminateDispensado(): boolean {
+
+    const target = this.dataSourceDispensado.filteredData.length > 0
+      ? this.dataSourceDispensado.filteredData
+      : this.dataSourceDispensado.data;
+
+    const enabledRows = target.filter((row: any) => this.isGroupEnabled(row));
+    const selected = enabledRows.filter((row: any) => row.seleccionado);
+    return selected.length > 0 && selected.length < enabledRows.length;    
+
+    /*
     const enabledRows = this.dataSourceDispensado.data.filter((row: any) =>
       this.isGroupEnabled(row)
     );
     const selected = enabledRows.filter((row: any) => row.seleccionado);
     return selected.length > 0 && selected.length < enabledRows.length;
+    */
   }
 
 

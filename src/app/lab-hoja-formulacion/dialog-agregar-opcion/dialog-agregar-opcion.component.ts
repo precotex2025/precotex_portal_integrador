@@ -79,7 +79,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   @ViewChild('inputColorante') inputColorante!: ElementRef<HTMLInputElement>;
 
-  colorantesDisponibles: { codigo: string, nombre: string, inicial: number }[] = [];
+  colorantesDisponibles: { codigo: string, nombre: string, inicial: number, orden: number }[] = [];
   curvas: { nombre: string, codigo: number, cantidad: number }[] = [];
   fijados: { nombre: string, codigo: number }[] = [];
   productos: { nombre: string, cantidad: number, porcentaje: number }[] = [];
@@ -275,6 +275,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     const colorante = event.option.value;
     this.coloranteSeleccionado = colorante;
 
+    console.log('evento', event);
+
     // Validar si ya existe el código en el array
     const existe = this.colorantesSeleccionados.some(c => c.codigo === colorante.codigo);
     if (existe) {
@@ -283,11 +285,15 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     }
 
     this.colorantesSeleccionados.push({
-      codigo: colorante.codigo,
-      nombre: colorante.nombre,
+      codigo : colorante.codigo,
+      nombre : colorante.nombre,
       inicial: null, //parseFloat(colorante.inicial.toFixed(5)),
-      ajuste: 0 //0
+      ajuste : 0, //0
+      orden  : colorante.orden
     });
+
+    //agregado por hmedina 05-06-2026 - Ordenar ascendente por ORDEN
+    this.colorantesSeleccionados.sort((a, b) => a.orden - b.orden);
 
     //this.coloranteControl.setValue('');
     this.coloranteSeleccionado = null;
@@ -410,6 +416,10 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
   quitarColorante(colorante: any): void {
     this.colorantesSeleccionados = this.colorantesSeleccionados.filter(c => c !== colorante);
+
+    //agregado por hmedina 04-06-2026 - Ordenar ascendente por ORDEN
+    this.colorantesSeleccionados.sort((a, b) => a.orden - b.orden);
+
     this.actualizarTotalFinal();
   }
 
@@ -681,8 +691,14 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     let errores = 0;
 
     try {
-      for (let i = 0; i < this.colorantesSeleccionados.length; i++) {
-        const c = this.colorantesSeleccionados[i];
+
+      //agregado por hmedina 04-06-2026 - Ordenar ascendente por ORDEN antes de guardar
+      const ordenados = [...this.colorantesSeleccionados].sort((a, b) => a.orden - b.orden);
+
+      //console.log('Ordenado', ordenados);
+
+      for (let i = 0; i < ordenados.length; i++) {
+        const c = ordenados[i];
 
         const datitos = {
           ...comunes,
@@ -747,13 +763,15 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
             this.colorantesDisponibles = response.elements.map((c: any) => ({
               codigo: c.col_Cod_Org,
               nombre: c.col_Des,
-              inicial: c.col_Ini
+              inicial: c.col_Ini,
+              orden: c.id_familia_receta//nuevo
             }));
 
             this.coloranteControl.valueChanges.pipe(
               startWith(''),
               map(value => typeof value === 'string' ? this.filtrarColorantes(value) : this.filtrarColorantes(''))
             ).subscribe(filtrados => {
+              console.log('filtrados', filtrados);
               this.colorantesFiltrados = filtrados;
             });
 
@@ -1050,11 +1068,15 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
           inicial: c.por_Fin ? parseFloat(c.por_Fin.toFixed(5)) : 0,
           ajuste: 0,
           final: c.por_Fin ? parseFloat(c.por_Fin.toFixed(5)) : 0,
-          id_secuencia: c.id_secuencia
+          id_secuencia: c.id_secuencia,
+          orden: c.orden
         }));
+        
+        //comentado por hmedina 05-06-2026
+        //this.colorantesSeleccionados.sort((a, b) => a.id_secuencia - b.id_secuencia);
 
-        this.colorantesSeleccionados.sort((a, b) => a.id_secuencia - b.id_secuencia);
-
+        //agregado por hmedina 05-06-2026 - Ordenar descendente por ORDEN
+        this.colorantesSeleccionados.sort((a, b) => a.orden - b.orden);        
 
         let tipoFamilia: string = datos.familia.toString();
         let jabonadoNormal: number = 0;
@@ -1290,6 +1312,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
 
     try {
       if (!this.data.PartidasAgrupadasR) {
+        console.log('entro a guardar AQUI');
         this.guardar();
       } else {
         const partidas = this.data.PartidasAgrupadasR!.split('/')

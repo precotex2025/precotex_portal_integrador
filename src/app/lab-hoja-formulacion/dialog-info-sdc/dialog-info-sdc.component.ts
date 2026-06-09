@@ -70,7 +70,7 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
     @Optional() @Inject(MAT_DIALOG_DATA) public data: data,
   ){}
   ngOnInit(): void {
-    this.getListarPrevios();
+    //this.getListarPrevios();
     this.onLoadData();    
   }
 
@@ -102,6 +102,11 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
             this.dataInformeProduccion = response.elements;
             this.previoSeleccionado = this.dataInformeProduccion[0].pre_Id;
           }
+
+          //Carga el combo
+          console.log('familia', response.elements[0].familia); 
+          this.getListarPrevios(response.elements[0].familia);
+
           console.log(this.dataInformeProduccion)
             //console.log('contenido que cargará en la grilla', this.dataInforme);
             this.SpinnerService.hide();
@@ -115,8 +120,8 @@ export class DialogInfoSdcComponent implements OnInit, AfterViewInit{
   }
 
 
-  getListarPrevios(): void {
-    this.LabColTrabService.getListarPrevios().subscribe({
+  getListarPrevios(sDesPro:string): void {
+    this.LabColTrabService.getListarPrevios(sDesPro).subscribe({
       next: (response: any) => {
         if (response.success) {
           console.log('>>>>>>>>>>>>>>>>>>>>', response.elements);

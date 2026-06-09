@@ -707,17 +707,34 @@ export class DialogJabonadosComponent {
 
 
   toggleAllRows(checked: boolean): void {
-    this.dataSource.data.forEach((row: any) => row.seleccionado = checked);
+    const target = this.dataSource.filteredData.length > 0 
+      ? this.dataSource.filteredData 
+      : this.dataSource.data;
+
+    target.forEach((row: any) => row.seleccionado = checked);    
+    //this.dataSource.data.forEach((row: any) => row.seleccionado = checked);
   }
 
 
   isAllSelected(): boolean {
-    return this.dataSource.data.every((row: any) => row.seleccionado);
+    const target = this.dataSource.filteredData.length > 0 
+        ? this.dataSource.filteredData 
+        : this.dataSource.data;
+
+    return target.every((row: any) => row.seleccionado);
+    //return this.dataSource.data.every((row: any) => row.seleccionado);
   }
 
   isIndeterminate(): boolean {
-    const selected = this.dataSource.data.filter((row: any) => row.seleccionado);
-    return selected.length > 0 && selected.length < this.dataSource.data.length;
+    const target = this.dataSource.filteredData.length > 0 
+      ? this.dataSource.filteredData 
+      : this.dataSource.data;
+
+    const numSeleccionados = target.filter((row: any) => row.seleccionado).length;
+    return numSeleccionados > 0 && numSeleccionados < target.length;
+        
+    //const selected = this.dataSource.data.filter((row: any) => row.seleccionado);
+    //return selected.length > 0 && selected.length < this.dataSource.data.length;
   }
 
 

@@ -720,15 +720,17 @@ export class LabHojaFormulacionComponent implements OnInit {
                 antipilling: antipilling ?? ''
               });
             }
-
+            
             correlativosMap.get(correlativo).colorantes.push({
               col_Cod: c.col_Cod,
               col_Des: c.col_Des,
               por_Ini: c.por_Ini,
               por_Fin: c.por_Fin,
               por_Aju: c.por_Aju,
-              id_secuencia: c.id_secuencia
+              id_secuencia: c.id_secuencia,
+              orden: c.orden //Agregado por HMEDINA 05/06/2026
             });
+            
           });
         });
 
@@ -740,6 +742,8 @@ export class LabHojaFormulacionComponent implements OnInit {
           // Orden descendente por id_secuencia
           f.colorantes.sort((a: any, b: any) => b.id_secuencia - a.id_secuencia);
         });
+
+        console.log('Resultado de Mapeo', correlativosMap);
 
         // Asignar formulaciones ordenadas por correlativo descendente
         this.formulaciones = Array.from(correlativosMap.values())
@@ -984,7 +988,8 @@ export class LabHojaFormulacionComponent implements OnInit {
             filasColorantes.push({
               etiqueta: c.col_Des?.trim() || c.col_Cod,
               key: c.col_Cod,
-              tipo: 'numero'
+              tipo: 'numero',
+              orden: c.orden //Agregado por HMEDINA 05-06-2026
             });
           }
         }
@@ -1008,8 +1013,16 @@ export class LabHojaFormulacionComponent implements OnInit {
     });
 
     const especiales = filasColorantes.filter(fc => fc.key === 'SAL' || fc.key === 'SULFATO');
-    const otrosColorantes = filasColorantes.filter(fc => fc.key !== 'SAL' && fc.key !== 'SULFATO');
 
+    //Comentado por HMEDINA 05-06-2026
+    //const otrosColorantes = filasColorantes.filter(fc => fc.key !== 'SAL' && fc.key !== 'SULFATO');
+
+    //Agregado por HMEDINA 05-06-2026
+    const otrosColorantes = filasColorantes
+      .filter(fc => fc.key !== 'SAL' && fc.key !== 'SULFATO')
+      .sort((a, b) => a.orden - b.orden);    
+
+  
     if (this.TipoReceta === 'R') {
       this.filas = [
         { etiqueta: 'DETALLE', key: 'detalle', tipo: 'texto' },

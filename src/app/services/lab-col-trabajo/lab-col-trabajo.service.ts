@@ -329,9 +329,11 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarJabonadoExcluidoDescarga', { headers, params })
   }
 
-  getListarPrevios(){
+  getListarPrevios(Pro_Cod: string){
     const headers = this.Header;
-    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarPrevios', { headers })
+    let params = new HttpParams();
+    params = params.append('Pro_Cod', Pro_Cod);    
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarPrevios', { headers, params })
   }
 
   getListarTiposTenido(Familia: string){

@@ -32,7 +32,7 @@ export class DialogDetalleColorComponent implements OnInit, AfterViewInit {
   previoSeleccionado: number = 0;
   ngOnInit(): void {
     this.cargarReceta(this.data.corr_Carta, this.data.sec, this.data.correlativo, this.data.tipoTenido);
-    this.getListarPrevios();
+    //this.getListarPrevios();
   }
 
   ngAfterViewInit(): void {
@@ -53,6 +53,9 @@ export class DialogDetalleColorComponent implements OnInit, AfterViewInit {
             this.recetaDetalle.previo = parseInt(this.recetaDetalle.previo);
             this.previoSeleccionado = this.recetaDetalle.previo;
           }
+
+          //Cargar Receta Detalle Familia
+          this.getListarPrevios(this.recetaDetalle?.familia);
         }else{
           this.toastr.warning('No existe información de la receta');
           return;
@@ -66,8 +69,8 @@ export class DialogDetalleColorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  getListarPrevios(): void{
-    this.LabColTraService.getListarPrevios().subscribe({
+  getListarPrevios(Pro_Cod: string): void{
+    this.LabColTraService.getListarPrevios(Pro_Cod).subscribe({
       next: (response: any) => {
         if(response.success){
           console.log('>>>>>>>>>>>>>>>>>>>>', response.elements);
