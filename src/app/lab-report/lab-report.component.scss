@@ -372,3 +372,17 @@
     width: 100% !important; } 
   }
 
+
+.box {
+  border: 2px solid #000;   /* borde sólido */
+  height: 100%;
+  width: 100%;
+}
+
+mat-card-title {
+  font-weight: bold;
+  font-size: 15px;
+  text-align: left;
+  margin-left: -10px;
+  margin-top: -15px;
+}

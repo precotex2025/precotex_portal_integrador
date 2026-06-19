@@ -46,7 +46,8 @@
       <div class="cabecera">
         <div class="col">
           <p><strong>ANALISTA:</strong> {{ grupos[0].reporte.analista }}</p>
-          <p><strong>PARTIDAS:</strong> {{ grupos[0].reporte.partidasAgrupadas }}</p>
+          <p><strong>PARTIDAS MAQUINA:</strong> {{ grupos[0].reporte.partida_Agrupada_Tinto }}</p>
+          <p><strong>PARTIDAS BAÑO CIEGO:</strong> {{ grupos[0].reporte.partidasAgrupadas }}</p>
           <p><strong>CLIENTE:</strong> {{ grupos[0].reporte.nom_Cliente }}</p>
           <p><strong>TEMPORADA:</strong> {{ grupos[0].reporte.temporada }}</p>
           <p><strong>ARTÍCULO:</strong> {{ grupos[0].reporte.articulo }}</p>
@@ -54,11 +55,12 @@
           <p><strong>COLOR:</strong> {{ grupos[0].reporte.cod_Color }}</p>
         </div>
         <div class="col">
-          <p><strong>Previo:</strong> {{ grupos[0].reporte.previo }}</p>
+          <!-- <p><strong>Previo:</strong> {{ grupos[0].reporte.previo }}</p>
           <p><strong>Tipo:</strong> {{ grupos[0].reporte.tipoPartida }}</p>
           <p><strong>Tipo teñido:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
           <p><strong>Curva teñido:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
-          <p><strong>Temporada: </strong> {{ grupos[0].reporte.temporada }}</p>
+          <p><strong>Temporada: </strong> {{ grupos[0].reporte.temporada }}</p> -->
+
           <p><strong>TIPO RECETA:</strong> {{ grupos[0].reporte.tipoPartida }}</p>
           <p><strong>TIPO TEÑIDO:</strong> {{ grupos[0].reporte.tip_Ten }}</p>
           <p [hidden]="this.data.tipoRecetaR === 'O'"><strong>PREVIO:</strong> {{ grupos[0].reporte.previo }}</p>
@@ -66,6 +68,7 @@
           <p><strong>MAQUINA:</strong> {{ grupos[0].reporte.maquina }}</p>
           <p><strong>KG:</strong> {{ grupos[0].reporte.kgs_Prod }}</p>
           <p><strong>LOTE:</strong> {{ grupos[0].reporte.lote_Hilado }}</p>
+          <!-- <p><strong>TEMPORADA: </strong> {{ grupos[0].reporte.temporada }}</p> -->
         </div>
       
         <div class="col" *ngIf="this.data.tipoRecetaR === 'R'">
@@ -155,7 +158,36 @@
     <div class="colorantes-section">
       <h2>Corridas</h2>
       <div class="table-container">
-        <table>
+
+
+<mat-grid-list cols="10" rowHeight="125px" gutterSize="6px">
+          <!-- Primera fila: 1 al 10 -->
+          <mat-grid-tile *ngFor="let box of boxes1">
+            <mat-card class="box">
+              <mat-card-header>
+                <mat-card-title>{{ box }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                
+              </mat-card-content>
+            </mat-card>
+          </mat-grid-tile>
+
+          <!-- Segunda fila: 11 al 20 -->
+          <mat-grid-tile *ngFor="let box of boxes2">
+            <mat-card class="box">
+              <mat-card-header>
+                <mat-card-title>{{ box }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                
+              </mat-card-content>
+            </mat-card>
+          </mat-grid-tile>
+        </mat-grid-list>
+
+
+        <!-- <table>
           <thead>
             <tr>
               <th>Descripción</th>
@@ -173,21 +205,19 @@
                 <ng-container *ngIf="valor.porcentaje !== '0.0000';">
                   {{ valor.porcentaje }}
                 </ng-container>
-                <!-- <ng-template #espacioVacioCelda>
-              <div class="espacio-vacio"></div>
-            </ng-template> -->
+
               </td>
             </tr>
           </tbody>
-        </table>
+        </table> -->
       </div>
 
 
-      <ng-template #espacioVacio>
+      <!-- <ng-template #espacioVacio>
         <div class="espacio-vacio">
-          <!-- <p>Muestra de tela</p> -->
+    
         </div>
-      </ng-template>
+      </ng-template> -->
 
 
     </div>

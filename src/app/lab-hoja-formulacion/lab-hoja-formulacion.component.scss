@@ -584,6 +584,12 @@ mat-expansion-panel {
   background-color: #C6E8F5;
   border-radius: 4px;
   size: 10px;
+  //
+  display: inline-block;   
+  max-width: 100%;         
+  word-wrap: break-word;  
+  white-space: normal;     
+  padding: 2px 4px;         
 }
 
 .partidas-bano {
@@ -591,4 +597,10 @@ mat-expansion-panel {
   background-color: #BCF5CA;
   border-radius: 4px;
   size: 10px;  
+  //
+  display: inline-block;   
+  max-width: 100%;         
+  word-wrap: break-word;  
+  white-space: normal;     
+  padding: 2px 4px;        
 }

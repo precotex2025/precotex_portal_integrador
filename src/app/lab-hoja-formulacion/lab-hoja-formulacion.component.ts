@@ -115,48 +115,66 @@ export class LabHojaFormulacionComponent implements OnInit {
     });
 
     if (this.data.corr_CartaR !== '' && this.data.secR !== 0) {
+      console.log('Entro a corr_Carta', this.recetas);
       const encontrada = this.recetas.find(r => r.corr_Carta === this.data.corr_CartaR && r.sec === this.data.secR)!;
-      const empiezaConLetra = /^[A-Za-z]/.test(encontrada.corr_Carta);
-      //if (encontrada) {
-      /* CON ESTO REGRESAMOS A LA RECETA Y SECUENCIA SELECCIONADA */
-      this.recetaSeleccionada = encontrada;
-      this.Corr_Carta_Remover = encontrada.corr_Carta;
-      this.Sec_Remover = encontrada.sec;
-      this.Cod_Color = encontrada.cod_Color;
-      // this.Tipo_Receta_Remover = this.data.tip_TenR;
-      //this.Familia = this.data.familiaR;
-      
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<', this.Cod_Color);
-      /************************************************************/
-      
-      // if(this.Tipo_Receta_Remover !== ''){
-      //   console.log('ENTRA A LA CONDICION Y SI TIENE INFORMACION');
-      //   this.TipoReceta = this.Tipo_Receta_Remover;
-      //   console.log(this.TipoReceta);
-      //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.Tipo_Receta_Remover);
-      // }
-      this.mostrarPartidas = empiezaConLetra
-      //this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
-      this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
-      setTimeout(() => {
-        //this.getListarTiposTenido(this.Familia);
-        this.TipoReceta = this.data.tip_TenR;
-        this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+
+      //nueva logica de validacion solo aplica si encuentra coincidencia
+      if (encontrada) {
         
+        const empiezaConLetra = /^[A-Za-z]/.test(encontrada.corr_Carta);
+        console.log('encontrada', encontrada);
+        //if (encontrada) {
+        /* CON ESTO REGRESAMOS A LA RECETA Y SECUENCIA SELECCIONADA */
+        this.recetaSeleccionada = encontrada;
+        this.Corr_Carta_Remover = encontrada.corr_Carta;
+        this.Sec_Remover = encontrada.sec;
+        this.Cod_Color = encontrada.cod_Color;
+        // this.Tipo_Receta_Remover = this.data.tip_TenR;
+        //this.Familia = this.data.familiaR;
+        
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<', this.Cod_Color);
+        /************************************************************/
+        
+        // if(this.Tipo_Receta_Remover !== ''){
+        //   console.log('ENTRA A LA CONDICION Y SI TIENE INFORMACION');
+        //   this.TipoReceta = this.Tipo_Receta_Remover;
+        //   console.log(this.TipoReceta);
+        //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.Tipo_Receta_Remover);
+        // }
+        this.mostrarPartidas = empiezaConLetra
+        //this.getObtenerPartidasAgrupadas(this.Usuario!, this.Corr_Carta_Remover);
+        this.onLlenarGrillaDesplegable(this.Corr_Carta_Remover, this.Sec_Remover);
+        setTimeout(() => {
+          //this.getListarTiposTenido(this.Familia);
+          this.TipoReceta = this.data.tip_TenR;
+          this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+          
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {},
+            replaceUrl: true
+          });
+          //this.onActualizarHojaFormulacion();
+        }, 300);
+
+        // console.log('::::::::::::::::..',encontrada.tip_Ten);
+        // setTimeout(() => {
+        //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
+        // }, 2000);
+        //}
+        //this.onActualizarHojaFormulacion();
+
+      } else {
+        this.SpinnerService.hide();
         this.router.navigate([], {
           relativeTo: this.route,
           queryParams: {},
           replaceUrl: true
-        });
-        //this.onActualizarHojaFormulacion();
-      }, 300);
+        });        
+        console.warn('No se encontró coincidencia para la receta: ' + String(this.data.corr_CartaR) + ", Procedure: PA_Lb_ColaTrabajoLabDetalle_WB_S0001" );
+      }
 
-      // console.log('::::::::::::::::..',encontrada.tip_Ten);
-      // setTimeout(() => {
-      //   this.onCargarGrillaHojaFormulacion(this.Corr_Carta_Remover, this.Sec_Remover, this.TipoReceta);
-      // }, 2000);
-      //}
-      //this.onActualizarHojaFormulacion();
+
     }
 
     // this.TipoReceta = this.data.tip_TenR;
@@ -242,7 +260,7 @@ export class LabHojaFormulacionComponent implements OnInit {
           if (response.totalElements > 0) {
             //console.log('Entrando al metodo');
             this.recetas = response.elements;
-
+            console.log('Entro aqui a onGetParams')
             this.onGetParams();
 
             if (!this.recetaSeleccionada) {

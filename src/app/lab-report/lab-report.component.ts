@@ -57,6 +57,7 @@ interface ReporteBackend {
   colorantes_Reporte: Insumo[];
   ruta_Reporte: Ruta[];
   solidez_Reporte: Solidez[];
+  partida_Agrupada_Tinto: string; //Nuevo
 }
 
 interface data {
@@ -81,7 +82,8 @@ export class LabReportComponent implements OnInit {
   }[] = [];
 
   correlativos: number[] = [];
-
+  boxes1 = Array.from({ length: 10 }, (_, i) => i + 1);   // [1..10]
+  boxes2 = Array.from({ length: 10 }, (_, i) => i + 11);  // [11..20]
 
   constructor(
     private labColTrabajoService: LabColTrabajoService,
