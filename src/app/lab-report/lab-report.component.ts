@@ -90,7 +90,15 @@ export class LabReportComponent implements OnInit {
     @Optional() @Inject(MAT_DIALOG_DATA) public data: data,
     private route: ActivatedRoute,
     private router: Router
-  ) { }
+  ) {
+    if (!this.data) {
+      this.data = {
+        sdcR: '',
+        secuenciaR: 0,
+        tipoRecetaR: ''
+      };
+    }
+  }
 
   ngOnInit(): void {
     this.ngOnGetParams();
@@ -99,15 +107,15 @@ export class LabReportComponent implements OnInit {
   ngOnGetParams(): void {
     this.route.queryParams.subscribe(params => {
       this.data = {
-        sdcR: params['sdcE'] !== undefined ? String(params['sdcE']) : '',
+        sdcR: params['sdcE'] !== undefined ? String(params['sdcE']).trim() : '',
         secuenciaR: params['secuenciaE'] !== undefined ? Number(params['secuenciaE']) : 0,
-        tipoRecetaR: params['tipoRecetaE'] !== undefined ? String(params['tipoRecetaE']): ''
+        tipoRecetaR: params['tipoRecetaE'] !== undefined ? String(params['tipoRecetaE']).trim().toUpperCase() : ''
       };
+      const empiezaConLetra = /^[A-Za-z]/.test(this.data.sdcR);
+      this.mostrarCabecera = empiezaConLetra;
+      console.log('la cabecera está en::::::::::::::::::::.', this.mostrarCabecera);
+      this.cargarDatosReporte(this.data.sdcR, this.data.secuenciaR, this.data.tipoRecetaR);
     });
-    const empiezaConLetra = /^[A-Za-z]/.test(this.data.sdcR);
-    this.mostrarCabecera = empiezaConLetra;
-    console.log('la cabecera está en::::::::::::::::::::.', this.mostrarCabecera);
-    this.cargarDatosReporte(this.data.sdcR, this.data.secuenciaR, this.data.tipoRecetaR);
   }
 
 
@@ -123,6 +131,12 @@ export class LabReportComponent implements OnInit {
           solidez_Reporte: response.elements[0].solidez_Reporte ?? [],
           id_secuencia: response.elements.id_secuencia ?? 0
         };
+
+        if (reporte && (!this.data.tipoRecetaR || this.data.tipoRecetaR === '')) {
+          if (reporte.tipoReceta) {
+            this.data.tipoRecetaR = String(reporte.tipoReceta).trim().toUpperCase();
+          }
+        }
 
         reporte.colorantes_Reporte = (reporte.colorantes_Reporte ?? []).sort((a, b) => {
           const prioridad = [1, 2, 3];
@@ -195,7 +209,18 @@ export class LabReportComponent implements OnInit {
   imprimirReporte() {
     const element = document.querySelector('.report-only') as HTMLElement;
 
-    html2canvas(element, { scale: 2 }).then(canvas => {
+    // Guardar el ancho original y forzar un ancho de PC de escritorio (1400px)
+    // para que la captura sea horizontal y aproveche todo el espacio de la hoja.
+    const originalWidth = element.style.width;
+    element.style.width = '1400px';
+
+    html2canvas(element, { 
+      scale: 2,
+      windowWidth: 1400
+    }).then(canvas => {
+      // Restaurar el ancho original del elemento en pantalla
+      element.style.width = originalWidth;
+
       const imgData = canvas.toDataURL('image/png');
 
       const printWindow = window.open('', '_blank');
@@ -205,8 +230,26 @@ export class LabReportComponent implements OnInit {
           <head>
             <title>Reporte</title>
             <style>
-              body { margin: 0; display: flex; justify-content: center; }
-              img { max-width: 100%; height: auto; }
+              @page {
+                size: landscape;
+                margin: 10mm;
+              }
+              html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #fff;
+              }
+              img {
+                width: 100%;
+                height: auto;
+                max-height: 100%;
+                object-fit: contain;
+              }
             </style>
           </head>
           <body>
@@ -307,7 +350,18 @@ export class LabReportComponent implements OnInit {
   generarPDF(): void {
     const element = document.querySelector('.report-only') as HTMLElement;
 
-    html2canvas(element, { scale: 2 }).then(canvas => {
+    // Guardar el ancho original y forzar un ancho de PC de escritorio (1400px)
+    // para que la captura en el PDF sea horizontal y aproveche todo el espacio de la hoja.
+    const originalWidth = element.style.width;
+    element.style.width = '1400px';
+
+    html2canvas(element, { 
+      scale: 2,
+      windowWidth: 1400
+    }).then(canvas => {
+      // Restaurar el ancho original del elemento en pantalla
+      element.style.width = originalWidth;
+
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('l', 'mm', 'a4');
 

@@ -253,18 +253,18 @@
 /* Ruta y Solidez */
 .ruta-solidez-block {
   display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
+  flex-wrap: nowrap;
+  gap: 1.5rem;
 
   .block {
-    flex: 1 1 400px;
+    flex: 1 1 0%;
+    min-width: 0;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 6px;
     padding: 1rem;
-    
-    white-space: pre;
-    font-family: monospace;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.85rem;
 
     h4 {
       font-size: 1rem;
@@ -274,14 +274,22 @@
       padding-bottom: 0.3rem;
     }
 
+    .ruta-item {
+      white-space: pre;
+      font-family: monospace;
+      font-size: 0.8rem;
+      overflow-x: auto;
+    }
+
     ul {
       list-style: disc;
       padding-left: 1.2rem;
 
       li {
         margin-bottom: 0.3rem;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: #333;
+        white-space: normal;
       }
     }
   }

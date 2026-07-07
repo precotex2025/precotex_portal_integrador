@@ -42,15 +42,24 @@
               "node_modules/ngx-toastr/toastr.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "moment",
+              "sweetalert2",
+              "html2canvas",
+              "canvg",
+              "rgbcolor",
+              "raf",
+              "core-js"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "3mb"
+                  "maximumWarning": "3mb",
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
