@@ -60,7 +60,23 @@
           <mat-checkbox [(ngModel)]="row.seleccionado" ></mat-checkbox>
         </td>
       </ng-container>
-      
+
+      <!-- MAQUINA -->      
+      <ng-container matColumnDef="maquina">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">
+            {{ filtroSeleccionado === 'pendientes' ? 'Maq. Teñido' : 'Maq. Jabonado' }}
+        </th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.ahi_Des }}</td>
+      </ng-container>
+
+      <!-- TUBO -->
+      <ng-container matColumnDef="tubo">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">
+          {{ filtroSeleccionado === 'pendientes' ? 'Tub. Teñido' : 'Tub. Jabonado' }}
+        </th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.nro_Tubo }}</td>
+      </ng-container>
+
       <!-- SDC -->
       <ng-container matColumnDef="corr_Carta">
         <th mat-header-cell *matHeaderCellDef class="centradoCabecera ">#SDC/PARTIDA</th>
@@ -246,6 +262,33 @@
         <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Tip. Descarga</th>
         <td mat-cell *matCellDef="let r" class="centrado">{{ r.fij_Tip_Des }}</td>
       </ng-container>
+
+      <!--INICIO DE NUEVOS CAMPOS-->
+      <ng-container matColumnDef="maq_Ahi_Des">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Maq. Teñido</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.maq_Ahi_Des }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="maq_Nro_Tubo">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Tubo. Teñido</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.maq_Nro_Tubo }}</td>
+      </ng-container>      
+      
+      <ng-container matColumnDef="jab_Ahi_Des">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Maq. Jabonado</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.jab_Ahi_Des }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="jab_Nro_Tubo">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Tub. Jabonado</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.jab_Nro_Tubo }}</td>
+      </ng-container>      
+      
+      <ng-container matColumnDef="Fec_Fin_Tenido">
+        <th mat-header-cell *matHeaderCellDef class="centradoCabecera">Fec. Teñido</th>
+        <td mat-cell *matCellDef="let r" class="centrado">{{ r.fec_Fin_Tenido | date: 'dd/MM/yyyy hh:mm' }}</td>
+      </ng-container>        
+      <!--FIN DE NUEVOS CAMPOS-->
 
       <!-- Renderizado -->
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>

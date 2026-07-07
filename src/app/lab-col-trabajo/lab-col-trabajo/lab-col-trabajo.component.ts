@@ -108,6 +108,9 @@ export class LabColTrabajoComponent implements OnInit {
     'fec_comp',
     'dias_diferencia',
     'fechaasignaanalista',
+    //Campos Nuevos
+    'fec_Ape',
+    'fec_Ent',
     //'dias_comp',
     'cod_Color',
     'des_Color',
@@ -695,6 +698,9 @@ getColorClaseProduccion(row: any): string {
   } 
 
   onSeleccionarCurva(codigoSeleccionado: string): void {
+    this.curvasSeleccionadasDes = [];
+    this.curvaSeleccionada = "";
+    this.global_curvaTenido = "";
     this.curvaSeleccionada = codigoSeleccionado;
     this.onCargarCurvaDes(codigoSeleccionado, this.Cod_OrdTra);
   }
@@ -716,10 +722,17 @@ getColorClaseProduccion(row: any): string {
     });
   }
 
+  global_curvaTenido: string = "";
+
   onSeleccionarCurvaDescripcion(codigoSeleccionado: string): void {
+    //Obtener el codigo de la curva
+    this.global_curvaTenido = codigoSeleccionado;
+
+    console.log('Curva seleccionada ahora mismo:', this.global_curvaTenido);
+
     //OBTENER EL NOMBRE DE LA CURVA
     const curva = this.curvas.find(c => c.codigo === codigoSeleccionado);
-
+    
     this.curvaSeleccionadaDes = curva ? curva.descripcion : '';
 
     console.log(this.curvaSeleccionadaDes);
@@ -783,7 +796,7 @@ getColorClaseProduccion(row: any): string {
       //"Usr_Cod": this.Usuario,
       Familia: ProcesoSeleccionado
     };
-    //console.log(this.dataTenido);
+    console.log('Data Teñido', this.dataTenido);
       // Validar que haya al menos una curva seleccionada
       if(this.dataTenido.Cur_Ten_Dis === '0'){
         if (!this.curvasSeleccionadasDes || this.curvasSeleccionadasDes.length === 0) {
@@ -807,10 +820,49 @@ getColorClaseProduccion(row: any): string {
           this.dataTenido.Cur_Ten = parseInt(ordenadas[0].codigo);
           this.dataTenido.Cur_Ten_Dis = parseInt(ordenadas[1].codigo);
         }
+      } 
+
+    //Nueva valdiacion agregada
+      console.log('TIPO TEÑIDO', this.dataTenido.Cur_Ten);
+      console.log('TIPO TEÑIDO DISPERSO', this.dataTenido.Cur_Ten_Dis);
+      console.log('global_curvaTenido:', this.global_curvaTenido);
+      console.log('curva seleccionada pe:', this.curvaSeleccionada); 
+
+      if(this.curvaSeleccionada !='141.00000' &&
+          this.curvaSeleccionada !='143.00000' && 
+          this.curvaSeleccionada !='145.00000' &&
+          this.curvaSeleccionada !='146.00000' &&
+          this.curvaSeleccionada !='147.00000' &&
+          this.curvaSeleccionada !='148.00000' &&
+          this.curvaSeleccionada !='149.00000') {
+          if (!this.global_curvaTenido) {
+           this.toastr.warning('Debe seleccionar una curva', 'Atención');
+           return;
+         }              
+
+      }else{
+
+
+        if (!this.curvasSeleccionadasDes || this.curvasSeleccionadasDes.length === 0) {
+          this.toastr.warning('Debe seleccionar una curva', 'Atención');
+          return;
+        }       
+        
+        if (this.curvasSeleccionadasDes.length === 1) {
+          this.toastr.warning('Debe seleccionar 2 curvas');
+          return;
+        }        
+
       }
 
-    console.log('DataTenido listo para enviar:', this.dataTenido);
+    // if (!this.global_curvaTenido) {
 
+    //   this.toastr.warning('Debe seleccionar una curva r', 'Atención');
+    //   return;
+    // }  
+
+
+    //return;
     this.SpinnerService.show();
     this.LabColaTrabajoService.postRegistrarDetalleColorSDC(this.dataTenido).subscribe({
       next: (response: any) => {
@@ -940,6 +992,7 @@ getColorClaseProduccion(row: any): string {
   }
 
   onSeleccionarCurvas(event: any): void {
+    
     const seleccionadas = event.value as any[];
     if (!seleccionadas) return;
 

@@ -49,6 +49,8 @@ export class DialogJabonadosComponent {
   curvasAhiba: { codigo: number, nombre: string, cantidadPosiciones: number, estado: string, estadoCarga: string }[] = [];
 
   columnsToDisplay: string[] = [
+    // 'maquina',
+    // 'tubo',
     'corr_Carta',
     'sec',
     'correlativo',
@@ -112,6 +114,8 @@ export class DialogJabonadosComponent {
           // recalcular columnas dinámicas
           this.columnsToDisplay = [
             'seleccion',
+    'maquina',
+    'tubo',            
             'corr_Carta',
             'sec',
             'correlativo',
@@ -120,7 +124,8 @@ export class DialogJabonadosComponent {
             'ph_Neu',
             'jab_Des',
             'can_Jabo',
-            'tip_Ten'
+            'tip_Ten',
+            'Fec_Fin_Tenido'
             //...this.getPhColumns(),
           ];
 
@@ -158,6 +163,8 @@ export class DialogJabonadosComponent {
           this.dataSource.sort = this.sort;
 
           this.columnsToDisplay = [
+    'maquina',
+    'tubo',               
             'corr_Carta',
             'sec',
             'correlativo',
@@ -869,7 +876,12 @@ export class DialogJabonadosComponent {
             'descarga',
             'tipo_fijado_descarga',
             'ph_Des',
-            'tip_Ten'
+            'tip_Ten',
+            //Nuevos campos
+            'maq_Ahi_Des',
+            'maq_Nro_Tubo',
+            'jab_Ahi_Des',
+            'jab_Nro_Tubo'
           ];
 
           this.SpinnerService.hide();

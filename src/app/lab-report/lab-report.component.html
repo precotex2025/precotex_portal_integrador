@@ -6,8 +6,13 @@
 <div class="print-button-container">
   <button mat-raised-button color="primary" (click)="imprimirReporte()">
   <!-- <button mat-raised-button color="primary" (click)="generarPDF()"> -->
-    <mat-icon>print</mat-icon> Imprimir reporte
-  </button>
+     <mat-icon>print</mat-icon> Imprimir reporte
+  </button> 
+
+  <!-- <button mat-raised-button color="primary" (click)="imprimirReporteRed()">
+    <mat-icon>print</mat-icon> Imprimir reporte en Red
+  </button>  -->
+
 </div>
 
 <div class="report-only">
@@ -73,12 +78,16 @@
       
         <div class="col" *ngIf="this.data.tipoRecetaR === 'R'">
           <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p>
+          <p><strong>RB SIGE:</strong> {{ grupos[0].reporte.rel_Ban_Sige }}</p> <!--NUEVO CAMPO-->
           <p><strong>CANTIDAD JABONADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
           <p><strong>CURVA JABONADO:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
           <!-- <p><strong>Descarga:</strong> {{ grupos[0].reporte.fijado }}</p> -->
           <!-- <p><strong>Maquina</strong> {{ grupos[0].reporte.maquina }}</p> -->
           <!-- <p><strong>Kg:</strong> {{ grupos[0].reporte.kgs_Prod }}</p> -->
           <p><strong>DESCARGA:</strong> {{ grupos[0].reporte.descarga }}</p>
+          <p><strong>PESO MUESTRA (gr):</strong> {{ grupos[0].reporte.pes_Mue }}</p> <!--NUEVO CAMPO-->
+          <p><strong>ESTADO:</strong> {{ grupos[0].reporte.flg_Est_Lab === '01' ? 'PENDIENTE' : 'ENTREGADO' }}</p> <!--NUEVO CAMPO-->
+
         </div>
         <div class="col" *ngIf="this.data.tipoRecetaR === 'D'">
           <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p>
@@ -92,6 +101,19 @@
           <!-- <p><strong>Tipo de Lavado:</strong> {{ grupos[0].reporte.jab_Des }}</p> -->
           <!-- <p><strong>Maquina:</strong> {{ grupos[0].reporte.maquina }}</p> -->
           <!-- <p><strong>Kg:</strong> {{ grupos[0].reporte.kgs_Prod }}</p> -->
+        </div>
+
+        <!--NUEVO BLOQUE DE PH-->
+        <div class="col" *ngIf="grupos[0]?.reporte?.flg_Est_Lab === '02'">
+           <div *ngFor="let ph of reportePH">
+          <p><strong>pH inicio:</strong> {{ ph.ph_Ini }}</p>
+          <p><strong>pH final:</strong> {{ ph.ph_Fin }}</p>
+          <p><strong>pH jabonado:</strong> {{ ph.ph_Jab }}</p>
+          <p *ngIf="ph.ph_Jab2 > 0"><strong>pH jabonado2:</strong> {{ ph.ph_Jab2 }}</p>
+          <p *ngIf="ph.ph_Jab3 > 0"><strong>pH jabonado3:</strong> {{ ph.ph_Jab3 }}</p>
+          <p><strong>pH descarga:</strong> {{ ph.ph_Des }}</p>
+          </div>
+ 
         </div>
 
       </div>
@@ -157,43 +179,17 @@
 
     <div class="colorantes-section">
       <h2>Corridas</h2>
-      <div class="table-container">
 
-
-<mat-grid-list cols="10" rowHeight="125px" gutterSize="6px">
-          <!-- Primera fila: 1 al 10 -->
-          <mat-grid-tile *ngFor="let box of boxes1">
-            <mat-card class="box">
-              <mat-card-header>
-                <mat-card-title>{{ box }}</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                
-              </mat-card-content>
-            </mat-card>
-          </mat-grid-tile>
-
-          <!-- Segunda fila: 11 al 20 -->
-          <mat-grid-tile *ngFor="let box of boxes2">
-            <mat-card class="box">
-              <mat-card-header>
-                <mat-card-title>{{ box }}</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                
-              </mat-card-content>
-            </mat-card>
-          </mat-grid-tile>
-        </mat-grid-list>
-
-
-        <!-- <table>
+      <!--DIV PARA ESTADO 02-->
+      <div class="table-container" *ngIf="grupos[0]?.reporte?.flg_Est_Lab === '02'">
+        <table>
           <thead>
             <tr>
               <th>Descripción</th>
               <th *ngFor="let grupo of grupos; trackBy: trackByIndex">
                 <ng-container *ngIf="!grupo.placeholder; else espacioVacio">
-                  {{ grupo.correlativo }}
+                  <!-- {{ grupo.correlativo }} -->
+                  {{ procedencia }}
                 </ng-container>
               </th>
             </tr>
@@ -205,19 +201,75 @@
                 <ng-container *ngIf="valor.porcentaje !== '0.0000';">
                   {{ valor.porcentaje }}
                 </ng-container>
-
+                <!-- <ng-template #espacioVacioCelda>
+              <div class="espacio-vacio"></div>
+            </ng-template> -->
               </td>
             </tr>
           </tbody>
-        </table> -->
+        </table>
+      </div>
+
+      <ng-template #espacioVacio>
+        <div class="espacio-vacio">
+          <!-- <p>Muestra de tela</p> -->
+        </div>
+      </ng-template> 
+
+
+      <!--DIV PARA ESTADO 01-->
+      <div class="table-container" *ngIf="grupos[0]?.reporte?.flg_Est_Lab === '01'">
+
+          <!-- Colorantes -->
+          <div class="receta-subsection">
+            <h3>Colorantes</h3>
+            <div class="receta-table3">
+              <div class="header">Nombre</div>
+              <div class="header">%</div>
+              <div class="header">Ajuste %</div>
+              <div class="header">gr</div>
+
+              <ng-container *ngFor="let col of recetaDetalle">
+                <div class="cell" [ngClass]="{'rojo': col.ingreso_Manual === 1}">{{ col.col_Des }}</div>
+                <div class="cell" [ngClass]="{'rojo': col.ingreso_Manual === 1}">{{ col.por_Fin | number:'1.5-5' }}</div>
+                <div class="cell" [ngClass]="{'rojo': col.ingreso_Manual === 1}">{{ col.por_Aju | number:'1.5-5' }}</div>
+                <div class="cell" [ngClass]="{'rojo': col.ingreso_Manual === 1}">{{ col.por_Fin | number:'1.5-5' }}</div>
+                <!-- <div class="cell" [ngClass]="{'rojo': col.ingreso_Manual === 1}">{{ (col.por_Fin * recetaDetalle.pes_Mue) / 100 | number:'1.5-5' }}</div> -->
+              </ng-container> 
+            </div>
+          </div>        
+
+
+          <mat-grid-list cols="10" rowHeight="125px" gutterSize="6px">
+            <!-- Primera fila: 1 al 10 -->
+            <mat-grid-tile *ngFor="let box of boxes1">
+              <mat-card class="box">
+                <mat-card-header>
+                  <mat-card-title>{{ box }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  
+                </mat-card-content>
+              </mat-card>
+            </mat-grid-tile>
+
+            <!-- Segunda fila: 11 al 20 -->
+            <mat-grid-tile *ngFor="let box of boxes2">
+              <mat-card class="box">
+                <mat-card-header>
+                  <mat-card-title>{{ box }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  
+                </mat-card-content>
+              </mat-card>
+            </mat-grid-tile>
+          </mat-grid-list>
+
       </div>
 
 
-      <!-- <ng-template #espacioVacio>
-        <div class="espacio-vacio">
-    
-        </div>
-      </ng-template> -->
+
 
 
     </div>

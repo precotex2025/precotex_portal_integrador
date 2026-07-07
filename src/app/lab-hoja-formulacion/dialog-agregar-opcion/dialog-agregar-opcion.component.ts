@@ -89,6 +89,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
   colorantesSeleccionados: any[] = [];
   curvasTenido: { nombre: string, codigo: number }[] = [];
   curvaTenido: number = 0;
+  msg_Alerta: string = '';
   TipoTenido: { nombre: string, codigo: string }[] = [];
   TipoTenidoSeleccionado: string = '';
   //antireductores: {nombre: string, cantidad: number, porcentaje: number}[] = [];
@@ -345,11 +346,12 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
     //   familia = this.Familia
     // }
 
-    // console.log('::::::::::::::::::::::.', this.Familia);
-    // console.log(this.totalFinalColorantes);
-    // console.log(this.condicion);
-    // console.log(this.data.TipoReceta);
+    console.log('::::::::::::::::::::::.', this.Familia);
+    console.log(this.totalFinalColorantes);
+    console.log(this.condicion);
+    console.log(this.data.TipoReceta);
     if(this.corridaConCambios === 0){
+      console.log('entra a fijado');
       this.GetCurvasJabonadoCalculado(this.totalFinalColorantes, this.Familia, this.data.TipoReceta);
       this.GetFijadosCalculado(this.totalFinalColorantes, this.Familia, this.data.TipoReceta, this.Cod_ColorSeleccionado);
     }
@@ -652,7 +654,8 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
       Correlativo: this.correlativo,
       Can_Jabo: canJabonados || '0',
       Cur_Jabo: this.parametros.curva.toString() || '0',
-      Fijado: this.parametros.fijado.toString() || '0',
+      //Fijado: this.parametros.fijado.toString() || '0',
+      Fijado: this.parametros.fijado.toString()==='NaN'?'0':this.parametros.fijado.toString(),
       Rel_Ban: this.datos.relacionBano.toString() || '0',
       Pes_Mue: this.datos.pesoMuestra.toString() || '0',
       Volumen: this.datos.volumen.toString() || '0',
@@ -910,7 +913,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
               codigo: c.fij_Id,
               nombre: c.fij_Des
             }));
-
+            console.log('los elementos fijados calculados 2 son: ', this.fijados);
             const valoresPermitidos = [0.6, 0.8, 2, 3];
             let fijadoPor = parseFloat(response.elements[0].fij_Can || 0);
 
@@ -1060,6 +1063,7 @@ export class DialogAgregarOpcionComponent implements OnInit, AfterViewInit {
         this.TipoTenidoSeleccionado = datos.tip_Ten;
 
         this.curvaTenido = datos?.cur_Ten.toString();
+        this.msg_Alerta = datos?.msg_Alerta ?? '';
 
         //console.log('Productos cargados: ', this.productos);
         this.colorantesSeleccionados = (datos.colorantes ?? []).map((c: any) => ({

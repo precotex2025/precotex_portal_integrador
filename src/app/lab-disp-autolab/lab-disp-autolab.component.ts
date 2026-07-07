@@ -110,7 +110,8 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     'ingreso_Manual',
     'jab_Des',
     'volumen',
-    'reenvio'
+    'reenvio',
+    'fec_Env_Autolab'
   ];
 
   dataSource: MatTableDataSource<data_colaautolab> = new MatTableDataSource();
@@ -558,7 +559,8 @@ async enviarAutolab(): Promise<void> {
     'correlativo',
     'ph_Ini',
     'detalle',
-    'reenvio'
+    'reenvio',
+    'fec_Env_Autolab'
   ];
 
 

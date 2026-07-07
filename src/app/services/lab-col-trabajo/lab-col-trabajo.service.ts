@@ -212,6 +212,15 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarDatosReporte', { headers, params })
   }
 
+  getCargarDatosReporteTrico(Corr_Carta: any, Sec: number, Tip_Ten: string){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Corr_Carta', Corr_Carta);
+    params = params.append('Sec', Sec);
+    params = params.append('Tip_Ten', Tip_Ten);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarDatosReporteTrico', { headers, params })
+  }  
+
   getListarJabonadoMantenimiento() {
     const headers = this.Header;
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getListarJabonadoMantenimiento', { headers })
@@ -671,6 +680,18 @@ export class LabColTrabajoService {
     params = params.append('sCodUsuario', sCodUsuario)
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getVerificarEstadoDispensado', { headers, params })
   }  
+
+  postImprimirReporteLabDip(data: any){
+    const headers = this.Header;
+    return this.http.post(this.baseUrlTinto + 'HelpCommon/postImprimirReporteLabDip', data)
+  }
+
+  getCargarDatosReportePH(Corr_Carta: any){
+    const headers = this.Header;
+    let params = new HttpParams();
+    params = params.append('Corr_Carta', Corr_Carta);
+    return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarDatosReportePH', { headers, params })
+  }    
 
 
 

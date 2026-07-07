@@ -386,3 +386,40 @@ mat-card-title {
   margin-left: -10px;
   margin-top: -15px;
 }
+
+
+  .receta-subsection {
+    margin-bottom: 2rem;
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #2c3e50;
+      text-align: center;
+    }
+
+    .receta-table3 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      background: #f9f9f9;
+      padding: 0.5rem;
+      border-radius: 6px;
+
+      .header {
+        font-weight: 600;
+        background: #e0e0e0;
+        padding: 0.5rem;
+        text-align: center;
+      }
+
+      .cell {
+        background: #fff;
+        padding: 0.5rem;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+      }
+    }    
+
+  }
