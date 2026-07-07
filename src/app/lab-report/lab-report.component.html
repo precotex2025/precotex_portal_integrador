@@ -41,9 +41,9 @@
           <!-- <p><strong>Descarga:</strong> {{ grupos[0].reporte.fijado }}</p> -->
           <p><strong>DESCARGA:</strong> {{ grupos[0].reporte.descarga }}</p>
         </div>
-        <div class="col" *ngIf="this.data.tipoRecetaR === 'D'">
+        <div class="col" *ngIf="this.data.tipoRecetaR === 'R' || this.data.tipoRecetaR === 'D'">
           <p><strong>CANTIDAD LAVADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
-          <p><strong>TIPO LAVADO:</strong> {{ grupos[0].reporte.corr_Carta }}</p>
+          <p><strong>TIPO LAVADO:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
         </div>
       </div>
     </div>
@@ -89,7 +89,7 @@
           <p><strong>ESTADO:</strong> {{ grupos[0].reporte.flg_Est_Lab === '01' ? 'PENDIENTE' : 'ENTREGADO' }}</p> <!--NUEVO CAMPO-->
 
         </div>
-        <div class="col" *ngIf="this.data.tipoRecetaR === 'D'">
+        <div class="col" *ngIf="this.data.tipoRecetaR === 'R' || this.data.tipoRecetaR === 'D'">
           <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p>
           <p><strong>CANTIDAD LAVADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
           <p><strong>TIPO LAVADO:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
@@ -284,7 +284,7 @@
           <!-- <li *ngFor="let paso of grupos[0].reporte.ruta_Reporte; let i = index">
             {{ paso.descripcion }}
           </li> -->
-          <div *ngFor="let paso of grupos[0].reporte.ruta_Reporte; let i = index">
+          <div *ngFor="let paso of grupos[0].reporte.ruta_Reporte; let i = index" class="ruta-item">
             {{ paso.descripcion }}
           </div>
         <!-- </ul> -->
