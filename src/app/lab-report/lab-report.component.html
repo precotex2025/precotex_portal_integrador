@@ -4,10 +4,10 @@
   </button>
 </div>
 <div class="print-button-container">
-  <button mat-raised-button color="primary" (click)="imprimirReporte()">
+  <!-- <button mat-raised-button color="primary" (click)="imprimirReporte()"> -->
   <!-- <button mat-raised-button color="primary" (click)="generarPDF()"> -->
-     <mat-icon>print</mat-icon> Imprimir reporte
-  </button> 
+     <!-- <mat-icon>print</mat-icon> Imprimir reporte -->
+  <!-- </button> -->
 
   <button mat-raised-button color="primary" (click)="imprimirReporteRed()">
     <mat-icon>print</mat-icon> Imprimir reporte en Red
@@ -44,9 +44,9 @@
           <p><strong>PESO MUESTRA (gr):</strong> {{ grupos[0].reporte.pes_Mue }}</p> <!--NUEVO CAMPO-->
           <p><strong>ESTADO:</strong> {{ grupos[0].reporte.flg_Est_Lab === '01' ? 'PENDIENTE' : 'ENTREGADO' }}</p> <!--NUEVO CAMPO-->          
         </div>
-        <div class="col" *ngIf="this.data.tipoRecetaR === 'D'">
+        <div class="col" *ngIf="this.data.tipoRecetaR === 'R' || this.data.tipoRecetaR === 'D'">
           <p><strong>CANTIDAD LAVADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
-          <p><strong>TIPO LAVADO:</strong> {{ grupos[0].reporte.corr_Carta }}</p>
+          <p><strong>TIPO LAVADO:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
         </div>
       </div>
     </div>
@@ -92,7 +92,7 @@
           <p><strong>ESTADO:</strong> {{ grupos[0].reporte.flg_Est_Lab === '01' ? 'PENDIENTE' : 'ENTREGADO' }}</p> <!--NUEVO CAMPO-->
 
         </div>
-        <div class="col" *ngIf="this.data.tipoRecetaR === 'D'">
+        <div class="col" *ngIf="this.data.tipoRecetaR === 'R' || this.data.tipoRecetaR === 'D'">
           <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p>
           <p><strong>RB SIGE:</strong> {{ grupos[0].reporte.rel_Ban_Sige }}</p> <!--NUEVO CAMPO-->
           <p><strong>CANTIDAD LAVADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
@@ -249,7 +249,7 @@
           </div>        
 
 
-          <mat-grid-list cols="10" rowHeight="125px" gutterSize="6px">
+          <mat-grid-list cols="10" rowHeight="100px" gutterSize="6px">
             <!-- Primera fila: 1 al 10 -->
             <mat-grid-tile *ngFor="let box of boxes1">
               <mat-card class="box">
@@ -287,20 +287,20 @@
     <!-- Ruta y Solidez en una sola fila -->
     <div class="ruta-solidez-block">
       <!-- RUTA -->
-      <div class="block">
+      <div class="block ruta-block">
         <h4>Ruta</h4>
         <!-- <ul> -->
           <!-- <li *ngFor="let paso of grupos[0].reporte.ruta_Reporte; let i = index">
             {{ paso.descripcion }}
           </li> -->
-          <div *ngFor="let paso of grupos[0].reporte.ruta_Reporte; let i = index">
+          <div *ngFor="let paso of grupos[0].reporte.ruta_Reporte; let i = index" class="ruta-item">
             {{ paso.descripcion }}
           </div>
         <!-- </ul> -->
       </div>
 
       <!-- SOLIDECES SDC -->
-      <div class="block">
+      <div class="block ref-block">
         <h4 [hidden]="this.mostrarCabecera">Solidez</h4>
         <h4 [hidden]="!this.mostrarCabecera">Referencias</h4>
         <ul>
