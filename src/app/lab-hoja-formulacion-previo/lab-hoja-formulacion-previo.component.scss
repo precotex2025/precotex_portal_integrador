@@ -1,0 +1,607 @@
+.laboratorio-container {
+  display: flex;
+  flex-direction: row;
+  height: 96%;
+  width: 100%;
+  background-color: #f4f6f9;
+  font-family: 'Segoe UI', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.toggle-recetas-btn {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 20;
+  background-color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.recetas-sidebar {
+  width: 260px;
+  min-width: 260px;
+  background-color: #ffffff;
+  padding: 1.5rem 1rem;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, width 0.3s ease;
+  z-index: 10;
+
+  //SCROLL VERTICAL
+  //max-height: 80vh; 
+  overflow-y: auto; 
+  overflow-x: hidden; // evita scroll horizontal
+
+  &.oculto {
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    transform: translateX(-100%);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+  }
+
+  ::ng-deep mat-list-item {
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #ecf0f1;
+    }
+
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #34495e;
+    }
+
+    mat-icon {
+      color: #3498db;
+    }
+
+    &.receta-activa {
+      border-bottom: 2px solid #3498db;
+      background-color: #eaf4ff;
+
+      h4 {
+        color: #3498db;
+        font-weight: 600;
+      }
+
+      mat-icon {
+        color: #3498db;
+      }
+    }
+  }
+}
+
+.contenido-principal {
+  flex-grow: 1;
+  transition: width 0.3s ease, padding 0.3s ease;
+  padding: 1rem;
+  overflow-y: auto;
+  width: 100% !important;// ancho por defecto cuando el sidebar está visible
+
+  // &.expandido {
+  //   width: 100%;
+  // }
+
+  // &.reducido {
+  //   width: calc(100% - 260px);
+  // }
+}
+
+mat-expansion-panel {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+
+  ::ng-deep .mat-expansion-panel-header {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #2c3e50;
+  }
+
+  .sdc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+
+    div {
+      background-color: #f0f4f8;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      color: #34495e;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+.botones-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  button {
+    min-width: 140px;
+    font-weight: 500;
+    border-radius: 6px;
+    text-transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+.tabla-wrapper {
+  overflow-x: auto;
+
+  .formulaciones-section {
+    position: relative;
+    margin-top: 1rem;
+
+    .formulaciones-scroll-wrapper {
+      max-height: 100%;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    .formulaciones-grid {
+      display: grid;
+      gap: 0.75rem;
+      align-items: center;
+      z-index: 2;
+      
+      // .formulacion-header {
+      //   font-weight: 600;
+      //   background-color: #e3eaf2;
+      //   padding: 0.5rem;
+      //   text-align: center;
+      //   border-radius: 4px;
+      //   color: #2c3e50;
+      // }
+
+      .formulacion-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        font-weight: 600;
+        background-color: #e3eaf2;
+        border-radius: 4px;
+        color: #2c3e50;
+        text-align: center;
+
+        mat-checkbox {
+          margin-right: 8px;
+          flex-shrink: 0;
+          height: 24px;
+          width: 24px;
+          align-self: center;           
+          transform: translateY(-1px);  
+          padding-bottom: 15px;
+          margin-left: 10px;
+        }
+
+
+        .col-label {
+          flex: 1;
+          text-align: right;      
+          margin-right: 10px;
+          font-size: 0.85rem;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .btn-copiar {
+          margin-left: auto;
+          padding-left: 0;
+          min-width: auto;
+          width: 24px;
+          height: 24px;
+
+          mat-icon {
+            font-size: 18px;
+          }
+        }
+      }
+
+
+
+      .formulacion-cell {
+        background-color: #ffffff;
+        padding: 0.5rem;
+        text-align: center;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        font-size: 0.95rem;
+        color: #34495e;
+
+        &.etiqueta {
+          font-weight: 500;
+          background-color: #f0f4fa;
+        }
+
+        mat-icon {
+          vertical-align: middle;
+        }
+
+        button {
+          font-size: 0.85rem;
+          padding: 0.25rem 0.5rem;
+          min-width: 80px;
+        }
+      }      
+    }
+  }
+}
+
+.tabla-colorantes {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    background-color: #e3eaf2;
+    font-weight: 600;
+    padding: 0.75rem;
+    text-align: center;
+    color: #2c3e50;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #34495e;
+    white-space: nowrap;
+  }
+
+  ::ng-deep mat-checkbox {
+    margin: auto;
+  }
+
+  tr:hover {
+    background-color: #f5faff;
+  }
+}
+
+.colorEnviado { 
+  background-color: #d4edda;
+  color: #155724;
+}
+
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .laboratorio-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    overflow: visible;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .laboratorio-container {
+    flex-direction: column;
+  }
+
+  .recetas-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 15;
+  }
+
+  .contenido-principal {
+    width: 100% !important;
+    padding: 1rem;
+  }
+
+  .sdc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabla-colorantes th,
+  .tabla-colorantes td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+}
+
+.centradoCabecera {
+  text-align: center;
+  justify-content: center;
+  font-weight: bold;
+  background-color: #d2d2d2 !important;
+  color: #333;
+}
+
+.centrado {
+  text-align: center;
+  justify-content: center;
+}
+
+.scroll-horizontal {
+  overflow-x: auto;
+  max-width: 100%;
+}
+// .scroll-horizontal {
+//   overflow-x: auto;   /* activa scroll horizontal */
+//   overflow-y: hidden; /* evita scroll vertical innecesario */
+//   max-width: 100%;    /* limita al ancho disponible */
+//   white-space: nowrap; /* asegura que las columnas no se rompan */
+// }
+
+
+.formulaciones-grid {
+  min-width: 900px;
+  width: max-content;
+}
+
+.spinner-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.spinner-text {
+  color: white;
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.loader {
+  width: 24px;
+  height: 80px;
+  display: block;
+  margin: 35px auto 0;
+  border: 1px solid #fff;
+  border-radius: 0 0 50px 50px;
+  position: relative;
+  box-shadow: 0px 0px #ff3d00 inset;
+  background-image: linear-gradient(#ff3d00 100px, transparent 0);
+  background-position: 0px 0px;
+  background-size: 22px 80px;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  animation: animloader 6s linear infinite;
+}
+
+.loader::after {
+  content: '';
+  box-sizing: border-box;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 6px;
+}
+
+.loader::before {
+  content: '';
+  box-sizing: border-box;
+  left: 0;
+  bottom: -4px;
+  border-radius: 50%;
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  animation: animloader1 6s linear infinite;
+}
+
+@keyframes animloader {
+  0% {
+    background-position: 0px 80px;
+  }
+  100% {
+    background-position: 0px 0px;
+  }
+}
+
+@keyframes animloader1 {
+  0% {
+    box-shadow: 4px -10px rgba(255, 255, 255, 0),
+      6px 0px rgba(255, 255, 255, 0),
+      8px -15px rgba(255, 255, 255, 0),
+      12px 0px rgba(255, 255, 255, 0);
+  }
+  20% {
+    box-shadow: 4px -20px rgba(255, 255, 255, 0),
+      8px -10px rgba(255, 255, 255, 0),
+      10px -30px rgba(255, 255, 255, 0.5),
+      15px -5px rgba(255, 255, 255, 0);
+  }
+  40% {
+    box-shadow: 2px -40px rgba(255, 255, 255, 0.5),
+      8px -30px rgba(255, 255, 255, 0.4),
+      8px -60px rgba(255, 255, 255, 0.5),
+      12px -15px rgba(255, 255, 255, 0.5);
+  }
+  60% {
+    box-shadow: 4px -60px rgba(255, 255, 255, 0.5),
+      6px -50px rgba(255, 255, 255, 0.4),
+      10px -90px rgba(255, 255, 255, 0.5),
+      15px -25px rgba(255, 255, 255, 0.5);
+  }
+  80% {
+    box-shadow: 2px -80px rgba(255, 255, 255, 0.5),
+      4px -70px rgba(255, 255, 255, 0.4),
+      8px -120px rgba(255, 255, 255, 0),
+      12px -35px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow: 4px -100px rgba(255, 255, 255, 0),
+      8px -90px rgba(255, 255, 255, 0),
+      10px -120px rgba(255, 255, 255, 0),
+      15px -45px rgba(255, 255, 255, 0);
+  }
+}
+@media (max-width: 1024px) {
+  body, .laboratorio-container, .contenido-principal {
+    font-size: 13px;
+  }
+
+  .mat-cell, .mat-header-cell, .formulacion-cell, .formulacion-header {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.5rem;
+  }
+
+  .recetas-sidebar h3,
+  .recetas-sidebar ::ng-deep mat-list-item h4 {
+    font-size: 0.85rem;
+  }
+
+  .botones-acciones button {
+    min-width: 120px;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .tabla-colorantes th,
+  .tabla-colorantes td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+
+  mat-expansion-panel {
+    margin-bottom: 1rem;
+  }
+  //.formulaciones-grid {
+    //grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  //}
+}
+////////////////////////////////////////
+
+
+////////////////////////////////////////
+
+.sticky-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 220px; /* igual que la columna sticky */
+  height: 100%;
+  background-color: #f4f6f9 !important;
+  z-index: 3; /* debajo de los sticky cells */
+  pointer-events: none; /* no interfiere con clics */
+}
+
+
+// .sticky-col {
+//   position: sticky;
+//   left: 0;
+//   z-index: 10;
+//   background-color: transparent;
+//   box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+//   width: 200px;
+//   // min-width: 200px;
+// }
+
+.sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: transparent;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  width: 200px;
+
+  /* 🔽 centramos el contenido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+
+.selector-ahiba-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 0.5rem 0;
+}
+
+.selector-ahiba {
+  width: 100%;
+  max-width: 280px;
+}
+
+.total-colorante {
+  font-weight: 700;
+  color: #0a0a0a; 
+  background-color: #e5e7eb; 
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  text-align: right;
+}
+
+.grupo-partidas {
+  margin: 2px 0;   /* reduce espacio vertical */
+    margin: 0;            /* elimina espacio vertical extra */
+  padding: 0;           /* elimina relleno */
+  line-height: 1.2; /* compacta la altura de línea */
+}
+
+.titulo-grupo {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.partidas-maquina {
+  color: #1976d2; /* azul */
+  font-weight: bold;
+  background-color: #C6E8F5;
+  border-radius: 4px;
+  size: 10px;
+  //
+  display: inline-block;   
+  max-width: 100%;         
+  word-wrap: break-word;  
+  white-space: normal;     
+  padding: 2px 4px;         
+}
+
+.partidas-bano {
+  color: #2e7d32; /* verde */
+  background-color: #BCF5CA;
+  border-radius: 4px;
+  size: 10px;  
+  //
+  display: inline-block;   
+  max-width: 100%;         
+  word-wrap: break-word;  
+  white-space: normal;     
+  padding: 2px 4px;        
+}

@@ -113,6 +113,7 @@ export class LabHojaFormulacionComponent implements OnInit {
         cod_ColorR: params ['cod_ColorE'] !== undefined ? String(params['cod_ColorE']): 'NO_COL'
       };
     });
+    console.log('Parametros recibidos en Hoja de Formulación: ', this.data);
 
     if (this.data.corr_CartaR !== '' && this.data.secR !== 0) {
       console.log('Entro a corr_Carta', this.recetas);
