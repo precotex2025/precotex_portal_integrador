@@ -681,8 +681,9 @@ export class LabColTrabajoService {
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getVerificarEstadoDispensado', { headers, params })
   }  
 
-  postImprimirReporteLabDip(data: any){
-    const headers = this.Header;
+  postImprimirReporteLabDip(data: FormData){
+    // NO se debe pasar Content-Type aquí: el navegador lo fija automáticamente
+    // con el boundary correcto para multipart/form-data.
     return this.http.post(this.baseUrlTinto + 'HelpCommon/postImprimirReporteLabDip', data)
   }
 

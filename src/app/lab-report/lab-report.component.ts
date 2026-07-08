@@ -5,6 +5,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
 import jsPDF from 'jspdf';
 import { ToastrService } from 'ngx-toastr';
+import { forkJoin } from 'rxjs';
 
 interface Insumo {
   col_Cod: string;
@@ -109,6 +110,8 @@ export class LabReportComponent implements OnInit {
   recetaDetalle: Colorante[] = [];
   procedencia: string = '';
   reportePH: ph[] = [];
+  isCapturing = false;
+  reporteListo = false;
 
   constructor(
     private labColTrabajoService: LabColTrabajoService,
@@ -147,15 +150,23 @@ export class LabReportComponent implements OnInit {
 
   cargarDatosReporte(corrCarta: any, sec: number, Tip_Ten: string): void {
     this.loading = true;
-    this.labColTrabajoService.getCargarDatosReporte(corrCarta, sec, Tip_Ten).subscribe({
+    this.reporteListo = false;
 
-      next: (response: any) => {
+    // forkJoin espera a que las 3 llamadas HTTP terminen antes de procesar
+    // Esto evita la condición de carrera (race condition) donde html2canvas
+    // capturaba el DOM antes de que llegaran los datos de Tricomía y pH.
+    forkJoin({
+      principal: this.labColTrabajoService.getCargarDatosReporte(corrCarta, sec, Tip_Ten),
+      trico:     this.labColTrabajoService.getCargarDatosReporteTrico(corrCarta, sec, Tip_Ten),
+      ph:        this.labColTrabajoService.getCargarDatosReportePH(corrCarta),
+    }).subscribe({
+      next: ({ principal, trico, ph }: any) => {
         const reporte: ReporteBackend = {
-          ...response.elements[0],
-          colorantes_Reporte: response.elements[0].colorantes_Reporte ?? [],
-          ruta_Reporte: response.elements[0].ruta_Reporte ?? [],
-          solidez_Reporte: response.elements[0].solidez_Reporte ?? [],
-          id_secuencia: response.elements.id_secuencia ?? 0
+          ...principal.elements[0],
+          colorantes_Reporte: principal.elements[0].colorantes_Reporte ?? [],
+          ruta_Reporte: principal.elements[0].ruta_Reporte ?? [],
+          solidez_Reporte: principal.elements[0].solidez_Reporte ?? [],
+          id_secuencia: principal.elements[0].id_secuencia ?? 0  // corregido: antes era .elements.id_secuencia (bug)
         };
 
         if (reporte && (!this.data.tipoRecetaR || this.data.tipoRecetaR === '')) {
@@ -168,51 +179,36 @@ export class LabReportComponent implements OnInit {
           const prioridad = [1, 2, 3];
           const aPrioridad = prioridad.includes(a.id_secuencia) ? 0 : 1;
           const bPrioridad = prioridad.includes(b.id_secuencia) ? 0 : 1;
-
-          if (aPrioridad !== bPrioridad) {
-            return aPrioridad - bPrioridad; // primero los 1,2,3
-          }
-          return a.id_secuencia - b.id_secuencia; // luego orden normal
+          if (aPrioridad !== bPrioridad) return aPrioridad - bPrioridad;
+          return a.id_secuencia - b.id_secuencia;
         });
 
         console.log('EL REPORTE ES::::::::::::::::::::::::::::::.', reporte);
-  
-        this.procedencia = reporte.colorantes_Reporte.length > 0? reporte.colorantes_Reporte[0].procedencia ?? '': '';
+
+        this.procedencia = reporte.colorantes_Reporte.length > 0
+          ? reporte.colorantes_Reporte[0].procedencia ?? ''
+          : '';
 
         this.grupos = this.groupByCorrelativo(reporte)
           .sort((a, b) => a.correlativo - b.correlativo);
 
         this.construirTabla();
 
-        //Mostrar reporte de Tricomia
-        this.cargarDatosReporteTrico(corrCarta, sec, Tip_Ten);
+        // Datos de Tricomía y pH — ya disponibles porque forkJoin esperó las 3
+        this.recetaDetalle = trico.elements ?? [];
+        this.reportePH = ph.elements ?? [];
 
-        //Mostrar reporte de PH
-        this.CargarDatosReportePH(corrCarta);
+        console.log('EL REPORTE DE TRICOMIA ES::::::::::::::::::::::::::::::.', this.recetaDetalle);
+        console.log('EL REPORTE DE PH ES::::::::::::::::::::::::::::::.', this.reportePH);
 
         this.loading = false;
+        this.reporteListo = true;  // El botón de imprimir se habilitará ahora
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = 'No se pudo cargar el reporte. Intente nuevamente.';
+        console.error('Error al cargar el reporte', err);
       }
-
-    });
-  }
-
-  cargarDatosReporteTrico(corrCarta: any, sec: number, Tip_Ten: string): void {
-    this.labColTrabajoService.getCargarDatosReporteTrico(corrCarta, sec, Tip_Ten).subscribe({
-      next: (response: any) => {
-          this.recetaDetalle = response.elements ?? [];
-          console.log('EL REPORTE DE TRICOMIA ES::::::::::::::::::::::::::::::.', this.recetaDetalle);
-          this.loading = false;
-      },
-    });
-  }
-
-  CargarDatosReportePH(corrCarta: any): void {
-    this.labColTrabajoService.getCargarDatosReportePH(corrCarta).subscribe({
-      next: (response: any) => {
-          this.reportePH = response.elements ?? [];
-          console.log('EL REPORTE DE PH ES::::::::::::::::::::::::::::::.', this.reportePH);
-          this.loading = false;
-      },
     });
   }
 
@@ -263,125 +259,77 @@ export class LabReportComponent implements OnInit {
   }
 
   imprimirReporteRed() {
-
     const element = document.querySelector('.report-only') as HTMLElement;
 
-html2canvas(element, { scale: 2 }).then(canvas => {
-  const imgData = canvas.toDataURL('image/png');
-  console.log('imagen', imgData);
+    html2canvas(element, { 
+      scale: 2, 
+      windowWidth: 1200, 
+      useCORS: true 
+    }).then(canvas => {
+      console.log('Canvas generado. Tamaño:', canvas.width, 'x', canvas.height);
+      canvas.toBlob(blob => {
+        if (!blob) {
+          console.error('Error: canvas.toBlob devolvió null');
+          return;
+        }
 
-  
+        console.log('Blob generado. Tamaño:', blob.size, 'bytes');
+        const formData = new FormData();
+        formData.append('reporte', blob, 'reporte.png');
 
-  const previewWindow = window.open('', '_blank');
-  if (previewWindow) {
-    previewWindow.document.write(`
-      <html>
-        <head>
-          <title>Vista previa reporte</title>
-          <style>
-            body { margin: 0; display: flex; justify-content: center; }
-            img { max-width: 100%; height: auto; }
-            @page { size: A4 landscape; }
-          </style>
-        </head>
-        <body>
-          <img src="${imgData}" />
-        </body>
-      </html>
-    `);
-    previewWindow.document.close();
-  }
-
-  //imprewsion directa
-    // Enviar al backend para impresión en red
-    /*
-    canvas.toBlob(blob => {
-      if (!blob) return;
-
-      const formData = new FormData();
-      formData.append('reporte', blob, 'reporte.png');
-
-      this.labColTrabajoService.postImprimirReporteLabDip(formData).subscribe({
-        next: () => console.log('Reporte enviado al backend para impresión en red'),
-        error: err => console.error('Error al enviar reporte', err)
-      });
-    });  
-    */
-
-});    
-
-    // html2canvas(element, { scale: 2 }).then(canvas => {
-    //   canvas.toBlob(blob => {
-    //     if (!blob){
-    //       console.log('entro al retorno BLOB');
-    //       return;
-    //     }
-    //     const formData = new FormData();
-    //     formData.append('reporte', blob, 'reporte.png');
-
-    //     //this.labColTrabajoService.postImprimirReporteLabDip()
-    //     this.labColTrabajoService.postImprimirReporteLabDip(formData).subscribe({
-    //       next: (response: any)=> {
-            
-    //         console.log('Reporte Enviado a producción');
-         
-    //       },
-    //       error: (error) => {
-    //         //this.SpinnerService.hide();
-    //         this.toastr.error(error.message, 'Cerrar', {
-    //         timeOut: 2500,
-    //         });
-    //       }          
-    //     });        
-        
-    //   });
-    // });    
-
+        this.toastr.info('Enviando reporte a la impresora en red...', 'Impresión');
+        this.labColTrabajoService.postImprimirReporteLabDip(formData).subscribe({
+          next: (response: any) => {
+            this.toastr.success('Reporte enviado a la impresora en red.', 'Impresión');
+            console.log('Reporte enviado al backend para impresión en red', response);
+          },
+          error: err => {
+            this.toastr.error(`Error al enviar reporte: ${err.status} ${err.statusText}`, 'Impresión');
+            console.error('Error al enviar reporte:', err.status, err.statusText, err.error);
+          }
+        });
+      });  
+    });
   }
 
   imprimirReporte() {
-    const element = document.querySelector('.report-only') as HTMLElement;
+  const element = document.querySelector('.report-only') as HTMLElement;
 
-    // Guardar el ancho original y forzar un ancho de PC de escritorio (1400px)
-    // para que la captura sea horizontal y aproveche todo el espacio de la hoja.
-    const originalWidth = element.style.width;
-    element.style.width = '1400px';
+  // 1. Forzamos un ancho de ventana virtual para que el layout no se comprima en la tablet
+  html2canvas(element, { 
+    scale: 2,
+    windowWidth: 1200, // Simula el ancho de un monitor
+    useCORS: true      // Útil si tienes imágenes externas en el reporte
+  }).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
 
-    html2canvas(element, { 
-      scale: 2,
-      windowWidth: 1400
-    }).then(canvas => {
-      // Restaurar el ancho original del elemento en pantalla
-      element.style.width = originalWidth;
-
-      const imgData = canvas.toDataURL('image/png');
-
-      const printWindow = window.open('', '_blank');
-      if (printWindow) {
-        printWindow.document.write(`
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
         <html>
           <head>
             <title>Reporte</title>
             <style>
+              /* 2. Quitamos todos los márgenes de la página impresa */
               @page {
                 size: landscape;
-                margin: 10mm;
+                margin: 0mm; 
               }
               html, body {
                 margin: 0;
                 padding: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background-color: #fff;
+                width: 100vw;
+                height: 100vh;
+                overflow: hidden; /* Evita barras de desplazamiento */
               }
+              /* 3. Forzamos a la imagen a ocupar el 100% de la hoja */
               img {
                 width: 100%;
-                height: auto;
-                max-height: 100%;
-                object-fit: contain;
+                height: 100%;
+                /* 'fill' estirará la imagen para que encaje perfecto sin dejar bordes blancos. 
+                   Si notas que se deforma mucho, cámbialo a 'cover' */
+                object-fit: fill; 
+                display: block;
               }
             </style>
           </head>
@@ -389,22 +337,20 @@ html2canvas(element, { scale: 2 }).then(canvas => {
             <img src="${imgData}" />
             <script>
               window.onload = function() {
-
-                //setTimeout(() => {
-                //      window.focus();
-                //  }, 300)
-              
-                window.print();
-                window.onafterprint = function() { window.close(); };
+                // Pequeño timeout para asegurar que la imagen cargue en memoria antes de imprimir
+                setTimeout(() => {
+                  window.print();
+                  window.onafterprint = function() { window.close(); };
+                }, 250);
               }
             </script>
           </body>
         </html>
       `);
-        printWindow.document.close();
-      }
-    });
-  }
+      printWindow.document.close();
+    }
+  });
+}
 
   // imprimirReporte() {
   //   const element = document.querySelector('.report-only') as HTMLElement;
