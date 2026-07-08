@@ -53,6 +53,7 @@ import { DetalleCompExtraComponent } from './mantenimientos/mantenimientos-lst/d
 import { DialogNuevoCompExtraComponent } from './mantenimientos/mantenimientos-lst/detalle-comp-extra/dialog-nuevo-comp-extra/dialog-nuevo-comp-extra.component';
 import { DialogEntregaAjusteComponent } from './lab-hoja-formulacion/dialog-entrega-ajuste/dialog-entrega-ajuste.component';
 import { LabAnalisisDeltaComponent } from './lab-analisis-delta/lab-analisis-delta.component';
+import { LabHojaFormulacionPrevioComponent } from './lab-hoja-formulacion-previo/lab-hoja-formulacion-previo.component';
 import { NgChartsModule } from 'ng2-charts';
 
 
@@ -77,7 +78,8 @@ import { NgChartsModule } from 'ng2-charts';
     DetalleCompExtraComponent,
     DialogNuevoCompExtraComponent,
     DialogEntregaAjusteComponent,
-    LabAnalisisDeltaComponent
+    LabAnalisisDeltaComponent,
+    LabHojaFormulacionPrevioComponent
   ],
   imports: [
     BrowserModule,

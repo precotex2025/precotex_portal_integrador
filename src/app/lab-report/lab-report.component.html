@@ -98,16 +98,22 @@
         </div>
         <div class="col" *ngIf="this.data.tipoRecetaR === 'R' || this.data.tipoRecetaR === 'D'">
           <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p>
+          <p><strong>RB SIGE:</strong> {{ grupos[0].reporte.rel_Ban_Sige }}</p> <!--NUEVO CAMPO-->
           <p><strong>CANTIDAD LAVADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
           <p><strong>TIPO LAVADO:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
           <!-- <p><strong>Maquina:</strong> {{ grupos[0].reporte.maquina }}</p> -->
           <!-- <p><strong>Kg:</strong> {{ grupos[0].reporte.kgs_Prod }}</p> -->
+          <p><strong>PESO MUESTRA (gr):</strong> {{ grupos[0].reporte.pes_Mue }}</p> <!--NUEVO CAMPO-->
+          <p><strong>ESTADO:</strong> {{ grupos[0].reporte.flg_Est_Lab === '01' ? 'PENDIENTE' : 'ENTREGADO' }}</p> <!--NUEVO CAMPO-->           
         </div>
         <div class="col" *ngIf="this.data.tipoRecetaR === 'O'">
           <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p>
+          <p><strong>RB SIGE:</strong> {{ grupos[0].reporte.rel_Ban_Sige }}</p> <!--NUEVO CAMPO-->
           <!-- <p><strong>Tipo de Lavado:</strong> {{ grupos[0].reporte.jab_Des }}</p> -->
           <!-- <p><strong>Maquina:</strong> {{ grupos[0].reporte.maquina }}</p> -->
           <!-- <p><strong>Kg:</strong> {{ grupos[0].reporte.kgs_Prod }}</p> -->
+          <p><strong>PESO MUESTRA (gr):</strong> {{ grupos[0].reporte.pes_Mue }}</p> <!--NUEVO CAMPO-->
+          <p><strong>ESTADO:</strong> {{ grupos[0].reporte.flg_Est_Lab === '01' ? 'PENDIENTE' : 'ENTREGADO' }}</p> <!--NUEVO CAMPO-->           
         </div>
 
         <!--NUEVO BLOQUE DE PH-->
