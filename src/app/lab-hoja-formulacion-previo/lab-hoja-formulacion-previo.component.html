@@ -1,0 +1,186 @@
+<div class="laboratorio-container">
+   <!-- Botón para mostrar/ocultar recetas --> 
+   <!-- <button mat-icon-button (click)="toggleRecetas()" class="toggle-recetas-btn">
+      <mat-icon>{{ showRecetas ? 'chevron_left' : 'menu' }}</mat-icon>
+   </button> -->
+   <!-- Sidebar de recetas --> 
+<!-- <div class="recetas-sidebar" [class.visible]="showRecetas" [class.oculto]="!showRecetas"> 
+   <h3>Recetas disponibles</h3>
+   <mat-nav-list>
+      <mat-list-item *ngFor="let receta of recetas" [ngClass]="{ 'receta-activa': receta === recetaSeleccionada }"> 
+      <h4 matLine>{{ receta.corr_Carta }}-{{ receta.sec.toString().padStart(2, '0') }} - {{ receta.descripcion_Color }}</h4>
+      </mat-list-item> 
+   </mat-nav-list>
+</div> -->
+<!-- Contenido principal --> 
+<div class="contenido-principal"> <!-- Paneles de información --> 
+<mat-expansion-panel *ngFor="let grilla of grillaExpandible">
+   <mat-expansion-panel-header>
+      <mat-panel-title>Información:</mat-panel-title>
+      <mat-panel-description>#{{ grilla.corr_Carta }}-{{ grilla.sec.toString().padStart(2, '0') }} - Cliente: {{ grilla.des_Cliente }} - Color: {{ grilla.descripcion_Color }}</mat-panel-description>
+   </mat-expansion-panel-header>
+   <div class="sdc-grid">
+      <div><strong>Fecha Apertura:</strong> {{ grilla.fec_creacion | date:'dd/MM/yyyy' }}</div>
+      <div><strong>Fecha Entrega:</strong> {{ grilla.fec_Entrega | date:'dd/MM/yyyy' }}</div>
+      <div><strong>Tipo:</strong> {{ grilla.tipo }}</div>
+      <div><strong>Artículo:</strong> {{ grilla.des_Tela }}</div>
+      <div *ngIf="mostrarPartidas">
+         <strong>Partidas Agrupadas:</strong> 
+         <!-- Grupo por máquina -->
+         <div class="grupo-partidas">
+            <span class="titulo-grupo">Máquina:</span>
+            <span class="partidas-maquina">
+               {{ PartidasAgrupadas_Tinto }}
+            </span>
+         </div>
+
+         <!-- Grupo por baño ciego -->
+         <div class="grupo-partidas">
+            <span class="titulo-grupo">Baño ciego:</span>
+            <span class="partidas-bano">
+               <b>{{ PartidasAgrupadas }}</b>
+            </span>
+         </div>         
+         <!--{{ this.PartidasAgrupadas }} {{ this.PartidasAgrupadas_Tinto }} -->
+      </div>    
+
+   </div>
+</mat-expansion-panel>
+<!-- Botones de acción --> 
+<div class="botones-acciones"> <button mat-raised-button color="primary" (click)="onInformeSDC()">Informe</button>
+    <!--
+   <button mat-raised-button color="accent" disabled>Agregar
+   </button> 
+   <button mat-raised-button disabled>Entregar
+   </button> 
+   <button mat-raised-button color="warn" disabled>Remover
+   </button> 
+   <button mat-raised-button color="primary" disabled>Actualizar
+   </button> 
+   -->
+   <button mat-raised-button color="primary"
+      (click)="onAbrirReporte()">Reporte
+   </button> 
+   <button mat-raised-button color="warn"
+      (click)="onCerrarReporte()">Cerrar
+   </button>    
+
+
+
+   <div>
+      <mat-form-field appearance="fill">
+         <mat-label>Tenido</mat-label>
+         <mat-select [(ngModel)]="TipoReceta" >
+            <mat-option *ngFor="let t of TipoTenido" [value]="t.codigo">
+               {{ t.nombre }}
+            </mat-option>
+         </mat-select>
+      </mat-form-field>
+   </div>
+   <!-- <ng-container *ngIf="this.TipoReceta === 'R'">
+      <div>
+         <button mat-raised-button style="background-color: green; color: white;" (click)="BuscarReactivo()">
+            Reactivo
+         </button>
+      </div>
+   </ng-container>
+   <ng-container *ngIf="this.TipoReceta === 'D'">
+   <div>
+      <button mat-raised-button style="background-color: green; color: white;" (click)="BuscarDisperso()">
+         Disperso
+      </button>
+   
+   </div>
+   </ng-container> -->
+</div>
+<!-- Grilla de formulaciones con scroll horizontal --> 
+<div class="tabla-wrapper-scale">
+<div class="tabla-wrapper">
+   <section class="formulaciones-section">
+      <div class="scroll-horizontal">
+         <div class="sticky-background"></div>
+
+         <div class="formulaciones-grid" [ngStyle]="{ 'grid-template-columns': '200px ' + '1fr '.repeat(formulaciones.length).trim() }">
+            <!-- Botón copiar --> 
+            <!-- <div class="" style="background-color: #f4f6f9;"></div>
+            <div class="formulacion-cell" *ngFor="let f of formulaciones">
+               <button mat-button color="accent" (click)="copiarFormulacion(f.numeroColumna)">
+                  <mat-icon>file_copy</mat-icon>
+               </button>
+            </div> -->
+            <!-- Botón enviar --> 
+            <div class="" style="background-color: #f4f6f9;"></div>
+            <div class="formulacion-cell" *ngFor="let f of formulaciones">
+               <button *ngIf="f.flg_Est_Autolab === null" mat-button color="primary" disabled> Enviar a Autolab 
+               <mat-icon class="atras">send</mat-icon>
+               </button> 
+               <button *ngIf="f.flg_Est_Autolab !== null" mat-button color="primary" class="colorEnviado">
+                  Enviado 
+                  <mat-icon class="atras">check_circle_outline</mat-icon>
+               </button>
+            </div>
+            <!-- Checkbox selección --> 
+            <!-- <div class="" style="background-color: #f4f6f9;"></div>
+            <div class="formulacion-cell" *ngFor="let f of formulaciones"> 
+               <mat-checkbox [(ngModel)]="f.seleccionado" [checked]="f.flg_Est_Autolab === '02'" (change)="toggleSeleccion(f.numeroColumna)"></mat-checkbox> 
+            </div> -->
+            <!-- Encabezado --> 
+            <div class="formulacion-header sticky-col" style="background-color: #f4f6f9; border-color:#f4f6f9 ; box-shadow: none !important;"></div>
+            <div class="formulacion-header" *ngFor="let f of formulaciones">
+               <!-- <span>{{ f.numeroColumna }}</span> -->
+               <mat-checkbox [(ngModel)]="f.seleccionado" [checked]="f.flg_Est_Lab=== '02'" (change)="toggleSeleccion(f.numeroColumna)" disabled></mat-checkbox> 
+               <span class="col-label">{{ f.numeroColumna }}</span>
+               <!-- <button mat-button color="accent" (click)="copiarFormulacion(f.numeroColumna)">
+                  <mat-icon>file_copy</mat-icon>
+               </button> -->
+
+            </div>
+            <!-- Filas dinámicas --> 
+            <ng-container *ngFor="let fila of filas">
+               <div class="formulacion-cell etiqueta sticky-col">{{ fila.etiqueta }}</div>
+               <div class="formulacion-cell" *ngFor="let f of formulaciones">
+                  <ng-container [ngSwitch]="fila.tipo">
+                     <ng-container *ngIf="fila.key === 'detalle'; else valorNormal"> <button mat-button color="primary" (click)="verDetalle(f)">VER</button> </ng-container>
+                     <ng-template #valorNormal>
+                        <span *ngSwitchCase="'texto'">{{ getValor(f, fila.key) }}</span> 
+                        <span *ngSwitchCase="'numero'"> {{ 
+                        fila.key === 'cur_Jabo' ? (getValor(f, fila.key) | number:'1.2-2') : 
+                        fila.key === 'pes_Mue' ? (getValor(f, fila.key) | number:'1.2-2') :
+                        fila.key.startsWith('SAL') ? getValorColorantePorCodigo(f.colorantes, fila.key) : 
+                        fila.key.startsWith('SULFATO') ? getValorColorantePorCodigo(f.colorantes, fila.key) : 
+                        ( fila.key.startsWith('QC') || fila.key.startsWith('SM') || fila.key.startsWith('QQ') || fila.key.startsWith('QA') ? (getValorColorantePorCodigo(f.colorantes, fila.key) | number:'1.5-5') : 
+                        getValor(f, fila.key) ) }} 
+                        </span> 
+                        <span *ngSwitchCase="'booleano'">
+                           <mat-icon color="primary" *ngIf="getValor(f, fila.key)">check</mat-icon>
+                        </span>
+                        <span *ngSwitchCase="'total'" class="total-colorante">
+                           {{getSumaTotalColorantes(f) | number:'1.5-5'}}
+                        </span>
+                     </ng-template>
+                  </ng-container>
+               </div>
+            </ng-container>
+            <!-- Botón eliminar --> 
+            <!-- <div class="formulacion-cell etiqueta">Eliminar</div>
+            <div class="formulacion-cell" *ngFor="let f of formulaciones">
+               <button mat-button color="warn" (click)="borrarFormulacion(f.numeroColumna, f)">
+                  <mat-icon>delete</mat-icon>
+               </button>
+            </div> -->
+         </div>
+
+
+
+
+      </div>
+   </section>
+</div>
+</div>
+</div> </div> 
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="medium" type="custom" [fullScreen]="true">
+   <div class="spinner-wrapper">
+      <p class="spinner-text">CARGANDO INFORMACIÓN</p>
+      <div class="loader"></div>
+   </div>
+</ngx-spinner>

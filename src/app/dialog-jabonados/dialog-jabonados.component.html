@@ -57,7 +57,7 @@
           </mat-checkbox>
         </th>
         <td mat-cell *matCellDef="let row" class="centrado">
-          <mat-checkbox [(ngModel)]="row.seleccionado" ></mat-checkbox>
+          <mat-checkbox [(ngModel)]="row.seleccionado" (change)="validarSeleccion(row, $event)"></mat-checkbox>
         </td>
       </ng-container>
 

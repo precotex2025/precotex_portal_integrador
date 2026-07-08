@@ -17,6 +17,7 @@ import { GlobalVariable } from '../../VarGlobals';
 import { AuthService } from '../../authentication/auth.service';
 import Swal from 'sweetalert2';
 import { timeout } from 'rxjs';
+import { LabHojaFormulacionPrevioComponent } from '../../lab-hoja-formulacion-previo/lab-hoja-formulacion-previo.component';
 
 
 interface data_cola_trab {
@@ -1082,5 +1083,61 @@ getColorClaseProduccion(row: any): string {
     const diffMs = fecha.getTime() - hoy.getTime();
     return Math.floor(diffMs / (1000 * 60 * 60 * 24));
   }
+
+  //Nueva funcion
+  CargarModalTenido2(data_cola_trab_produccion: any): void {
+
+    console.log('data para el modal 2', data_cola_trab_produccion);
+    console.log('data para el modal 2', data_cola_trab_produccion.cod_OrdTra);
+
+    const dialogRef = this.dialog.open(LabHojaFormulacionPrevioComponent, {
+      width: '100%',
+      height: '100%',
+      disableClose: false,
+      panelClass: 'my-class',      
+      data: {
+           corr_CartaR: data_cola_trab_produccion.cod_OrdTra,
+           secE: data_cola_trab_produccion.Num_Sec,
+           tip_TenE: data_cola_trab_produccion.TipoReceta,
+           cod_Color: data_cola_trab_produccion.cod_Color
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+        //this.buscar();
+    });  
+
+
+
+    // this.router.navigate(['/HojaFormulacion']
+    //   , {
+    //     queryParams: {
+    //       corr_CartaE: data_cola_trab_produccion.cod_OrdTra,
+    //       secE: data_cola_trab_produccion.Num_Sec,
+    //       tip_TenE: data_cola_trab_produccion.TipoReceta,
+    //       cod_Color: data_cola_trab_produccion.cod_Color
+    //     }
+    //   });
+
+    /*
+    //let Cod_OrdTra = this.dataListadoProduccion[0].cod_OrdTra;
+    let Cod_OrdTra = data_cola_trab_produccion.cod_OrdTra;
+    //let Usr_Cod = data_cola_trab_produccion.usr_Cod;
+    let Usr_Cod = this.Usuario;
+    let partidas = data_cola_trab_produccion.partidas;
+    this.Cod_OrdTra = Cod_OrdTra;
+    this.dataTenido = {
+      "Corr_Carta": '',
+      "Cod_OrdTra": Cod_OrdTra,
+      "Sec": 1,
+      "Usr_Cod": Usr_Cod,
+      "Partidas": partidas
+    };
+
+    this.getListarCurvas('0.00000')
+    this.curvaSeleccionada = '';
+    this.getListarCurvaObtenidaOrgatex('0.00000', Cod_OrdTra);
+    setTimeout(() => { this.dialogRef1 = this.dialog.open(this.modalEnviar, { width: '600px' }); }, 300);
+    */
+  }  
 
 }

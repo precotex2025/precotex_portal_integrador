@@ -893,5 +893,18 @@ export class DialogJabonadosComponent {
     });
   }
 
+  validarSeleccion(row: any, event: any) {
+    // condición: neutralizado distinto de vacío y ph_Neu == 0
+    if (row.neutralizado !== '' && row.ph_Neu === 0) {
+      //alert('No se puede seleccionar esta fila porque está neutralizada con pH 0');
+      this.toastr.warning('DEBE REGISTRAR EL pH DE NEUTRALIZADO.', '', { timeOut: 3000 });
+      event.source.checked = false; // desmarca el checkbox
+      return;
+    }
+
+    // si pasa la validación, actualiza el estado
+    row.seleccionado = event.checked;
+  }  
+
 
 }
