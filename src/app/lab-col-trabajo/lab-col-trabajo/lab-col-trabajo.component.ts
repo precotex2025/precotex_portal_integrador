@@ -1093,6 +1093,8 @@ getColorClaseProduccion(row: any): string {
     const dialogRef = this.dialog.open(LabHojaFormulacionPrevioComponent, {
       width: '100%',
       height: '100%',
+      maxWidth: '100vw',
+      maxHeight: '100vh',      
       disableClose: false,
       panelClass: 'my-class',      
       data: {

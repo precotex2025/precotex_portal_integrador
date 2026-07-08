@@ -9,9 +9,9 @@
      <mat-icon>print</mat-icon> Imprimir reporte
   </button> 
 
-  <!-- <button mat-raised-button color="primary" (click)="imprimirReporteRed()">
+  <button mat-raised-button color="primary" (click)="imprimirReporteRed()">
     <mat-icon>print</mat-icon> Imprimir reporte en Red
-  </button>  -->
+  </button> 
 
 </div>
 
@@ -36,10 +36,13 @@
           <p><strong>CURVA TEÑIDO:</strong> {{ grupos[0].reporte.cur_Ten }}</p>
         </div>
         <div class="col" *ngIf="this.data.tipoRecetaR === 'R'">
+          <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p> <!--NUEVO CAMPO-->
           <p><strong>CANTIDAD JABONADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
           <p><strong>CURVA JABONADO:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
           <!-- <p><strong>Descarga:</strong> {{ grupos[0].reporte.fijado }}</p> -->
           <p><strong>DESCARGA:</strong> {{ grupos[0].reporte.descarga }}</p>
+          <p><strong>PESO MUESTRA (gr):</strong> {{ grupos[0].reporte.pes_Mue }}</p> <!--NUEVO CAMPO-->
+          <p><strong>ESTADO:</strong> {{ grupos[0].reporte.flg_Est_Lab === '01' ? 'PENDIENTE' : 'ENTREGADO' }}</p> <!--NUEVO CAMPO-->          
         </div>
         <div class="col" *ngIf="this.data.tipoRecetaR === 'D'">
           <p><strong>CANTIDAD LAVADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
