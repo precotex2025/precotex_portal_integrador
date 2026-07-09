@@ -4,14 +4,14 @@
   </button>
 </div>
 <div class="print-button-container">
-  <!-- <button mat-raised-button color="primary" (click)="imprimirReporte()"> -->
+  <button mat-raised-button color="primary" (click)="imprimirReporte()"> 
   <!-- <button mat-raised-button color="primary" (click)="generarPDF()"> -->
-     <!-- <mat-icon>print</mat-icon> Imprimir reporte -->
-  <!-- </button> -->
-
-  <button mat-raised-button color="primary" (click)="imprimirReporteRed()">
-    <mat-icon>print</mat-icon> Imprimir reporte en Red
+     <mat-icon>print</mat-icon> Imprimir reporte 
   </button> 
+
+  <!-- <button mat-raised-button color="primary" (click)="imprimirReporteRed()">
+    <mat-icon>print</mat-icon> Imprimir reporte
+  </button>  -->
 
 </div>
 
@@ -44,9 +44,12 @@
           <p><strong>PESO MUESTRA (gr):</strong> {{ grupos[0].reporte.pes_Mue }}</p> <!--NUEVO CAMPO-->
           <p><strong>ESTADO:</strong> {{ grupos[0].reporte.flg_Est_Lab === '01' ? 'PENDIENTE' : 'ENTREGADO' }}</p> <!--NUEVO CAMPO-->          
         </div>
-        <div class="col" *ngIf="this.data.tipoRecetaR === 'R' || this.data.tipoRecetaR === 'D'">
+        <div class="col" *ngIf="this.data.tipoRecetaR === 'D'">
+          <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p> <!--NUEVO CAMPO-->
           <p><strong>CANTIDAD LAVADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
           <p><strong>TIPO LAVADO:</strong> {{ grupos[0].reporte.cur_Jab }}</p>
+          <p><strong>PESO MUESTRA (gr):</strong> {{ grupos[0].reporte.pes_Mue }}</p> <!--NUEVO CAMPO-->
+          <p><strong>ESTADO:</strong> {{ grupos[0].reporte.flg_Est_Lab === '01' ? 'PENDIENTE' : 'ENTREGADO' }}</p> <!--NUEVO CAMPO-->
         </div>
       </div>
     </div>
@@ -92,7 +95,7 @@
           <p><strong>ESTADO:</strong> {{ grupos[0].reporte.flg_Est_Lab === '01' ? 'PENDIENTE' : 'ENTREGADO' }}</p> <!--NUEVO CAMPO-->
 
         </div>
-        <div class="col" *ngIf="this.data.tipoRecetaR === 'R' || this.data.tipoRecetaR === 'D'">
+        <div class="col" *ngIf="this.data.tipoRecetaR === 'D'">
           <p><strong>RB:</strong> {{ grupos[0].reporte.r_B_Prod }}</p>
           <p><strong>RB SIGE:</strong> {{ grupos[0].reporte.rel_Ban_Sige }}</p> <!--NUEVO CAMPO-->
           <p><strong>CANTIDAD LAVADOS: </strong> {{ grupos[0].reporte.can_Jab }}</p>
