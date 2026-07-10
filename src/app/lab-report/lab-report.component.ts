@@ -158,7 +158,7 @@ export class LabReportComponent implements OnInit {
     forkJoin({
       principal: this.labColTrabajoService.getCargarDatosReporte(corrCarta, sec, Tip_Ten),
       trico:     this.labColTrabajoService.getCargarDatosReporteTrico(corrCarta, sec, Tip_Ten),
-      ph:        this.labColTrabajoService.getCargarDatosReportePH(corrCarta),
+      ph:        this.labColTrabajoService.getCargarDatosReportePH(corrCarta, sec, Tip_Ten),
     }).subscribe({
       next: ({ principal, trico, ph }: any) => {
         const reporte: ReporteBackend = {
@@ -293,64 +293,41 @@ export class LabReportComponent implements OnInit {
   }
 
   imprimirReporte() {
-  const element = document.querySelector('.report-only') as HTMLElement;
+    const element = document.querySelector('.report-only') as HTMLElement;
 
-  // 1. Forzamos un ancho de ventana virtual para que el layout no se comprima en la tablet
-  html2canvas(element, { 
-    scale: 2,
-    windowWidth: 1200, // Simula el ancho de un monitor
-    useCORS: true      // Útil si tienes imágenes externas en el reporte
-  }).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
+    html2canvas(element, { scale: 2 }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
 
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
         <html>
           <head>
             <title>Reporte</title>
             <style>
-              /* 2. Quitamos todos los márgenes de la página impresa */
-              @page {
-                size: landscape;
-                margin: 0mm; 
-              }
-              html, body {
-                margin: 0;
-                padding: 0;
-                width: 100vw;
-                height: 100vh;
-                overflow: hidden; /* Evita barras de desplazamiento */
-              }
-              /* 3. Forzamos a la imagen a ocupar el 100% de la hoja */
-              img {
-                width: 100%;
-                height: 100%;
-                /* 'fill' estirará la imagen para que encaje perfecto sin dejar bordes blancos. 
-                   Si notas que se deforma mucho, cámbialo a 'cover' */
-                object-fit: fill; 
-                display: block;
-              }
+        @page {
+          size: A4 landscape; /* o landscape */
+          margin: 10mm;
+        }
+        body { margin: 0; display: flex; justify-content: center; }
+        img { width: 100%; height: auto; }
             </style>
           </head>
           <body>
             <img src="${imgData}" />
             <script>
               window.onload = function() {
-                // Pequeño timeout para asegurar que la imagen cargue en memoria antes de imprimir
-                setTimeout(() => {
-                  window.print();
-                  window.onafterprint = function() { window.close(); };
-                }, 250);
+                window.print();
+                window.onafterprint = function() { window.close(); };
               }
             </script>
           </body>
         </html>
       `);
-      printWindow.document.close();
-    }
-  });
-}
+        printWindow.document.close();
+      }
+    });
+  }
 
   // imprimirReporte() {
   //   const element = document.querySelector('.report-only') as HTMLElement;

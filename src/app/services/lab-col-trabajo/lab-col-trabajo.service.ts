@@ -687,10 +687,12 @@ export class LabColTrabajoService {
     return this.http.post(this.baseUrlTinto + 'HelpCommon/postImprimirReporteLabDip', data)
   }
 
-  getCargarDatosReportePH(Corr_Carta: any){
+  getCargarDatosReportePH(Corr_Carta: any, Sec: number, Tip_Ten: string){
     const headers = this.Header;
     let params = new HttpParams();
     params = params.append('Corr_Carta', Corr_Carta);
+    params = params.append('Sec', Sec);
+    params = params.append('Tip_Ten', Tip_Ten);
     return this.http.get(this.baseUrlTinto + 'LbColaTrabajo/getCargarDatosReportePH', { headers, params })
   }    
 

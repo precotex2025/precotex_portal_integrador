@@ -524,5 +524,26 @@
 }
 
 .fila-mosquito {
-  background-color: #fff59d;
+  // background-color: #fff59d;
+  background-color: #CEFAFE;
+}
+
+
+/******* AGREGADO NUEVO *******/
+
+::ng-deep .tabla-laboratorio .fila-rojo {
+  background-color: #f8d7da !important;
+}
+
+::ng-deep .tabla-laboratorio .fila-verde {
+  background-color: #d4edda !important;
+}
+
+::ng-deep .tabla-laboratorio .fila-amarillo {
+  background-color: #fff3cd !important;
+}
+
+
+::ng-deep .tabla-laboratorio .fila-plomo {
+  background-color: #979797 !important;
 }

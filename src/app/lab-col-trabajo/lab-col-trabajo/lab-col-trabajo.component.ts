@@ -56,8 +56,10 @@ export class LabColTrabajoComponent implements OnInit {
     ) { }
 
   range = new FormGroup({
-    start: new FormControl(new Date(new Date().getFullYear(), new Date().getMonth() - 2, 1)),
-    end: new FormControl(new Date),
+    start: new FormControl(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
+    end: new FormControl(new Date),    
+    //start: new FormControl(new Date(new Date().getFullYear(), new Date().getMonth() - 2, 1)),
+    //end: new FormControl(new Date),
   });
 
   ngOnInit(): void {

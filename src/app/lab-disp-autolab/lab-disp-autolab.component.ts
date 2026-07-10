@@ -58,6 +58,11 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
   @ViewChild('paginatorColaAutolab') paginatorColaAutolab!: MatPaginator;
   @ViewChild('paginatorDispensado') paginatorDispensado!: MatPaginator;
   Usuario: string = '';
+  private readonly prioridadColor: Record<string, number> = {
+    'fila-rojo': 1,
+    'fila-amarillo': 2,
+    'fila-verde': 3
+  };  
 
   constructor(
     private dialog: MatDialog,
@@ -70,6 +75,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
 
   ) { }
   posiciones: { numero: number, seleccionado: boolean, ocupado: boolean }[] = [];
+  //dataListadoColaAutolab = Array<any> = [];
   ngOnInit(): void {
     console.log('marca jabonado');           
     if (this.authService.isLoggedIn()) {
@@ -87,7 +93,7 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     this.onListarColaAutolab(this.Usuario);
     // this.onListarDispensado();
   }
-
+  
   ngAfterViewInit(): void {
     
     this.dataSource.paginator = this.paginatorColaAutolab;
@@ -146,11 +152,11 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
     //return selected.length > 0 && selected.length < this.dataSource.data.length;
   }
 
-  dataListadoColaAutolab = [];
+  dataListadoColaAutolab : Array<any> = [];
   onListarColaAutolab(Usr_Cod: string) {
 
-    this.SpinnerService.show();
     this.dataListadoColaAutolab = [];
+    this.SpinnerService.show();
     this.LabColTrabajoService.getListarColaAutolab(Usr_Cod).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -159,7 +165,22 @@ export class LabDispAutolabComponent implements OnInit, AfterViewInit {
             ...colita,
             seleccionado: false
           }));
-          this.dataSource.data = this.dataListadoColaAutolab;
+
+          /*COMENTADO*/
+          //this.dataSource.data = this.dataListadoColaAutolab;
+
+          this.dataSource.data = this.dataListadoColaAutolab.sort((a, b) => {
+            const colorA = this.prioridadColor[this.getColorClaseProduccion(a)] ?? 99;
+            const colorB = this.prioridadColor[this.getColorClaseProduccion(b)] ?? 99;
+            if (colorA !== colorB) {
+              return colorA - colorB;
+            }
+              const fechaA = new Date(a.fec_Env_Autolab).getTime();
+              const fechaB = new Date(b.fec_Env_Autolab).getTime();
+              return fechaA - fechaB;
+          });          
+
+        
           this.dataSource.sort = this.sortColaAutolab;
 
           this.dataSource.data.forEach(row => {
@@ -1256,6 +1277,77 @@ async enviarAutolab(): Promise<void> {
       }
     });
   }
+
+  getColorClase(row: any): string {
+    const hoy = new Date();
+    const fechaCompromiso = new Date(row.fec_Env_Autolab);
+
+    //console.log('Fecha de compromiso:', fechaCompromiso);
+
+    const diasCompromiso = Math.floor((fechaCompromiso.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+    //console.log('Dias de compromiso:', diasCompromiso);
+    let clase = '';
+
+    if (diasCompromiso <= 0) {
+      //console.log('Fila roja');
+      clase = 'fila-rojo';
+    } else if (diasCompromiso > 0 && diasCompromiso <= 3) {
+      //console.log('Fila amarilla');
+      clase = 'fila-amarillo';
+    } else if (diasCompromiso > 3) {
+      console.log('Fila verde');
+      clase = 'fila-verde';
+    }
+
+    return clase;
+  }  
+
+getColorClaseProduccion(row: any): string {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0); // Normalizar a inicio del día
+
+  const fechaAsignacion = new Date(row.fecha_AsignaAnalista);
+  const fechaPCP = new Date(row.fec_Teorico_Inicio_Tenido);
+
+  // Diferencia en días: PCP respecto a hoy (positivo = días que faltan)
+  const diasPCP = Math.floor(
+    (fechaPCP.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  // Diferencia en días: desde asignación hasta hoy (positivo = días transcurridos)
+  const diasAsignacion = Math.floor(
+    (hoy.getTime() - fechaAsignacion.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  const pcpValido = !isNaN(fechaPCP.getTime());
+  const asignacionValida = !isNaN(fechaAsignacion.getTime());
+
+  // --- Semáforo PCP ---
+  // Rojo: faltan < 3 días | Amarillo: exactamente 3 días | Verde: > 3 días
+  let colorPCP = '';
+  if (pcpValido) {
+    if (diasPCP < 3)       colorPCP = 'fila-rojo';
+    else if (diasPCP === 3) colorPCP = 'fila-amarillo';
+    else                   colorPCP = 'fila-verde';
+  }
+
+  // Rojo: > 5 días | Amarillo: exactamente 5 días | Verde: < 5 días
+  let colorLab = '';
+  if (asignacionValida) {
+    if (diasAsignacion > 5)       colorLab = 'fila-rojo';
+    else if (diasAsignacion === 5) colorLab = 'fila-amarillo';
+    else                          colorLab = 'fila-verde';
+  }
+
+  const colores = [colorPCP, colorLab].filter(c => c !== '');
+
+  if (colores.includes('fila-rojo'))    return 'fila-rojo';
+  if (colores.includes('fila-amarillo')) return 'fila-amarillo';
+  if (colores.includes('fila-verde'))   return 'fila-verde';
+
+  // Fechas inválidas
+  return 'fila-amarillo';
+}  
 
 
 

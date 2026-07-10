@@ -153,7 +153,8 @@
 
         <!-- Header y filas -->
         <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-        <tr mat-row *matRowDef="let row; columns: columnsToDisplay" [ngClass]="{'fila-mosquito': row.procedencia === 'Mosquito'}"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnsToDisplay" [ngClass]="row.procedencia === 'Mosquito' ? 'fila-mosquito' : getColorClaseProduccion(row)"></tr>
+        <!-- <tr mat-row *matRowDef="let row; columns: columnsToDisplay" [ngClass]="{'fila-mosquito': row.procedencia === 'Mosquito'}"></tr> -->
       </table>
     </div>
 
