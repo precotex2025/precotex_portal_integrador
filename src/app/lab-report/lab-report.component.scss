@@ -108,7 +108,7 @@
 /* Cabecera en tres columnas */
 .cabecera {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap !important;
   gap: 0.3em;
   margin-bottom: 0.5rem;
 
@@ -563,6 +563,7 @@ mat-card-title {
   .cabecera {
     margin-bottom: 0.8rem !important;
     gap: 1rem !important;
+    flex-wrap: nowrap !important;
 
     .col {
       padding: 0.5rem 0.8rem !important;

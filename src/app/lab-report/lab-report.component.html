@@ -4,15 +4,18 @@
   </button>
 </div>
 <div class="print-button-container">
-  <button mat-raised-button color="primary" (click)="imprimirReporte()"> 
-  <!-- <button mat-raised-button color="primary" (click)="generarPDF()"> -->
-     <mat-icon>print</mat-icon> Imprimir reporte 
+  <button mat-raised-button color="primary"
+        [disabled]="!reporteListo || imprimiendo"
+        (click)="imprimirReporteRed()">
+    <mat-icon *ngIf="!imprimiendo">print</mat-icon>
+    <mat-icon *ngIf="imprimiendo" style="vertical-align: middle; font-size: 18px; animation: spin 1s linear infinite;">autorenew</mat-icon>
+    {{ imprimiendo ? 'Imprimiendo...' : 'Imprimir reporte' }}
   </button> 
 
-  <!-- <button mat-raised-button color="primary" (click)="imprimirReporteRed()">
-    <mat-icon>print</mat-icon> Imprimir reporte
-  </button>  -->
-
+  <span *ngIf="!reporteListo && loading" style="margin-left: 12px; font-size: 0.85rem; color: #888; align-self: center;">
+    <mat-icon style="vertical-align: middle; font-size: 18px; animation: spin 1s linear infinite;">autorenew</mat-icon>
+    Cargando reporte...
+  </span>
 </div>
 
 <div class="report-only">
@@ -20,7 +23,7 @@
   <div class="report" *ngIf="grupos.length > 0">
 
     <!-- Cabecera en tres columnas -->
-    <div [hidden]="this.mostrarCabecera">
+    <div *ngIf="!this.mostrarCabecera">
       <div class="cabecera">
         <div class="col">
           <p><strong>ANALISTA:</strong> {{ grupos[0].reporte.analista }}</p>
@@ -53,7 +56,7 @@
         </div>
       </div>
     </div>
-    <div [hidden]="!this.mostrarCabecera">
+    <div *ngIf="this.mostrarCabecera">
       <div class="cabecera">
         <div class="col">
           <p><strong>ANALISTA:</strong> {{ grupos[0].reporte.analista }}</p>

@@ -112,6 +112,7 @@ export class LabReportComponent implements OnInit {
   reportePH: ph[] = [];
   isCapturing = false;
   reporteListo = false;
+  imprimiendo = false;
 
   constructor(
     private labColTrabajoService: LabColTrabajoService,
@@ -259,6 +260,10 @@ export class LabReportComponent implements OnInit {
   }
 
   imprimirReporteRed() {
+    if (this.imprimiendo) return;
+    this.imprimiendo = true;
+    this.toastr.info('Capturando pantalla y procesando reporte...', 'Impresión', { timeOut: 3000 });
+
     const element = document.querySelector('.report-only') as HTMLElement;
 
     html2canvas(element, { 
@@ -270,6 +275,8 @@ export class LabReportComponent implements OnInit {
       canvas.toBlob(blob => {
         if (!blob) {
           console.error('Error: canvas.toBlob devolvió null');
+          this.imprimiendo = false;
+          this.toastr.error('Error al generar la imagen del reporte.', 'Impresión');
           return;
         }
 
@@ -280,55 +287,65 @@ export class LabReportComponent implements OnInit {
         this.toastr.info('Enviando reporte a la impresora en red...', 'Impresión');
         this.labColTrabajoService.postImprimirReporteLabDip(formData).subscribe({
           next: (response: any) => {
+            this.imprimiendo = false;
             this.toastr.success('Reporte enviado a la impresora en red.', 'Impresión');
             console.log('Reporte enviado al backend para impresión en red', response);
           },
           error: err => {
+            this.imprimiendo = false;
             this.toastr.error(`Error al enviar reporte: ${err.status} ${err.statusText}`, 'Impresión');
             console.error('Error al enviar reporte:', err.status, err.statusText, err.error);
           }
         });
       });  
+    }).catch(err => {
+      this.imprimiendo = false;
+      this.toastr.error('Error al capturar la pantalla.', 'Impresión');
+      console.error(err);
     });
   }
 
   imprimirReporte() {
-  const element = document.querySelector('.report-only') as HTMLElement;
+    const element = document.querySelector('.report-only') as HTMLElement;
 
-  // 1. Forzamos un ancho de ventana virtual para que el layout no se comprima en la tablet
-  html2canvas(element, { 
-    scale: 2,
-    windowWidth: 1200, // Simula el ancho de un monitor
-    useCORS: true      // Útil si tienes imágenes externas en el reporte
-  }).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-
+    // IMPORTANTE: Abrir la ventana ANTES del html2canvas (sincrónico en el click)
+    // para evitar que el navegador/tablet la bloquee como popup.
     const printWindow = window.open('', '_blank');
-    if (printWindow) {
+    if (!printWindow) {
+      alert('El navegador bloqueó la ventana de impresión. Por favor permite popups para este sitio.');
+      return;
+    }
+
+    // Mostrar estado de carga mientras captura
+    printWindow.document.write(`
+      <html><head><title>Preparando reporte...</title></head>
+      <body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#555;">
+        <p>⏳ Generando imagen, por favor espere...</p>
+      </body></html>`);
+    printWindow.document.close();
+
+    html2canvas(element, {
+      scale: 2,
+      windowWidth: 1200,
+      useCORS: true
+    }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+
+      printWindow.document.open();
       printWindow.document.write(`
         <html>
           <head>
             <title>Reporte</title>
             <style>
-              /* 2. Quitamos todos los márgenes de la página impresa */
-              @page {
-                size: landscape;
-                margin: 0mm; 
-              }
+              @page { size: landscape; margin: 0mm; }
               html, body {
-                margin: 0;
-                padding: 0;
-                width: 100vw;
-                height: 100vh;
-                overflow: hidden; /* Evita barras de desplazamiento */
+                margin: 0; padding: 0;
+                width: 100vw; height: 100vh;
+                overflow: hidden;
               }
-              /* 3. Forzamos a la imagen a ocupar el 100% de la hoja */
               img {
-                width: 100%;
-                height: 100%;
-                /* 'fill' estirará la imagen para que encaje perfecto sin dejar bordes blancos. 
-                   Si notas que se deforma mucho, cámbialo a 'cover' */
-                object-fit: fill; 
+                width: 100%; height: 100%;
+                object-fit: fill;
                 display: block;
               }
             </style>
@@ -337,20 +354,18 @@ export class LabReportComponent implements OnInit {
             <img src="${imgData}" />
             <script>
               window.onload = function() {
-                // Pequeño timeout para asegurar que la imagen cargue en memoria antes de imprimir
-                setTimeout(() => {
+                setTimeout(function() {
                   window.print();
                   window.onafterprint = function() { window.close(); };
-                }, 250);
+                }, 300);
               }
             </script>
           </body>
         </html>
       `);
       printWindow.document.close();
-    }
-  });
-}
+    });
+  }
 
   // imprimirReporte() {
   //   const element = document.querySelector('.report-only') as HTMLElement;
