@@ -112,6 +112,7 @@ export class LabReportComponent implements OnInit {
   reportePH: ph[] = [];
   isCapturing = false;
   reporteListo = false;
+  imprimiendo = false;
 
   constructor(
     private labColTrabajoService: LabColTrabajoService,
@@ -259,6 +260,10 @@ export class LabReportComponent implements OnInit {
   }
 
   imprimirReporteRed() {
+    if (this.imprimiendo) return;
+    this.imprimiendo = true;
+    this.toastr.info('Capturando pantalla y procesando reporte...', 'Impresión', { timeOut: 3000 });
+
     const element = document.querySelector('.report-only') as HTMLElement;
 
     html2canvas(element, { 
@@ -270,6 +275,8 @@ export class LabReportComponent implements OnInit {
       canvas.toBlob(blob => {
         if (!blob) {
           console.error('Error: canvas.toBlob devolvió null');
+          this.imprimiendo = false;
+          this.toastr.error('Error al generar la imagen del reporte.', 'Impresión');
           return;
         }
 
@@ -280,15 +287,21 @@ export class LabReportComponent implements OnInit {
         this.toastr.info('Enviando reporte a la impresora en red...', 'Impresión');
         this.labColTrabajoService.postImprimirReporteLabDip(formData).subscribe({
           next: (response: any) => {
+            this.imprimiendo = false;
             this.toastr.success('Reporte enviado a la impresora en red.', 'Impresión');
             console.log('Reporte enviado al backend para impresión en red', response);
           },
           error: err => {
+            this.imprimiendo = false;
             this.toastr.error(`Error al enviar reporte: ${err.status} ${err.statusText}`, 'Impresión');
             console.error('Error al enviar reporte:', err.status, err.statusText, err.error);
           }
         });
       });  
+    }).catch(err => {
+      this.imprimiendo = false;
+      this.toastr.error('Error al capturar la pantalla.', 'Impresión');
+      console.error(err);
     });
   }
 
