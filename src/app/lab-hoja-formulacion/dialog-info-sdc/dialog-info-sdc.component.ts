@@ -50,7 +50,8 @@ interface informacionSDCProduccion{
   cod_OrdTra_Ref: string;
   tela_Ref: string;
   rel_Ban_Ref: string;
-  lote_Ref: string
+  lote_Ref: string;
+  des_Colorante_Optico: string; //Nuevo
 }
 
 @Component({
